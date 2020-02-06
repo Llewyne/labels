@@ -1,0 +1,94 @@
+\begin{thebibliography}{10}
+
+\bibitem{barth2015readability}
+Lukas Barth, Andreas Gemsa, Benjamin Niedermann, and Martin N{\"o}llenburg.
+\newblock On the readability of boundary labeling.
+\newblock In {\em International Symposium on Graph Drawing}, pages 515--527.
+  Springer, 2015.
+
+\bibitem{been2006dynamic}
+Ken Been, Eli Daiches, and Chee Yap.
+\newblock Dynamic map labeling.
+\newblock {\em IEEE Transactions on visualization and computer graphics},
+  12(5):773--780, 2006.
+
+\bibitem{boundaryLabelling}
+M.~A. Bekos, M.~Kaufmann, K.~Potika, and A.~Symvonis.
+\newblock Boundary labelling of optimal total leader length.
+\newblock In Panayiotis Bozanis and Elias~N. Houstis, editors, {\em Advances in
+  Informatics}, pages 80--89, Berlin, Heidelberg, 2005. Springer Berlin
+  Heidelberg.
+
+\bibitem{Bekos:2006:PLM:1151903.1151906}
+Michael~A. Bekos, Michael Kaufmann, Katerina Potika, and Antonios Symvonis.
+\newblock Polygon labelling of minimum leader length.
+\newblock In {\em Proceedings of the 2006 Asia-Pacific Symposium on Information
+  Visualisation - Volume 60}, APVis '06, pages 15--21, Darlinghurst, Australia,
+  Australia, 2006. Australian Computer Society, Inc.
+
+\bibitem{Gemsa:2011:BAP:2093973.2094012}
+Andreas Gemsa, Jan-Henrik Haunert, and Martin N\"{o}llenburg.
+\newblock Boundary-labeling algorithms for panorama images.
+\newblock In {\em Proceedings of the 19th ACM SIGSPATIAL International
+  Conference on Advances in Geographic Information Systems}, GIS '11, pages
+  289--298, New York, NY, USA, 2011. ACM.
+
+\bibitem{hartmann2004floating}
+Knut Hartmann, Kamran Ali, and Thomas Strothotte.
+\newblock Floating labels: Applying dynamic potential fields for label layout.
+\newblock In {\em International Symposium on Smart Graphics}, pages 101--113.
+  Springer, 2004.
+
+\bibitem{hartmann2005metrics}
+Knut Hartmann, Timo G{\"o}tzelmann, Kamran Ali, and Thomas Strothotte.
+\newblock Metrics for functional and aesthetic label layouts.
+\newblock In {\em International Symposium on Smart Graphics}, pages 115--126.
+  Springer, 2005.
+
+\bibitem{ortiz2007automated}
+Emilio~G Ortiz-Garc{\'\i}a, Sancho Salcedo-Sanz, Jose~M Leiva-Murillo, Angel~M
+  P{\'e}rez-Bellido, and Jos{\'e}~A Portilla-Figueras.
+\newblock Automated generation and visualization of picture-logic puzzles.
+\newblock {\em Computers \& Graphics}, 31(5):750--760, 2007.
+
+\bibitem{purchase2002metrics}
+Helen~C Purchase.
+\newblock Metrics for graph drawing aesthetics.
+\newblock {\em Journal of Visual Languages \& Computing}, 13(5):501--516, 2002.
+
+\bibitem{purchase1995validating}
+Helen~C Purchase, Robert~F Cohen, and Murray James.
+\newblock Validating graph drawing aesthetics.
+\newblock In {\em International Symposium on Graph Drawing}, pages 435--446.
+  Springer, 1995.
+
+\bibitem{salcedo2007solving}
+Sancho Salcedo-Sanz, Emilio~G Ortiz-Garca, Angel~M P{\'e}rez-Bellido, Antonio
+  Portilla-Figueras, and Xin Yao.
+\newblock Solving japanese puzzles with heuristics.
+\newblock In {\em 2007 IEEE Symposium on Computational Intelligence and Games},
+  pages 224--231. IEEE, 2007.
+
+\bibitem{smith2013quantifying}
+Adam~M Smith, Eric Butler, and Zoran Popovic.
+\newblock Quantifying over play: Constraining undesirable solutions in puzzle
+  design.
+\newblock In {\em FDG}, pages 221--228, 2013.
+
+\bibitem{van2017improved}
+MA~van~de Kerkhof.
+\newblock Improved automatic generation of curved nonograms.
+\newblock Master's thesis, 2017.
+
+\bibitem{vollick2007specifying}
+Ian Vollick, Daniel Vogel, Maneesh Agrawala, and Aaron Hertzmann.
+\newblock Specifying label layout style by example.
+\newblock In {\em Proceedings of the 20th annual ACM symposium on User
+  interface software and technology}, pages 221--230. ACM, 2007.
+
+\bibitem{ware2002cognitive}
+Colin Ware, Helen Purchase, Linda Colpoys, and Matthew McGill.
+\newblock Cognitive measurements of graph aesthetics.
+\newblock {\em Information visualization}, 1(2):103--110, 2002.
+
+\end{thebibliography}
