@@ -1,5 +1,12 @@
 \begin{thebibliography}{10}
 
+\bibitem{justrecursion}
+Travis Athougies.
+\newblock Dynamic programming in haskell is just recursion.
+\newblock
+  \url{http://travis.athougies.net/posts/2018-05-05-dynamic-programming-is-recursion.html},
+  2018.
+
 \bibitem{barth2015readability}
 Lukas Barth, Andreas Gemsa, Benjamin Niedermann, and Martin N{\"o}llenburg.
 \newblock On the readability of boundary labeling.
@@ -19,6 +26,18 @@ M.~A. Bekos, M.~Kaufmann, K.~Potika, and A.~Symvonis.
   Informatics}, pages 80--89, Berlin, Heidelberg, 2005. Springer Berlin
   Heidelberg.
 
+\bibitem{bekos2010boundary}
+Michael~A Bekos, Michael Kaufmann, Martin N{\"o}llenburg, and Antonios
+  Symvonis.
+\newblock Boundary labeling with octilinear leaders.
+\newblock {\em Algorithmica}, 57(3):436--461, 2010.
+
+\bibitem{bekos2006multi}
+Michael~A Bekos, Michael Kaufmann, Katerina Potika, and Antonios Symvonis.
+\newblock Multi-stack boundary labeling problems.
+\newblock In {\em International Conference on Foundations of Software
+  Technology and Theoretical Computer Science}, pages 81--92. Springer, 2006.
+
 \bibitem{Bekos:2006:PLM:1151903.1151906}
 Michael~A. Bekos, Michael Kaufmann, Katerina Potika, and Antonios Symvonis.
 \newblock Polygon labelling of minimum leader length.
@@ -32,10 +51,23 @@ Michael~A Bekos, Michael Kaufmann, Antonios Symvonis, and Alexander Wolff.
   maps.
 \newblock {\em Computational Geometry}, 36(3):215--236, 2007.
 
+\bibitem{bekos2019external}
+Michael~A Bekos, Benjamin Niedermann, and Martin N{\"o}llenburg.
+\newblock External labeling techniques: A taxonomy and survey.
+\newblock In {\em Computer Graphics Forum}, volume~38, pages 833--860. Wiley
+  Online Library, 2019.
+
 \bibitem{de2016concept}
 TK~de~Jong.
 \newblock The concept and automatic generation of the curved nonogram puzzle.
 \newblock Master's thesis, 2016.
+
+\bibitem{fink2012algorithms}
+Martin Fink, Jan-Henrik Haunert, Andr{\'e} Schulz, Joachim Spoerhase, and
+  Alexander Wolff.
+\newblock Algorithms for labeling focus regions.
+\newblock {\em IEEE Transactions on Visualization and Computer Graphics},
+  18(12):2583--2592, 2012.
 
 \bibitem{Gemsa:2011:BAP:2093973.2094012}
 Andreas Gemsa, Jan-Henrik Haunert, and Martin N\"{o}llenburg.
@@ -56,12 +88,24 @@ Knut Hartmann, Timo G{\"o}tzelmann, Kamran Ali, and Thomas Strothotte.
 \newblock In {\em International Symposium on Smart Graphics}, pages 115--126.
   Springer, 2005.
 
+\bibitem{iturriaga1999elastic}
+Claudia Iturriaga and Anna Lubiw.
+\newblock Elastic labels around the perimeter of a map.
+\newblock In {\em Workshop on Algorithms and Data Structures}, pages 306--317.
+  Springer, 1999.
+
 \bibitem{loffler2014connect}
 Maarten L{\"o}ffler, Mira Kaiser, Tim van Kapel, Gerwin Klappe, Marc van
   Kreveld, and Frank Staals.
 \newblock The connect-the-dots family of puzzles: design and automatic
   generation.
 \newblock {\em ACM Transactions on Graphics (TOG)}, 33(4):72, 2014.
+
+\bibitem{nollenburg2010dynamic}
+Martin N{\"o}llenburg, Valentin Polishchuk, and Mikko Sysikaski.
+\newblock Dynamic one-sided boundary labeling.
+\newblock In {\em Proceedings of the 18th SIGSPATIAL International Conference
+  on Advances in Geographic Information Systems}, pages 310--319, 2010.
 
 \bibitem{ortiz2007automated}
 Emilio~G Ortiz-Garc{\'\i}a, Sancho Salcedo-Sanz, Jose~M Leiva-Murillo, Angel~M
@@ -115,5 +159,11 @@ Ian Vollick, Daniel Vogel, Maneesh Agrawala, and Aaron Hertzmann.
 Colin Ware, Helen Purchase, Linda Colpoys, and Matthew McGill.
 \newblock Cognitive measurements of graph aesthetics.
 \newblock {\em Information visualization}, 1(2):103--110, 2002.
+
+\bibitem{zoraster1997practical}
+Steven Zoraster.
+\newblock Practical results using simulated annealing for point feature label
+  placement.
+\newblock {\em Cartography \& Geographic Information Systems}, 24(4):228, 1997.
 
 \end{thebibliography}

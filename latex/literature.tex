@@ -1,6 +1,7 @@
 \documentclass[a4paper]{article}
 
 \usepackage{cite}
+\usepackage{url}
 
 \title{Labeling Sloped Nonograms Literature}
 
@@ -25,11 +26,9 @@ Automated generation of curved nonograms. Also goes into aesthetics. No mention 
 
 \subsubsection{Automated generation and visualization of picture-logic puzzles \cite{ortiz2007automated}}
 Generation of regular nonograms, in black and white and color. \\
-12/12 cited 28 times
 
 \subsubsection{Solving Japanese Puzzles with Heuristics \cite{salcedo2007solving}}
 Solving of regular nonograms, in black and white and color.\\
-12/12 cited 15 times
 
 \subsection{On (solving) puzzles in general}
 
@@ -39,53 +38,95 @@ Describes an algorithm for automatically generating levels with no undesirable s
 \subsubsection{The Connect-The-Dots family of puzzles: design and automatic generation \cite{loffler2014connect}}
 Generation of Connect-The-Dots puzzles and three new puzzle types: Connect-The-Closest-Dot, Connect-That-Dot (connect to dot in that direction), Connect-The-Unit-Dots (connect dots that lie at a unit distance)
 
-\subsection{On labeling}
-Labeling nonograms is similar to labeling graphs. Therefore research on automatically labeling graph boundaries is helpful.\\
+\subsection{On boundary labeling}
+Boundary labeling is the labeling of point sites in a rectangle, where the labels are placed on or near the boundary. There are many variations of this problem that differ in the type of leaders used, the amount of sides that are labeled, wether there are sliding or fixed ports, the size of the labels and what is considered an optimal solution. The problem of labeling sloped nonograms could be described as a boundary labeling problem with straight-line leaders with fixed slope and fixed ports. Or perhaps we could approximate the diagonal lines of a nonogram labeling with rectilinear leaders with many bends, where all parallel segments and all orthogonal segments are of fixed length and direction.\\
+Table \ref{tab:overview} shows an overview of the most relevant existing algorithms. \\
+
+\begin{table}[t]
+\centering
+\begin{tabular}{ |c|c|c|c| }
+\hline
+  Literature & Leader type &  Optimal solution & Feasible solution \\
+\hline
+  \cite{bekos2007boundary} & s & $O(n^2)$ & $O(n\log{}n)$ \\
+ \cite{bekos2007boundary} & opo &  $O(n^2\log{^3}n)$ & $O(n\log{}n)$ \\
+\cite{Gemsa:2011:BAP:2093973.2094012} & orthogonal & $O(k^*n^3)$& \\ 
+\cite{bekos2006multi} & opo & $O(n^4 \log{}H)$**&\\
+\hline
+\end{tabular}\\
+\caption{$k^*$ is the number of rows in the optimal solution, **For 3 stacks on one side, $H$ is the height of the boundary}
+\label{tab:overview}
+\end{table}
+
 
 \subsubsection{Boundary labeling: Models and efficient algorithms for rectangular maps \cite{bekos2007boundary}}
-17/12 cited 60 times
+Provides algorithms for a number of problems. Each problem focuses on either finding the bend-minimal or length-minimal solution or a feasible solution with different types of leaders and ports, for 1,2 or 4 sides of a rectangle.
+
 
 \subsubsection{Boundary Labelling of Optimal Total Leader Length \cite{boundaryLabelling}}
-12/12 cited 13 times
-
-\subsubsection{Polygon Labelling of Minimum Leader Length \cite{Bekos:2006:PLM:1151903.1151906}}
-12/12 cited 25 times
+Already included in previous\\
 
 \subsubsection{Boundary-labeling Algorithms for Panorama Images \cite{Gemsa:2011:BAP:2093973.2094012}}
-12/12 cited 13 times
+Provides algorithms for \emph{stacked} labels on a horizontal boundary with orthogonal leaders and labels with varying widths. This could be relevant to nonogram labeling, because there the labels are also stacked, only the leaders are diagonal and the height varies (in the case of a horizontal boundary).\\
+
+
+\subsubsection{Multi-stack Boundary Labeling Problems \cite{bekos2006multi}}
+Another solution that uses stacked labels, but for all sides of the boundary and with octilinear leaders as well as orthogonal leaders. Focuses on maximizing the label height. It's likely we'll be able to adapt this algorithm to at least solve a part of the nonogram labeling problem. 
+
+
+\subsubsection{Boundary labeling with octilinear leaders \cite{bekos2010boundary}}
+Algorithms for solving the boundary labeling problem using octilinear leaders with type \emph{od}, \emph{pd} and \emph{do} leaders, where the \emph{d} stands for diagonal. Although it does use diagonal leaders, the focus is in minimizing the length of the leaders \emph{inside} the boundary only. There is no obvious way this could be adapted for the nonogram labeling problem.
+
+\subsubsection{Algorithms for labeling focus regions \cite{fink2012algorithms}}
+Boundary labeling for a circular boundary using bezier curves for the leaders. More useful for labeling curved nonograms.
+
+\subsubsection{Dynamic one-sided boundary labeling \cite{nollenburg2010dynamic}}
+Here the labels are attached to the boundary and the leaders are only inside the boundary. Seems to be too different from nonogram labeling to be adapted for this problem.
+
+
+\subsubsection{On the readability of boundary labeling \cite{barth2015readability}}
+Only focusses on different ways of drawing leaders \textit{inside} the boundary and is therefore not really relevant.
+
+\subsection{On other types of labeling}
+While boundary labeling is most similar to the problem of sloped nonogram labeling, it is still useful to look at other types of labeling. There may still be elements of these problems that overlap with sloped nonogram labeling.
+
+\subsubsection{Elastic Labels Around the Perimeter of a Map \cite{iturriaga1999elastic}}
+This paper provides a polynomial time algorithm for the problem of attaching elastic labels to points. Elastic labels are rectangular labels that have a fixed area, but the width and height can vary. The labels are attached directly to the points, without leaders.
+
+\subsubsection{Polygon Labelling of Minimum Leader Length \cite{Bekos:2006:PLM:1151903.1151906}}
 
 \subsubsection{Floating labels: Applying dynamic potential fields for label layout \cite{hartmann2004floating}}
-10/12 cited 67 times
 
 \subsubsection{Dynamic map labeling \cite{been2006dynamic}}
-10/12 cited 123 times
+
+\subsubsection{Practical Results Using Simulated Annealing for Point Feature Label Placement \cite{zoraster1997practical}}
+Provides an algorithm for solving the problem of point-feature label placement on petroleum industry basemaps. Each label position is chosen from a fixed set of positions around placed the point in several directions and at several distances.  The nonogram labeling problem could be solved in a similar way, only all possible label positions lie on the same line.
+
+\subsubsection{External Labeling Techniques: A Taxonomy and Survey \cite{bekos2019external}}
+Provides an overview of many different labeling techniques.
 
 \subsection{On graph/puzzle aesthetics}
 At minimum, the goal is to design an algorithm that can determine a labeling where all labels are included and non of the labels overlap, if such a labeling exists. We can apply additional restrictions in order to reach a solution that is also aesthetically pleasing. In order to do this we must first determine what is aesthetically pleasing.\\
 
 \subsubsection{Validating Graph Drawing Aesthetics \cite{purchase1995validating}}
 An empirical study on three measurable aesthetic qualities of graphs. These aesthetics are symmetry, minimize edge crossings and minimize bends. Only the first applies to this project, as we already assume that edge crossings and bends will reduce the understandability of a labeling, and therefore will only consider labelings without edge crossings and bends. Unfortunately the results regarding symmetry in this study are inconclusive. However, the authors do provide some ideas on how to perform a conclusive study of the symmetrical aesthetic.\\
-12/12 cited 299 times
+
 \subsubsection{Metrics for Graph Drawing Aesthetics \cite{purchase2002metrics}}
 This paper presents metrics for measuring the aesthetic presence in a graph drawing for seven common aesthetic criteria. While none of the metrics except "maximizing symmetry" could apply to the problem of labeling, the general ideas concerning how to choose and use are still relevant. The paper proposes that measures should be continuous rather than binary. This is also true for puzzle labeling. Assuming we have a set of measurable aesthetic criteria, we can design an algorithm that minimizes or maximizes these aspects of the labeling.\\
-10/12 cited 262 times
 
 \subsubsection{Cognitive measurements of graph aesthetics \cite{ware2002cognitive}}
 Focusses more on how the brain interprets visuals. \\
-10/12 cited 404 times
 
 \subsubsection{Metrics for functional and aesthetic label layouts \cite{hartmann2005metrics}}
 Presents a system for the internal and external labeling of images. \\
-10/12 cited 65 times
-
 
 \subsubsection{Specifying label layout style by example \cite{vollick2007specifying}}
-10/12 cited 43 times
+Presents a system that can learn label styles from example and apply these to other labeling problems. Provides a list of properties of good label layouts and how they can be measured.
 
-\subsubsection{On the readability of boundary labeling \cite{barth2015readability}}
-Only focusses on different ways of drawing leaders \textit{inside} the boundary and is therefore not really relevant.
+\subsection{On implementation of algorithms}
 
-12/12 cited 13 times
+\subsubsection{Dynamic Programming in Haskell is Just Recursion \cite{justrecursion}}
+Provides a detailed description on how dynamic programming works in Haskell.
 
 \bibliography{refs}{}
 \bibliographystyle{plain}
