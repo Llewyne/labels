@@ -1,0 +1,32 @@
+Displaying help
+Possible command line arguments:
+Required arguments:
+indir=[string]: sets the directory to look in for the input file
+file=[string]: sets the input file.
+
+Scoring arguments:
+thresholds=[double,double,double,double]: sets the thresholds of the different kinds of arrangement scoring that use a threshold. Default is '11, 20, 55, 0.025'
+weights=[double,double,double,double,double]: sets the weights for the different partial scores. Any 0 values turns that kind of scoring off. Default is '0,0,0,0,0'
+The four metrics are respectively: Vertex Distance, Intersection Angle, Face Area, Face Compactness, Straight/Curved-Distance
+
+Optional arugments:
+outfile=[string]: sets the output file. Default is 'output.svg'
+it=[int]: sets the number of iterations the optimization should run. Default is 30
+mode={0,1}: sets the mode to load in the file. Default is 0.  0=> create a new arrangement by loading a .svg file. 1=> load an existing arrangement from an .xml file
+seed=[int]: sets the seed for the RNG. Defaults to a random seed
+outdir=[string]: sets the directory to place the output file
+cratio=[double(0.0-1.0)]: sets the ratio of eces that should be connected to each other. Only works if -me is set. Default is 0
+temp=[double]: sets the starting temperature for the simulated annealing. Default is 72
+coolrate=[double(0.0-1.0)]: sets the cooling rate of the temperature during simulated annealing. Default is 0.97
+pairits=[int]: sets the number of iterations to run pairwise optimization after simulated annealing. Default is 0
+savefile=[string]: sets the file to save the full arrangement to. Default is 'arrangement.xml'
+rattempts=[int]: sets the maximum number of attempts for randomizing a curve. Default is 10, set to 0 for infinite attempts
+sirattempts=[int]: sets the maximum number of attempts when randomizing a curve with polybezier self-intersections banned before making an exception for the curve and allowing it to intersect the polybezier. Default is 10, set to 0 for infinite attempts
+-dd: include to set the input directory to be the same as the output directory (this is already the default case)
+-me: include to set the program to generate new ECEs in the arrangement
+-dre: include to prohibit resolving unresolved ECEs that are found
+-am: include to let the load mode be chosen automatically
+-af: include to automatically split the input file and directory names, replaces the indir command
+-wone: include to set all weights to 1
+-npsi: include to disallow self-intersecting polybezier chains
+displayed help
