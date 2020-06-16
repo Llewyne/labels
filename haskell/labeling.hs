@@ -3,18 +3,20 @@
 
 module Labeling where
 
---import Graphics.Gloss
+import Graphics.Gloss
 import Data.Array
 import Data.List hiding (intersect)
 import Debug.Trace
 import Data.Ord
 import Data.Vinyl.CoRec
 
+import Drawing
+
 
 import Control.Lens
 
-import Data.Geometry hiding (head)
-import Data.Geometry.PlanarSubdivision
+import Data.Geometry hiding (head,direction)
+import Data.Geometry.PlanarSubdivision hiding(location)
 --import Data.Geometry.Ipe
 
 
@@ -47,14 +49,33 @@ $(makeLenses ''Nonogram)
 
 type UnplacedLabel = ([Port], Clue)
 
+
 _line :: Port -> Line 2 Float
 _line p = Data.Geometry.Line (_location p) (Labeling._direction p)
 
+--Test
+p1 = Port (Point2 0 1) (Vector2 1 1) True
+p2 = Port (Point2 0 3) (Vector2 1 (-1)) True
+p3 = Port (Point2 0 5) (Vector2 1 2) True
 
--- parseLeader :: Label -> [Picture]
--- parseLeader l = leader (l.port.location) (l.clue) (l.offset) (l.port.direction) (l.port.side)
+test1 = [([p1],[1,2]::[Int]),([p2],[2,3]::[Int]),([p3],[1]::[Int])]
 
 
+drawResult l1 e1 l2 e2 ls
+    = display
+         (InWindow
+           "Labels"      -- window title
+        (floor width, floor height)      -- window size
+        (100, 100))      -- window position
+    white            -- background color
+    (labelsToPicture (placeLabelsDynamic l1 e1 l2 e2 ls))     -- picture to display
+
+labelsToPicture :: [Label] -> Picture
+labelsToPicture ls = Pictures (map labelToPicture ls)
+
+
+labelToPicture :: Label -> Picture
+labelToPicture (Label c (Port (Point2 x y) (Vector2 vx vy) s) o)  = Pictures (leader (x,y) c o (vx/vy) (fromEnum s))
 
 placeLabelsDynamic :: Int        --index of the first port
     -> Float
@@ -90,30 +111,3 @@ intersectionLength p1 p2 = case ip of
     Just p -> euclideanDist (_location p1) p
     Nothing -> read "Infinity" :: Float
     where ip = asA (intersect (_line p1) (_line p2))
-
--- drawResult p e n ps r
---     = display
---          (InWindow
---            "Labels"      -- window title
---         (floor width, floor height)      -- window size
---         (100, 100))      -- window position
---     white            -- background color
---     (results n ps r 100.0 400.0)     -- picture to display
-
--- result p1 e1 n1 p2 e2 n2 ps =  Pictures (concat [(leader (100,(pos1)) n1 (e1) (slopeToDegrees m1) (sideToNum s1)),(leader (100,(pos2)) n2 (e2) (slopeToDegrees m2) (sideToNum s2))])
---     where
---         (Port s1 pos1 m1) = (ps!p1)
---         (Port s2 pos2 m2) = (ps!p2)
-
--- results :: [[Int]] -> Array Int Port -> [(Int,Float)] -> Float -> Float-> Picture
--- results n ps rs w h = Pictures   ((concat (map (\x->result1 (ps!(fst x)) w h (snd x) (n!!(fromIntegral ((fst x)-1)))) rs)) ++ ( nonogram [] [] w h) (map getSlope (elems ps)) (map getPos (elems ps)))
-
--- getSlope (Port b s pos m) = -m
-
--- getPos (Port b s pos m) = pos*20
-
--- result1 :: Port -> Float ->  Float -> Float -> [Int] -> [Picture]
--- result1 (Port Labeling.Right s pos m) w h e n = leader (100+w/20,(pos)) n (e) (slopeToDegrees m) (sideToNum s)
--- result1 (Port Labeling.Left s pos m) w h e n = leader (100,(pos)) n (-e) (slopeToDegrees m) (sideToNum s)
--- result1 (Port Labeling.Top s pos m) w h e n = leader (100+w,(pos)) n (e) (slopeToDegrees m) (sideToNum s)
--- result1 (Port Labeling.Bottom s pos m) w h e n = leader (100+w,(pos)) n (e) (slopeToDegrees m) (sideToNum s)
