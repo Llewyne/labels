@@ -1,8 +1,9 @@
 \documentclass[a4paper]{article}
 
 \usepackage{cite}
+\usepackage[colorinlistoftodos]{todonotes}
 
-\title{Labeling Sloped Nonograms Literature}
+\title{Labeling Sloped Nonograms}
 
 \author{Eva Timmer}
 
@@ -11,102 +12,97 @@
 \begin{document}
 \maketitle
 
-\section{Literature}
-\subsection{On (solving) Nonograms}
-It is neccesary to describe what nonograms are, specifically the new types of nonograms (curved and sloped) that require automatic labeling. If removing labels is allowed in order to reach a solution, then we must also include an accurate algorithm to determine if the puzzle is still solvable. Otherwise we can assume the initial puzzle and set of descriptions is simple and solvable.\\
-\cite{van2017improved}\\
-\cite{ortiz2007automated}\\
-
-\subsection{On (solving) puzzles in general}
-\cite{salcedo2007solving}\\
-\cite{smith2013quantifying}\\
-
-\subsection{On labeling}
-Labeling nonograms is similar to labeling graphs. Therefore research on automatically labeling graph boundaries is helpful.\\
-\cite{boundaryLabelling}\\
-\cite{Bekos:2006:PLM:1151903.1151906}\\
-\cite{Gemsa:2011:BAP:2093973.2094012}\\
-
-\subsubsection{Floating labels: Applying dynamic potential fields for label layout \cite{hartmann2004floating}}
-10/12 cited 67 times
-
-\subsubsection{Dynamic map labeling \cite{been2006dynamic}}
-10/12 cited 123 times
-
-\subsection{On graph/puzzle aesthetics}
-At minimum, the goal is to design an algorithm that can determine a labeling where all labels are included and non of the labels overlap, if such a labeling exists. We can apply additional restrictions in order to reach a solution that is also aesthetically pleasing. In order to do this we must first determine what is aesthetically pleasing.\\
-
-\subsubsection{Validating Graph Drawing Aesthetics \cite{purchase1995validating}}
-An empirical study on three measurable aesthetic qualities of graphs. These aesthetics are symmetry, minimize edge crossings and minimize bends. Only the first applies to this project, as we already assume that edge crossings and bends will reduce the understandability of a labeling, and therefore will only consider labelings without edge crossings and bends. Unfortunately the results regarding symmetry in this study are inconclusive. However, the authors do provide some ideas on how to perform a conclusive study of the symmetrical aesthetic.\\
-12/12 cited 299 times
-\subsubsection{Metrics for Graph Drawing Aesthetics \cite{purchase2002metrics}}
-This paper presents metrics for measuring the aesthetic presence in a graph drawing for seven common aesthetic criteria. While none of the metrics except "maximizing symmetry" could apply to the problem of labeling, the general ideas concerning how to choose and use are still relevant. The paper proposes that measures should be continuous rather than binary. This is also true for puzzle labeling. Assuming we have a set of measurable aesthetic criteria, we can design an algorithm that minimizes or maximizes these aspects of the labeling.\\
-10/12 cited 262 times
-
-\subsubsection{Cognitive measurements of graph aesthetics \cite{ware2002cognitive}}
-Focusses more on how the brain interprets visuals. \\
-10/12 cited 404 times
-
-\subsubsection{Metrics for functional and aesthetic label layouts \cite{hartmann2005metrics}}
-Presents a system for the internal and external labeling of images. \\
-10/12 cited 65 times
-
-
-\subsubsection{Specifying label layout style by example \cite{vollick2007specifying}}
-10/12 cited 43 times
-
-\subsubsection{On the readability of boundary labeling \cite{barth2015readability}}
-Only focusses on different ways of drawing leaders \textit{inside} the boundary and is therefore not really relevant.
-
-12/12 cited 13 times
-
 \section{Introduction}
-\subsection{What is Nonogram}
-\subsection{What is sloped nonogram}
-\section{Method}
-\subsection{Programming language}
-SAT solving library
+
+\section{Related Work}
+
+\subsection{Nonograms}
+There have been several studies on generating and solving nonograms.  
+
+Simple nonograms are nonograms that have an unique solution and can be solved by looking at only one row or column at a time.
+
+There is a classification of difficulty of simple nonograms \cite{batenburg2009constructing}.
+
+Different methods have been proposed for solving nonograms using heuristics\cite{salcedo2007solving}, depth-first search \cite{yu2011efficient} and combining relaxations \cite{batenburg2009solving}.
+
+Solving nonograms has been proven to be NP-hard \cite{ueda1996np}. 
+
+There have been studies on the generation of classic nonograms as well as on newer variations of nonograms, like colored nonograms, curved nonograms\cite{van2017improved} and sloped nonograms. With the latter two types, the problem of labeling becomes considerably more complicated.
+
+\subsection{Labeling}
+The problem of labeling nonograms is related to the problem of boundary labeling. 
+
+Algorithms have been proposed to solve the problem of boundary labeling. There are algorithms that optimize different aspects, like minimizing bends or minimizing length\cite{bekos2007boundary}.
+
+There have been defined several leader types, like straight (s), orthogonal (o), perpendicular (p), diagonal (d) and variations thereof (op, opo)\cite{bekos2010boundary}.
+
+Nonogram labeling is like boundary labeling with straight leaders that are restricted in their direction, but can have variable length and are restricted to two possible ports on either side of the line. With nonogram labeling whatever is going on inside the boundary cannot be changed to suit the labeling.
+
+\subsection{Puzzle/label aesthetics}
+Vollick et al. \cite{vollick2007specifying} have defined several properties of good label layouts and state that preventing overlap between labels is absolutely crucial for a legible layout.\todo{rephrase (basically copied)} Another property that could be applied to nonogram labeling are that they should be as close to the figure as possible up to a minimum buffer distance.
+
+They also provide an enegry function that can be used to measure the quality of a label configuration.
+
+\section{Definitions}
+\subsection{Nonograms}
+\textbf{Classic nonograms} are grid puzzles with a uniform grid. Each row and column has an associated clue, which is a sequence of numbers. Each number represents an uninterrupted sequence of cells in that row or column that should be colored in. Together these clues describe how the whole grid is to be colored in. A simple nonogram has exactly one valid unique solution.
+
+The clues for a classic nonogram are generally placed above or to the left of the corresponding column or row.
+
+\textbf{Sloped nonograms} do not not adhere to a uniform grid, but includes lines with a range of orientations. In this case each line has two descriptions, one for the adjecent cells above the line, and one for the adjecent cells below the line. 
+
+For sloped nonograms, the clues are placed at the start or end of each line. The line can be extended past the boundary, to avoid overlapping clues.
+
+\textbf{Curved nonograms} are quite similar to sloped nonograms, but have curved instead of straight lines. The clues are placed the same way.
+
+\subsection{Nonogram labeling}
+A set of clues for one line/row/column we call a \textit{label}. Each label can be placed on the boundary in one of two ways. For a classic nonogram, the label can be placed on either side of each row or column. For sloped and curved nonograms, each label can be placed on either intersection of the line with the boundary. These points on the boundary are called \textit{ports}. In the case of classic nonograms, the labels can be placed in any way and will never overlap, because of the uniform grid. However, for the other two types, this is not usually the case. 
+
+Unless the line is perpendicular to the boundary, it needs to be extended in order to avoid overlapping the label with the boundary. This part of the line that is extended past the boundary we call the \textit{leader}. The leader can be further extended to avoid overlapping between labels. A choice of labels and leabel leaders is called a \textit{labeling}. There may not always be a labeling that has no overlapping labels.
+
+\section{Nonogram labeling quality}
+
+What about using leaders that don't follow the direction of the line but are perpendicular to the boundary? Is this less readable? Does this make the problem easier?
+
+What about leaving out labels to avoid overlap, how does this effect the quality of the puzzle?
+
+What about allowing a small amount of overlap, is there something to say about the negative effect on aesthetics vs the positive effect of labeling efficiency?
+
+\section{Algorithms}
+
+\subsection{Overview}
+
 \subsection{Input}
-Boundary, what are the labels, pairs of ports, slope per pair, seperate picture (vector)
-\subsubsection{Only certain angles (45,isometric)}
-\subsubsection{Any set of k angles}
-\subsubsection{All angles}
-\subsubsection{Curves}
-\subsection{Output}
-\subsubsection{Image}
-\subsubsection{Assignment of labels}
-\subsection{Comparison}
-\subsubsection{Focus on one aspect}
-\subsubsection{Focus on combinations of aspects}
-\subsubsection{Grid type}
-\subsubsection{Speed}
-\subsubsection{Readability/Aesthetics}
-\subsubsection{Difficulty}
-\newpage
-\section{Sub problems / choices}
-\subsection{Label size}
-\subsubsection{Amount squares}
-\subsubsection{Only reference (actual size of label)}
-\subsection{Leader length}
-\subsubsection{Fixed length}
-\subsubsection{Maximum length}
-\subsubsection{No restrictions}
-\subsection{Sides}
-\subsubsection{Top and bottom same side}
-\subsubsection{Top and bottom opposite side}
-\subsubsection{All top on one side and all bottom on other side}
-\subsubsection{Whatever fits}
-\subsection{Omitting labels}
-\subsubsection{Least amount to fit}
-\subsubsection{Remove redundant}
-\subsection{Different shape labels}
-\section{Special cases}
-\subsection{Corners}
-\subsection{Concave}
+\textbf{B: the boundary} this can be a rectangle or a different shape depending on the type of nonogram and the limits of the algorithm
 
-\section{Results}
+\textbf{Set of unplaced labels} For each side of a line there are two possible ports, and the clues for that side of the line. Each port has a position and direction. 
 
+\subsection{Non-extensible leaders}
+It uses SAT2
 
+There is a variable for every possible placement of a label.
+
+There is a clause that makes sure exactly one port is chosen for every line-side.
+
+There is a clause for every pair of overlapping labels, that makes sure at most one of them is chosen.
+
+\subsection{Fixed side assignment}
+It uses dynamic programming
+
+\subsection{Relaxed direction}
+Is it possible to create an algorithm for sloped nonograms that has a range of allowed directions instead of one?
+
+\section{Experiments}
+\subsection{Complexity}
+How well does algorithm x work with 10,20...n labels?
+
+How much easier does the problem become with more allowed directions?
+
+\subsection{Simplifying the problem: allow overlap}
+How much easier does the problem become when you allow 1,2...n cases of overlap.
+
+\subsection{simplifying the problem: leave out labels}
+How much easier does the problem become when you leave out 1,2..n labels?
 
 \bibliography{refs}{}
 \bibliographystyle{plain}

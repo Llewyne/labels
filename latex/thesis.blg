@@ -1,48 +1,48 @@
-This is BibTeX, Version 0.99d (TeX Live 2019)
-Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
+This is BibTeX, Version 0.99d (TeX Live 2014/W32TeX)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: thesis.aux
 The style file: plain.bst
 Database file #1: refs.bib
 Warning--empty school in van2017improved
-You've used 15 entries,
+You've used 9 entries,
             2118 wiz_defined-function locations,
-            598 strings with 7066 characters,
-and the built_in function-call counts, 6833 in all, are:
-= -- 714
-> -- 306
-< -- 10
-+ -- 119
-- -- 104
-* -- 471
-:= -- 1048
-add.period$ -- 54
-call.type$ -- 15
-change.case$ -- 96
+            555 strings with 5567 characters,
+and the built_in function-call counts, 3392 in all, are:
+= -- 343
+> -- 171
+< -- 2
++ -- 68
+- -- 58
+* -- 251
+:= -- 565
+add.period$ -- 29
+call.type$ -- 9
+change.case$ -- 56
 chr.to.int$ -- 0
-cite$ -- 16
-duplicate$ -- 278
-empty$ -- 522
-format.name$ -- 104
-if$ -- 1509
+cite$ -- 10
+duplicate$ -- 119
+empty$ -- 245
+format.name$ -- 58
+if$ -- 701
 int.to.chr$ -- 0
-int.to.str$ -- 15
-missing$ -- 14
-newline$ -- 78
-num.names$ -- 32
-pop$ -- 111
+int.to.str$ -- 9
+missing$ -- 8
+newline$ -- 48
+num.names$ -- 18
+pop$ -- 52
 preamble$ -- 1
-purify$ -- 81
+purify$ -- 47
 quote$ -- 0
-skip$ -- 212
+skip$ -- 86
 stack$ -- 0
-substring$ -- 479
-swap$ -- 107
-text.length$ -- 10
+substring$ -- 226
+swap$ -- 28
+text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 60
+type$ -- 36
 warning$ -- 1
-while$ -- 69
-width$ -- 17
-write$ -- 180
+while$ -- 34
+width$ -- 10
+write$ -- 101
 (There was 1 warning)

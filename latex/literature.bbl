@@ -13,6 +13,16 @@ Lukas Barth, Andreas Gemsa, Benjamin Niedermann, and Martin N{\"o}llenburg.
 \newblock In {\em International Symposium on Graph Drawing}, pages 515--527.
   Springer, 2015.
 
+\bibitem{batenburg2009constructing}
+K~Joost Batenburg, Sjoerd Henstra, Walter~A Kosters, and Willem~Jan Palenstijn.
+\newblock Constructing simple nonograms of varying difficulty.
+\newblock {\em Pure Mathematics and Applications (Pu. MA)}, 20:1--15, 2009.
+
+\bibitem{batenburg2009solving}
+Kees~Joost Batenburg and Walter~A Kosters.
+\newblock Solving nonograms by combining relaxations.
+\newblock {\em Pattern Recognition}, 42(8):1672--1683, 2009.
+
 \bibitem{been2006dynamic}
 Ken Been, Eli Daiches, and Chee Yap.
 \newblock Dynamic map labeling.
@@ -57,6 +67,11 @@ Michael~A Bekos, Benjamin Niedermann, and Martin N{\"o}llenburg.
 \newblock In {\em Computer Graphics Forum}, volume~38, pages 833--860. Wiley
   Online Library, 2019.
 
+\bibitem{browne2013metrics}
+Cameron Browne.
+\newblock Metrics for better puzzles.
+\newblock In {\em Game Analytics}, pages 769--800. Springer, 2013.
+
 \bibitem{de2016concept}
 TK~de~Jong.
 \newblock The concept and automatic generation of the curved nonogram puzzle.
@@ -93,6 +108,17 @@ Claudia Iturriaga and Anna Lubiw.
 \newblock Elastic labels around the perimeter of a map.
 \newblock In {\em Workshop on Algorithms and Data Structures}, pages 306--317.
   Springer, 1999.
+
+\bibitem{karhulahti2012puzzle}
+Veli-Matti Karhulahti.
+\newblock Puzzle art in story worlds: Experience, expression and evaluation.
+\newblock In {\em 6th International Conference on the Philosophy of Computer
+  Games: the Nature of Player Experience}, 2012.
+
+\bibitem{karhulahti2013puzzle}
+Veli-Matti Karhulahti.
+\newblock Puzzle is not a game! basic structures of challenge.
+\newblock In {\em DiGRA Conference}, 2013.
 
 \bibitem{loffler2014connect}
 Maarten L{\"o}ffler, Mira Kaiser, Tim van Kapel, Gerwin Klappe, Marc van
@@ -131,11 +157,23 @@ Sancho Salcedo-Sanz, Emilio~G Ortiz-Garca, Angel~M P{\'e}rez-Bellido, Antonio
 \newblock In {\em 2007 IEEE Symposium on Computational Intelligence and Games},
   pages 224--231. IEEE, 2007.
 
+\bibitem{smith2012case}
+Adam~M Smith, Erik Andersen, Michael Mateas, and Zoran Popovi{\'c}.
+\newblock A case study of expressively constrainable level design automation
+  tools for a puzzle game.
+\newblock In {\em Proceedings of the International Conference on the
+  Foundations of Digital Games}, pages 156--163, 2012.
+
 \bibitem{smith2013quantifying}
 Adam~M Smith, Eric Butler, and Zoran Popovic.
 \newblock Quantifying over play: Constraining undesirable solutions in puzzle
   design.
 \newblock In {\em FDG}, pages 221--228, 2013.
+
+\bibitem{ueda1996np}
+Nobuhisa Ueda and Tadaaki Nagao.
+\newblock Np-completeness results for nonogram via parsimonious reductions.
+\newblock {\em preprint}, 1996.
 
 \bibitem{van2017improved}
 MA~van~de Kerkhof.
@@ -149,6 +187,12 @@ Mees van~de Kerkhof, Tim de~Jong, Raphael Parment, Maarten L{\"o}ffler, Amir
 \newblock In {\em Computer Graphics Forum}, volume~38, pages 343--353. Wiley
   Online Library, 2019.
 
+\bibitem{van2019not}
+Oskar van Deventer et~al.
+\newblock That is not art, it is a puzzle!
+\newblock In {\em Bridges 2019 Conference Proceedings}, pages 1--8.
+  Tessellations Publishing, 2019.
+
 \bibitem{vollick2007specifying}
 Ian Vollick, Daniel Vogel, Maneesh Agrawala, and Aaron Hertzmann.
 \newblock Specifying label layout style by example.
@@ -159,6 +203,11 @@ Ian Vollick, Daniel Vogel, Maneesh Agrawala, and Aaron Hertzmann.
 Colin Ware, Helen Purchase, Linda Colpoys, and Matthew McGill.
 \newblock Cognitive measurements of graph aesthetics.
 \newblock {\em Information visualization}, 1(2):103--110, 2002.
+
+\bibitem{yu2011efficient}
+Chiung-Hsueh Yu, Hui-Lung Lee, and Ling-Hwei Chen.
+\newblock An efficient algorithm for solving nonograms.
+\newblock {\em Applied Intelligence}, 35(1):18--31, 2011.
 
 \bibitem{zoraster1997practical}
 Steven Zoraster.

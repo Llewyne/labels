@@ -7,7 +7,7 @@ width = 600
 
 height = 600
 
-boxSize = 1
+boxSize = 3
 
 boxPath = [(0,0),(boxSize,0),(boxSize,boxSize),(0,boxSize)]
 
@@ -64,7 +64,7 @@ leader :: (Float,Float) -- The position of the port
 	-> Float 			-- The slope of the leader
 	-> Int 				-- The side of the line 1: bottom and 0: top
 	-> [Picture]
-leader p@(x,y) numbers len m o = map (Translate x y . Scale 20 20 . Color red) ((Rotate ((atan (-m))*180/pi) $ Line [(0,0),(len,0)]): map (Rotate ((atan (-m))*180/pi)) ( map (Translate (len-(isLeft*(fromIntegral(length numbers))*boxSize)) 0) ((map (box o) [0..fromIntegral((length numbers)-1)]) ++ zipWith (cluePicture o (m)) [0..fromIntegral(length numbers)] numbers)))
+leader p@(x,y) numbers len m o = map (Translate x y . Scale 1 1 . Color red) ((Rotate ((atan (-m))*180/pi) $ Line [(0,0),(len,0)]): map (Rotate ((atan (-m))*180/pi)) ( map (Translate (len-(isLeft*(fromIntegral(length numbers))*boxSize)) 0) ((map (box o) [0..fromIntegral((length numbers)-1)]) ++ zipWith (cluePicture o (m)) [0..fromIntegral(length numbers)] numbers)))
     where 
         isLeft
             | len > 0 = 0
