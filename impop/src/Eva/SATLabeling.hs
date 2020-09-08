@@ -30,7 +30,7 @@ makeLabel :: [(Int,(UnplacedLabel,Int))] -> Int -> Label
 makeLabel ml i = Label clue port 0
         where
             clue = snd $ fst $ snd $ ml!!(i-1)
-            port = (fst $ fst $ snd $ ml!!(i-1))!!((snd $ snd $ ml!!(i-1))-1)
+            port = fst ( fst $ snd $ ml!!(i-1))!!(snd ( snd $ ml!!(i-1))-1)
 
 
 -- Sets the clauses
@@ -41,11 +41,11 @@ makeLabel ml i = Label clue port 0
 -- also for each line l the clauses: xal or xbl, -xal or -xbl to ensure each line has exactly one label above and below
 setClauses :: [[(Int,(UnplacedLabel,Int))]] -> [[Int]]
 setClauses ml = map (\((a,_),(b,_))->[-a,-b]) (filter overlap (filter differentPort (pairs (concat ml)))) -- clauses for overlapping 
-            ++ concat ( map (\ls->[[-(fst $ ls!!0),-(fst $ ls!!1)],[(fst $ ls!!0),(fst $ ls!!1)]]) ( filter (\x->length x == 2) ml)) -- make sure 1 of 2 ports is selected for every line
-            ++ map (\ls->[fst $ ls !!0]) (filter (\x->length x == 1) ml) 
+            ++ concatMap (\ls->[[-(fst $ head ls),-(fst $ ls!!1)],[fst $ head ls,fst $ ls!!1]]) ( filter (\x->length x == 2) ml) -- make sure 1 of 2 ports is selected for every line
+            ++ map (\ls->[fst $ head ls]) (filter (\x->length x == 1) ml) 
 
 differentPort :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
-differentPort ((_,l1),(_,l2)) = (_location $ getPort l1) /= (_location $ getPort l2)
+differentPort ((_,l1),(_,l2)) = _location (getPort l1) /= _location (getPort l2)
 
 getPort :: (UnplacedLabel,Int) -> Port
 getPort ((ps,_),i) = ps!!(i-1)

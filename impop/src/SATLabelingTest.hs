@@ -39,6 +39,8 @@ import Misc.SpanningTree
 
 import Eva.SATLabeling
 
+testStar = labelTest "star"
+
 labelTest :: String -> IO ()
 labelTest name = do
 

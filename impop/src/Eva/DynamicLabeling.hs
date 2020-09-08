@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DataKinds #-}
 
-module Labeling where
+module Eva.DynamicLabeling where
 
 import Data.List hiding (intersect)
 import Data.List.Split

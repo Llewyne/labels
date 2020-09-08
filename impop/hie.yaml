@@ -1,0 +1,48 @@
+cradle: 
+  multi:
+    - path: "./mios-master"
+      config:
+        cradle:
+          none:
+    - path: "./hgeometry"
+      config:
+        cradle:
+          none:
+    - path: "./hgeometry-ipe"
+      config:
+        cradle:
+          none:
+    - path: "./hgeometry-combinatorial"
+      config:
+        cradle:
+          none:
+    - path: "./"
+      config:
+          cradle:
+            stack: 
+              - path: "./app"
+                component: "impop:exe:impop-exe"
+              - path: "./src"
+                component: "impop:lib"
+              - path: "./test"
+                component: "impop:test:impop-test"
+              # - path: "./mios-master/app"
+              #   component: "mios:exe:mios162"
+              # - path: "./mios-master/utils"
+              #   component: "mios:exe:cnf-stat"
+              # - path: "./mios-master/test"
+              #   component: "mios:test:mios-test"
+              # - path: "./hgeometry/src"
+              #   component: "hgeometry:lib"
+              # - path: "./hgeometry-combinatorial/src"
+              #   component: "hgeometry-combinatorial:lib"
+              # - path: "./hgeometry-combinatorial/doctests.hs"
+              #   component: "hgeometry-combinatorial:test:doctests"
+              # - path: "./hgeometry-combinatorial/test"
+              #   component: "hgeometry-combinatorial:test:hspec"
+              # - path: "./hgeometry-ipe/src"
+              #   component: "hgeometry-ipe:lib"
+              # - path: "./hgeometry-ipe/test"
+              #   component: "hgeometry-ipe:test:hspec"
+              - path: "./src/PSDGlossApp.hs"
+                component: "impop:lib:psd-gloss-app"

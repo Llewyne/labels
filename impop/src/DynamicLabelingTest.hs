@@ -37,7 +37,7 @@ import Nonogram.PathType
 
 import Misc.SpanningTree
 
-import Labeling
+import Eva.DynamicLabeling
 
 labelTest :: String -> IO ()
 labelTest name = do

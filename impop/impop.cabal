@@ -21,8 +21,7 @@ source-repository head
 
 library
   exposed-modules:
-      Main, Force, Draw, Test, LabelTest, DynamicLabelingTest, SATLabelingTest, Convert, Behaviour
-    , CurveArrangement
+      Main, Draw, Tests, LabelTest, DynamicLabelingTest, SATLabelingTest, Convert, CurveArrangement
   other-modules:
       Paths_impop
     , Data.Geometry.Bezier
@@ -98,7 +97,7 @@ test-suite impop-test
   other-modules:
       Paths_impop
   hs-source-dirs:
-      impop
+      test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
