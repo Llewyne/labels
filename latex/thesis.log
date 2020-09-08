@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/W32TeX) (preloaded format=pdflatex 2014.6.23)  25 AUG 2020 11:46
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014/W32TeX) (preloaded format=pdflatex 2014.6.23)  8 SEP 2020 12:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -461,7 +461,7 @@ s/cm/cmbx10.pfb><c:/texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx
 /texlive/2014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb><c:/texlive/2
 014/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb><c:/texlive/2014/texmf-
 dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on thesis.pdf (4 pages, 98949 bytes).
+Output written on thesis.pdf (4 pages, 98624 bytes).
 PDF statistics:
  44 PDF objects out of 1000 (max. 8388607)
  31 compressed objects within 1 object stream
