@@ -99,5 +99,13 @@ clump (x : y : xs) | x /= y = [x] : (clump $ y : xs)
                    | x == y = (x : head (clump $ y : xs)) : tail (clump $ y : xs)
 -}
 
-
+-- Given an unplaced label, port index, clue size and frame
+-- finds the minimum length of the leader where the clue doesn't intersect with the boundary
+-- minLengthLeader :: UnplacedLabel -> Int -> Int -> Frame -> Float
+-- minLengthLeader ul i s f = div s (tan (atan2 dir.x dir.y)) 
+--   where
+--     dir = Nonogram._direction ((fst ul)!!i)
+--     pos = Point2 div s (sin (atan2 dir.x dir.y))
+--     line = lineThrough (Nonogram._location ((fst ul)!!i)) pos
+--     side = 
 
