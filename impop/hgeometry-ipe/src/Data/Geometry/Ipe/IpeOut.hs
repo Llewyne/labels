@@ -219,6 +219,9 @@ ipeRectangle   :: Num r => IpeOut (Rectangle p r) Path r
 ipeRectangle r = ipePolygon $ fromPoints [tl,tr,br,bl]
   where
     Corners tl tr br bl = corners r
+    
+ipeBezier :: IpeOut (BezierSpline 3 2 r) Path r
+ipeBezier b = (path $ CubicBezierSegment b) :+ mempty
 
 --------------------------------------------------------------------------------
 -- * Group Converters

@@ -24,9 +24,6 @@ import Data.Geometry.PlanarSubdivision.More
 import Data.Geometry hiding (endPoints, head, init, _direction)
 import qualified Data.CircularSeq as C
 
-import           Data.LSeq (LSeq)
-import qualified Data.LSeq as LSeq
-
 import Convert
 
 import Algorithms.Geometry.EuclideanMST.EuclideanMST
@@ -338,62 +335,3 @@ neighbours ca i = concatMap (\i -> [leftFace i ca]) $ toList $ outerBoundaryDart
 -- where does this belong? This is not about construction...
 fullFaces :: CA r -> [FaceId' CAS]
 fullFaces ca = filter (\i -> ca ^. dataOf i . full) $ toList $ faces' ca
-
-
--- | Cut a Bezier curve into $x_i$-monotone pieces.
---   Can only be solved exactly for degree 4 or smaller.
---   Only gives rational result for degree 2 or smaller.
---   Currentlly implemented for degree 3.
-splitMonotone :: (Arity d, Ord r, Floating r, Show r) => Int -> BezierSpline 3 d r -> [BezierSpline 3 d r]
-splitMonotone i b = splitMany (locallyExtremalParameters i b) b
-
--- | Report all parameter values at which the derivative of the $i$th coordinate is 0.
-locallyExtremalParameters :: (Arity d, Ord r, Floating r) => Int -> BezierSpline 3 d r -> [r]
-locallyExtremalParameters i curve = 
-  let [x1, x2, x3, x4] = map (view $ unsafeCoord i) $ toList $ _controlPoints curve
-      a = 3 * x4 -  9 * x3 + 9 * x2 - 3 * x1
-      b = 6 * x1 - 12 * x2 + 6 * x3
-      c = 3 * x2 -  3 * x1
-  in filter (\i -> 0 <= i && i <= 1) $ solveQuadraticEquation a b c
-
--- | Split a Bezier curve into many pieces. 
---   Todo: filter out duplicate parameter values!
-splitMany :: forall n d r. (KnownNat n, Arity d, Ord r, Fractional r, Show r) => [r] -> BezierSpline (1 + n) d r -> [BezierSpline (1 + n) d r]
-splitMany ts b = splitManySorted (sort $ map (restrict "splitMany" 0 1) ts) b
-  where splitManySorted []       b = [b]
-        splitManySorted (t : ts) b = (fst $ split t b) : splitManySorted (map (rescale t) ts) (snd $ split t b)
-        rescale :: r -> r -> r
-        rescale 1 u = 1
-        rescale t u = (u - t) / (1 - t)
-
--- | Given two Bezier curves, list all intersection points.
---   Not exact, since for degree >= 3 there is no closed form.
---   (In principle, this algorithm works in any dimension
---   but this requires convexHull, area/volume, and intersect.)
-intersectB :: (KnownNat n, Ord r, Fractional r, Show r) => BezierSpline (1 + n) 2 r -> BezierSpline (1 + n) 2 r -> [Point 2 r]
-intersectB a b | a == b    = error "intersectB: equality" -- should return the curve
-               | otherwise = let [a1, a2, a3, a4] = toList $ _controlPoints a
-                                 [b1, b2, b3, b4] = toList $ _controlPoints b
-                             in    intersectPointsPoints [a1, a4] [b1, b4]
-                                ++ intersectPointsInterior [a1, a4] b
-                                ++ intersectPointsInterior [b1, b4] a
-                                ++ intersectInteriorInterior [a1, a4, b1, b4] a b
-
--- | Subdivide a curve based on a sequence of points.
---   Assumes these points are all supposed to lie on the curve, and
---   snaps endpoints of pieces to these points.
---   (higher dimensions would work, but depends on convex hull)
-splitByPoints :: (KnownNat n, Ord r, Fractional r, Show r) => [Point 2 r] -> BezierSpline (1 + n) 2 r -> [BezierSpline (1 + n) 2 r]
-splitByPoints points curve = 
-  let a      = LSeq.head $ _controlPoints curve
-      b      = LSeq.last $ _controlPoints curve
-      intern = filter (\p -> p /= a && p /= b) points
-      times  = map (parameterOf curve) intern
-      tipos  = sort $ zip times intern
-      pieces = splitMany (map fst tipos) curve
-      stapts = [a] ++ map snd tipos
-      endpts = map snd tipos ++ [b]
-  in zipWith3 snapEndpoints stapts endpts pieces
-
-endPoints :: (KnownNat n, Arity d, Ord r, Num r, Show r) => BezierSpline (1+n) d r -> (Point d r, Point d r)
-endPoints b = (LSeq.head $ _controlPoints b, LSeq.last $ _controlPoints b)

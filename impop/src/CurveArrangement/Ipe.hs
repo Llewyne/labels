@@ -66,19 +66,19 @@ separatePaths ps = map (\p -> _core p :+ NonoPathType (isFrame p) (isBoundary p)
 
 -- test on red and blue channel separately?
 isFrame :: (Eq r, Fractional r) => Path r :+ IpeAttributes Path r -> Bool
-isFrame p =  p^.extra.attrLens SStroke == Just (named "blue")
-          || p^.extra.attrLens SStroke == Just (named "purple")
-          || p^.extra.attrLens SStroke == Just (IpeColor . Valued $ RGB 0 0 1)
+isFrame p =  p^.extra.ixAttr SStroke == Just (named "blue")
+          || p^.extra.ixAttr SStroke == Just (named "purple")
+          || p^.extra.ixAttr SStroke == Just (IpeColor . Valued $ RGB 0 0 1)
 
 isBoundary :: (Eq r, Fractional r) => Path r :+ IpeAttributes Path r -> Bool
-isBoundary p =  p^.extra.attrLens SStroke == Just (named "red")
-             || p^.extra.attrLens SStroke == Just (named "purple")
-             || p^.extra.attrLens SStroke == Just (IpeColor . Valued $ RGB 1 0 0)
+isBoundary p =  p^.extra.ixAttr SStroke == Just (named "red")
+             || p^.extra.ixAttr SStroke == Just (named "purple")
+             || p^.extra.ixAttr SStroke == Just (IpeColor . Valued $ RGB 1 0 0)
   
 
 {-}
 redPaths :: [Path Float :+ IpeAttributes Path Float] -> [Path Float :+ IpeAttributes Path Float]
-redPaths = filter (\p -> p^.extra.attrLens SStroke == Just red)
+redPaths = filter (\p -> p^.extra.ixAttr SStroke == Just red)
   where red = named "red" :: IpeColor Float
 -}
 
@@ -150,7 +150,7 @@ nonoPathType ca i =
 
 -- turn segments into paths
 makePath :: BezierSpline 3 2 r :+ NonoPathType -> Path r :+ IpeAttributes Path r
-makePath (b :+ t) = ipeBezier b & extra . attrLens SStroke .~ Just (named $ pathColor t)
+makePath (b :+ t) = ipeBezier b & extra . ixAttr SStroke .~ Just (named $ pathColor t)
 
 --pathColor :: NonoPathType -> String
 pathColor t |     (_framePath t) && not (_boundaryPath t) = "blue"
