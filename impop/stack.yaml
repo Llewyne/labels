@@ -45,9 +45,9 @@ packages:
 #
 extra-deps:
 
-#- hgeometry-0.10.0.0@sha256:89e059de02bfd2d4556e156fefda765700e4f9305c862c5da6af06af5349ec67,10263
-#- hgeometry-combinatorial-0.10.0.0@sha256:b3c306bc3f3444ba21850a2af279d3461b27c0d19b7ce62940aeb6fcca5d8dcf,7425
-#- hgeometry-ipe-0.10.0.0@sha256:d9677652da773ae7f2ae9482b53cb322b2ec96682ca3e060f80a728f9ed2f69b,6534
+# - hgeometry-0.10.0.0@sha256:89e059de02bfd2d4556e156fefda765700e4f9305c862c5da6af06af5349ec67,10263
+# - hgeometry-combinatorial-0.10.0.0@sha256:b3c306bc3f3444ba21850a2af279d3461b27c0d19b7ce62940aeb6fcca5d8dcf,7425
+# - hgeometry-ipe-0.10.0.0@sha256:d9677652da773ae7f2ae9482b53cb322b2ec96682ca3e060f80a728f9ed2f69b,6534
 - hlist-0.0.0.0@sha256:5ee588580550018c03882b27d6a243df8b5f503bba98f86ddb44b85ed8bc4e52,775
 - hexpat-0.20.13
 - approximate-equality-1.1.0.2@sha256:564a83a453ff76d8008ade85d2308808816cb35886ac4891d79ea80e3292222c,1981
@@ -73,7 +73,7 @@ flags:
 # arch: x86_64
 #
 # Extra directories used by stack for building
-# extra-include-dirs: [/path/to/dir]
+# extra-include-dirs: [/hgeometry]
 # extra-lib-dirs: [/path/to/dir]
 #
 # Allow a newer minor version of GHC than the snapshot specifies
