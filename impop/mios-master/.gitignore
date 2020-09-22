@@ -1,0 +1,15 @@
+DiscordSecret.hs
+stack.yaml
+.stack-work
+.cabal-sandbox
+mios.cabal
+cabal.sandbox.config
+dist
+*.hi
+*.hcr
+*.o
+*.dyn_o
+*.dyn_hi
+*~
+TAGS
+app/sample

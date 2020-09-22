@@ -1,0 +1,1881 @@
+path {
+  start -128.0 128.0
+  line to -128.0 64.0
+}
+path {
+  start -128.0 64.0
+  line to -128.0 0.0
+}
+path {
+  start -128.0 0.0
+  line to -128.0 -32.0
+}
+path {
+  start -128.0 -32.0
+  line to -128.0 -48.0
+}
+path {
+  start -128.0 -48.0
+  line to -128.0 -80.0
+}
+path {
+  start -128.0 -80.0
+  line to -128.0 -128.0
+}
+path {
+  start -128.0 -128.0
+  line to -64.0 -128.0
+}
+path {
+  start -64.0 -128.0
+  line to -32.0 -128.0
+}
+path {
+  start -32.0 -128.0
+  line to 16.0 -128.0
+}
+path {
+  start 16.0 -128.0
+  line to 32.0 -128.0
+}
+path {
+  start 32.0 -128.0
+  line to 48.0 -128.0
+}
+path {
+  start 48.0 -128.0
+  line to 64.0 -128.0
+}
+path {
+  start 64.0 -128.0
+  line to 128.0 -128.0
+}
+path {
+  start 128.0 -128.0
+  line to 128.0 -80.0
+}
+path {
+  start 128.0 -80.0
+  line to 128.0 -48.0
+}
+path {
+  start 128.0 -48.0
+  line to 128.0 -32.0
+}
+path {
+  start 128.0 -32.0
+  line to 128.0 0.0
+}
+path {
+  start 128.0 0.0
+  line to 128.0 64.0
+}
+path {
+  start 128.0 64.0
+  line to 128.0 128.0
+}
+path {
+  start 128.0 128.0
+  line to 64.0 128.0
+}
+path {
+  start 64.0 128.0
+  line to 48.0 128.0
+}
+path {
+  start 48.0 128.0
+  line to 32.0 128.0
+}
+path {
+  start 32.0 128.0
+  line to 16.0 128.0
+}
+path {
+  start 16.0 128.0
+  line to -32.0 128.0
+}
+path {
+  start -32.0 128.0
+  line to -48.0 128.0
+}
+path {
+  start -48.0 128.0
+  line to -64.0 128.0
+}
+path {
+  start -64.0 128.0
+  line to -128.0 128.0
+}
+path {
+  start -64.0 -80.0
+  line to -64.00012 -32.0
+}
+path {
+  start -64.00012 -32.0
+  line to -64.00012 1.2207031e-4
+}
+path {
+  start -64.00012 1.2207031e-4
+  line to -64.0 16.0
+}
+path {
+  start -64.0 16.0
+  line to -32.0 48.0
+}
+path {
+  start -32.0 48.0
+  line to -15.999939 64.0
+}
+path {
+  start -15.999939 64.0
+  line to 0.0 80.0
+}
+path {
+  start 0.0 80.0
+  line to 15.999908 64.0
+}
+path {
+  start 15.999908 64.0
+  line to 32.0 48.0
+}
+path {
+  start 32.0 48.0
+  line to 32.0 64.0
+}
+path {
+  start 32.0 64.0
+  line to 48.0 64.0
+}
+path {
+  start 48.0 64.0
+  line to 48.0 32.0
+}
+path {
+  start 48.0 32.0
+  line to 64.0 16.0
+}
+path {
+  start 64.0 16.0
+  line to 63.999695 1.2207031e-4
+}
+path {
+  start 63.999695 1.2207031e-4
+  line to 63.99991 -32.0
+}
+path {
+  start 63.99991 -32.0
+  line to 64.0 -80.0
+}
+path {
+  start 64.0 -80.0
+  line to 48.0 -80.00006
+}
+path {
+  start 48.0 -80.00006
+  line to 32.0 -80.000275
+}
+path {
+  start 32.0 -80.000275
+  line to 16.0 -80.0
+}
+path {
+  start 16.0 -80.0
+  line to -32.0 -80.0
+}
+path {
+  start -32.0 -80.0
+  line to -64.0 -80.0
+}
+path {
+  start -32.0 0.0
+  line to -32.0 -32.0
+}
+path {
+  start -32.0 -32.0
+  line to 16.0 -32.0
+}
+path {
+  start 16.0 -32.0
+  line to 16.0 0.0
+}
+path {
+  start 16.0 0.0
+  line to -32.0 0.0
+}
+path {
+  start 64.0 -80.0
+  line to 128.0 -80.0
+}
+path {
+  start -64.0 -80.0
+  line to -128.0 -80.0
+}
+path {
+  start 0.0 80.0
+  line to 15.9999695 95.99997
+}
+path {
+  start 15.9999695 95.99997
+  line to 31.999939 111.99994
+}
+path {
+  start 31.999939 111.99994
+  line to 48.0 128.0
+}
+path {
+  start -64.0 16.0
+  line to -80.0 0.0
+}
+path {
+  start -80.0 0.0
+  line to -112.00009 -32.00006
+}
+path {
+  start -112.00009 -32.00006
+  line to -128.0 -48.0
+}
+path {
+  start -32.0 -32.0
+  line to -64.00012 -32.0
+}
+path {
+  start -64.00012 -32.0
+  line to -112.00009 -32.00006
+}
+path {
+  start -112.00009 -32.00006
+  line to -128.0 -32.0
+}
+path {
+  start -32.0 0.0
+  line to -64.00012 1.2207031e-4
+}
+path {
+  start -64.00012 1.2207031e-4
+  line to -80.0 0.0
+}
+path {
+  start -80.0 0.0
+  line to -128.0 0.0
+}
+path {
+  start 16.0 0.0
+  line to 31.99997 2.746582e-4
+}
+path {
+  start 31.99997 2.746582e-4
+  line to 48.000153 -6.1035156e-5
+}
+path {
+  start 48.000153 -6.1035156e-5
+  line to 63.999695 1.2207031e-4
+}
+path {
+  start 63.999695 1.2207031e-4
+  line to 80.00026 -6.1035156e-5
+}
+path {
+  start 80.00026 -6.1035156e-5
+  line to 128.0 0.0
+}
+path {
+  start 16.0 -32.0
+  line to 31.99997 -32.000214
+}
+path {
+  start 31.99997 -32.000214
+  line to 48.000153 -31.999817
+}
+path {
+  start 48.000153 -31.999817
+  line to 63.99991 -32.0
+}
+path {
+  start 63.99991 -32.0
+  line to 111.99986 -31.999939
+}
+path {
+  start 111.99986 -31.999939
+  line to 128.0 -32.0
+}
+path {
+  start 64.0 16.0
+  line to 64.00018 63.999695
+}
+path {
+  start 64.00018 63.999695
+  line to 64.0 128.0
+}
+path {
+  start 48.0 32.0
+  line to 48.000153 -6.1035156e-5
+}
+path {
+  start 48.000153 -6.1035156e-5
+  line to 48.000153 -31.999817
+}
+path {
+  start 48.000153 -31.999817
+  line to 48.0 -80.00006
+}
+path {
+  start 48.0 -80.00006
+  line to 48.0 -128.0
+}
+path {
+  start 64.0 -80.0
+  line to 64.0 -128.0
+}
+path {
+  start 16.0 -32.0
+  line to 16.0 -80.0
+}
+path {
+  start 16.0 -80.0
+  line to 16.0 -128.0
+}
+path {
+  start 16.0 0.0
+  line to 15.999908 64.0
+}
+path {
+  start 15.999908 64.0
+  line to 15.9999695 95.99997
+}
+path {
+  start 15.9999695 95.99997
+  line to 16.0 128.0
+}
+path {
+  start 32.0 64.0
+  line to 31.999939 111.99994
+}
+path {
+  start 31.999939 111.99994
+  line to 32.0 128.0
+}
+path {
+  start 32.0 48.0
+  line to 31.99997 2.746582e-4
+}
+path {
+  start 31.99997 2.746582e-4
+  line to 31.99997 -32.000214
+}
+path {
+  start 31.99997 -32.000214
+  line to 32.0 -80.000275
+}
+path {
+  start 32.0 -80.000275
+  line to 32.0 -128.0
+}
+path {
+  start 48.0 64.0
+  line to 48.0 128.0
+}
+path {
+  start 48.0 64.0
+  line to 64.00018 63.999695
+}
+path {
+  start 64.00018 63.999695
+  line to 128.0 64.0
+}
+path {
+  start 32.0 64.0
+  line to 15.999908 64.0
+}
+path {
+  start 15.999908 64.0
+  line to -15.999939 64.0
+}
+path {
+  start -15.999939 64.0
+  line to -31.999817 64.0
+}
+path {
+  start -31.999817 64.0
+  line to -64.00018 63.99991
+}
+path {
+  start -64.00018 63.99991
+  line to -128.0 64.0
+}
+path {
+  start -64.0 16.0
+  line to -64.00018 63.99991
+}
+path {
+  start -64.00018 63.99991
+  line to -64.0 128.0
+}
+path {
+  start -64.0 -80.0
+  line to -64.0 -128.0
+}
+path {
+  start -32.0 -32.0
+  line to -32.0 -80.0
+}
+path {
+  start -32.0 -80.0
+  line to -32.0 -128.0
+}
+path {
+  start -32.0 0.0
+  line to -32.0 48.0
+}
+path {
+  start -32.0 48.0
+  line to -31.999817 64.0
+}
+path {
+  start -31.999817 64.0
+  line to -32.00003 112.00003
+}
+path {
+  start -32.00003 112.00003
+  line to -32.0 128.0
+}
+path {
+  start 0.0 80.0
+  line to -32.00003 112.00003
+}
+path {
+  start -32.00003 112.00003
+  line to -48.0 128.0
+}
+path {
+  start 32.0 48.0
+  line to 48.0 32.0
+}
+path {
+  start 64.0 16.0
+  line to 80.00026 -6.1035156e-5
+}
+path {
+  start 80.00026 -6.1035156e-5
+  line to 111.99986 -31.999939
+}
+path {
+  start 111.99986 -31.999939
+  line to 128.0 -48.0
+}
+dynamic path {
+  start -128.0 -128.0
+  line to -128.0 -80.0
+  line to -64.0 -80.0
+  line to -64.0 -128.0
+  line to -128.0 -128.0
+} {
+solid path {
+  start -128.0 -128.0
+  line to -128.0 -80.0
+  line to -64.0 -80.0
+  line to -64.0 -128.0
+  line to -128.0 -128.0
+}
+
+} {
+
+}
+dynamic path {
+  start -128.0 -80.0
+  line to -128.0 -48.0
+  line to -112.00009 -32.00006
+  line to -64.00012 -32.0
+  line to -64.0 -80.0
+  line to -128.0 -80.0
+} {
+solid path {
+  start -128.0 -80.0
+  line to -128.0 -48.0
+  line to -112.00009 -32.00006
+  line to -64.00012 -32.0
+  line to -64.0 -80.0
+  line to -128.0 -80.0
+}
+
+} {
+
+}
+dynamic path {
+  start -128.0 -48.0
+  line to -128.0 -32.0
+  line to -112.00009 -32.00006
+  line to -128.0 -48.0
+} {
+solid path {
+  start -128.0 -48.0
+  line to -128.0 -32.0
+  line to -112.00009 -32.00006
+  line to -128.0 -48.0
+}
+
+} {
+
+}
+dynamic path {
+  start -128.0 -32.0
+  line to -128.0 0.0
+  line to -80.0 0.0
+  line to -112.00009 -32.00006
+  line to -128.0 -32.0
+} {
+solid path {
+  start -128.0 -32.0
+  line to -128.0 0.0
+  line to -80.0 0.0
+  line to -112.00009 -32.00006
+  line to -128.0 -32.0
+}
+
+} {
+
+}
+dynamic path {
+  start -128.0 0.0
+  line to -128.0 64.0
+  line to -64.00018 63.99991
+  line to -64.0 16.0
+  line to -80.0 0.0
+  line to -128.0 0.0
+} {
+solid path {
+  start -128.0 0.0
+  line to -128.0 64.0
+  line to -64.00018 63.99991
+  line to -64.0 16.0
+  line to -80.0 0.0
+  line to -128.0 0.0
+}
+
+} {
+
+}
+dynamic path {
+  start -128.0 64.0
+  line to -128.0 128.0
+  line to -64.0 128.0
+  line to -64.00018 63.99991
+  line to -128.0 64.0
+} {
+solid path {
+  start -128.0 64.0
+  line to -128.0 128.0
+  line to -64.0 128.0
+  line to -64.00018 63.99991
+  line to -128.0 64.0
+}
+
+} {
+
+}
+dynamic path {
+  start -112.00009 -32.00006
+  line to -80.0 0.0
+  line to -64.00012 1.2207031e-4
+  line to -64.00012 -32.0
+  line to -112.00009 -32.00006
+} {
+solid path {
+  start -112.00009 -32.00006
+  line to -80.0 0.0
+  line to -64.00012 1.2207031e-4
+  line to -64.00012 -32.0
+  line to -112.00009 -32.00006
+}
+
+} {
+
+}
+dynamic path {
+  start -80.0 0.0
+  line to -64.0 16.0
+  line to -64.00012 1.2207031e-4
+  line to -80.0 0.0
+} {
+solid path {
+  start -80.0 0.0
+  line to -64.0 16.0
+  line to -64.00012 1.2207031e-4
+  line to -80.0 0.0
+}
+
+} {
+
+}
+dynamic path {
+  start -64.00018 63.99991
+  line to -31.999817 64.0
+  line to -32.0 48.0
+  line to -64.0 16.0
+  line to -64.00018 63.99991
+} {
+solid path {
+  start -64.00018 63.99991
+  line to -31.999817 64.0
+  line to -32.0 48.0
+  line to -64.0 16.0
+  line to -64.00018 63.99991
+}
+
+} {
+
+}
+dynamic path {
+  start -64.00018 63.99991
+  line to -64.0 128.0
+  line to -48.0 128.0
+  line to -32.00003 112.00003
+  line to -31.999817 64.0
+  line to -64.00018 63.99991
+} {
+solid path {
+  start -64.00018 63.99991
+  line to -64.0 128.0
+  line to -48.0 128.0
+  line to -32.00003 112.00003
+  line to -31.999817 64.0
+  line to -64.00018 63.99991
+}
+
+} {
+
+}
+dynamic path {
+  start -64.00012 -32.0
+  line to -32.0 -32.0
+  line to -32.0 -80.0
+  line to -64.0 -80.0
+  line to -64.00012 -32.0
+} {
+solid path {
+  start -64.00012 -32.0
+  line to -32.0 -32.0
+  line to -32.0 -80.0
+  line to -64.0 -80.0
+  line to -64.00012 -32.0
+}
+
+} {
+
+}
+dynamic path {
+  start -64.00012 -32.0
+  line to -64.00012 1.2207031e-4
+  line to -32.0 0.0
+  line to -32.0 -32.0
+  line to -64.00012 -32.0
+} {
+solid path {
+  start -64.00012 -32.0
+  line to -64.00012 1.2207031e-4
+  line to -32.0 0.0
+  line to -32.0 -32.0
+  line to -64.00012 -32.0
+}
+
+} {
+
+}
+dynamic path {
+  start -64.00012 1.2207031e-4
+  line to -64.0 16.0
+  line to -32.0 48.0
+  line to -32.0 0.0
+  line to -64.00012 1.2207031e-4
+} {
+solid path {
+  start -64.00012 1.2207031e-4
+  line to -64.0 16.0
+  line to -32.0 48.0
+  line to -32.0 0.0
+  line to -64.00012 1.2207031e-4
+}
+
+} {
+
+}
+dynamic path {
+  start -64.0 -128.0
+  line to -64.0 -80.0
+  line to -32.0 -80.0
+  line to -32.0 -128.0
+  line to -64.0 -128.0
+} {
+solid path {
+  start -64.0 -128.0
+  line to -64.0 -80.0
+  line to -32.0 -80.0
+  line to -32.0 -128.0
+  line to -64.0 -128.0
+}
+
+} {
+
+}
+dynamic path {
+  start -48.0 128.0
+  line to -32.0 128.0
+  line to -32.00003 112.00003
+  line to -48.0 128.0
+} {
+solid path {
+  start -48.0 128.0
+  line to -32.0 128.0
+  line to -32.00003 112.00003
+  line to -48.0 128.0
+}
+
+} {
+
+}
+dynamic path {
+  start -32.00003 112.00003
+  line to -32.0 128.0
+  line to 16.0 128.0
+  line to 15.9999695 95.99997
+  line to 0.0 80.0
+  line to -32.00003 112.00003
+} {
+solid path {
+  start -32.00003 112.00003
+  line to -32.0 128.0
+  line to 16.0 128.0
+  line to 15.9999695 95.99997
+  line to 0.0 80.0
+  line to -32.00003 112.00003
+}
+
+} {
+
+}
+dynamic path {
+  start -32.00003 112.00003
+  line to 0.0 80.0
+  line to -15.999939 64.0
+  line to -31.999817 64.0
+  line to -32.00003 112.00003
+} {
+solid path {
+  start -32.00003 112.00003
+  line to 0.0 80.0
+  line to -15.999939 64.0
+  line to -31.999817 64.0
+  line to -32.00003 112.00003
+}
+
+} {
+
+}
+dynamic path {
+  start -32.0 -128.0
+  line to -32.0 -80.0
+  line to 16.0 -80.0
+  line to 16.0 -128.0
+  line to -32.0 -128.0
+} {
+solid path {
+  start -32.0 -128.0
+  line to -32.0 -80.0
+  line to 16.0 -80.0
+  line to 16.0 -128.0
+  line to -32.0 -128.0
+}
+
+} {
+
+}
+dynamic path {
+  start -32.0 -80.0
+  line to -32.0 -32.0
+  line to 16.0 -32.0
+  line to 16.0 -80.0
+  line to -32.0 -80.0
+} {
+solid path {
+  start -32.0 -80.0
+  line to -32.0 -32.0
+  line to 16.0 -32.0
+  line to 16.0 -80.0
+  line to -32.0 -80.0
+}
+
+} {
+
+}
+dynamic path {
+  start -32.0 -32.0
+  line to -32.0 0.0
+  line to 16.0 0.0
+  line to 16.0 -32.0
+  line to -32.0 -32.0
+} {
+solid path {
+  start -32.0 -32.0
+  line to -32.0 0.0
+  line to 16.0 0.0
+  line to 16.0 -32.0
+  line to -32.0 -32.0
+}
+
+} {
+
+}
+dynamic path {
+  start -32.0 0.0
+  line to -32.0 48.0
+  line to -15.999939 64.0
+  line to 15.999908 64.0
+  line to 16.0 0.0
+  line to -32.0 0.0
+} {
+solid path {
+  start -32.0 0.0
+  line to -32.0 48.0
+  line to -15.999939 64.0
+  line to 15.999908 64.0
+  line to 16.0 0.0
+  line to -32.0 0.0
+}
+
+} {
+
+}
+dynamic path {
+  start -32.0 48.0
+  line to -31.999817 64.0
+  line to -15.999939 64.0
+  line to -32.0 48.0
+} {
+solid path {
+  start -32.0 48.0
+  line to -31.999817 64.0
+  line to -15.999939 64.0
+  line to -32.0 48.0
+}
+
+} {
+
+}
+dynamic path {
+  start -15.999939 64.0
+  line to 0.0 80.0
+  line to 15.999908 64.0
+  line to -15.999939 64.0
+} {
+solid path {
+  start -15.999939 64.0
+  line to 0.0 80.0
+  line to 15.999908 64.0
+  line to -15.999939 64.0
+}
+
+} {
+
+}
+dynamic path {
+  start 0.0 80.0
+  line to 15.9999695 95.99997
+  line to 15.999908 64.0
+  line to 0.0 80.0
+} {
+solid path {
+  start 0.0 80.0
+  line to 15.9999695 95.99997
+  line to 15.999908 64.0
+  line to 0.0 80.0
+}
+
+} {
+
+}
+dynamic path {
+  start 15.999908 64.0
+  line to 32.0 64.0
+  line to 32.0 48.0
+  line to 15.999908 64.0
+} {
+solid path {
+  start 15.999908 64.0
+  line to 32.0 64.0
+  line to 32.0 48.0
+  line to 15.999908 64.0
+}
+
+} {
+
+}
+dynamic path {
+  start 15.999908 64.0
+  line to 15.9999695 95.99997
+  line to 31.999939 111.99994
+  line to 32.0 64.0
+  line to 15.999908 64.0
+} {
+solid path {
+  start 15.999908 64.0
+  line to 15.9999695 95.99997
+  line to 31.999939 111.99994
+  line to 32.0 64.0
+  line to 15.999908 64.0
+}
+
+} {
+
+}
+dynamic path {
+  start 15.999908 64.0
+  line to 32.0 48.0
+  line to 31.99997 2.746582e-4
+  line to 16.0 0.0
+  line to 15.999908 64.0
+} {
+solid path {
+  start 15.999908 64.0
+  line to 32.0 48.0
+  line to 31.99997 2.746582e-4
+  line to 16.0 0.0
+  line to 15.999908 64.0
+}
+
+} {
+
+}
+dynamic path {
+  start 15.9999695 95.99997
+  line to 16.0 128.0
+  line to 32.0 128.0
+  line to 31.999939 111.99994
+  line to 15.9999695 95.99997
+} {
+solid path {
+  start 15.9999695 95.99997
+  line to 16.0 128.0
+  line to 32.0 128.0
+  line to 31.999939 111.99994
+  line to 15.9999695 95.99997
+}
+
+} {
+
+}
+dynamic path {
+  start 16.0 -128.0
+  line to 16.0 -80.0
+  line to 32.0 -80.000275
+  line to 32.0 -128.0
+  line to 16.0 -128.0
+} {
+solid path {
+  start 16.0 -128.0
+  line to 16.0 -80.0
+  line to 32.0 -80.000275
+  line to 32.0 -128.0
+  line to 16.0 -128.0
+}
+
+} {
+
+}
+dynamic path {
+  start 16.0 -80.0
+  line to 16.0 -32.0
+  line to 31.99997 -32.000214
+  line to 32.0 -80.000275
+  line to 16.0 -80.0
+} {
+solid path {
+  start 16.0 -80.0
+  line to 16.0 -32.0
+  line to 31.99997 -32.000214
+  line to 32.0 -80.000275
+  line to 16.0 -80.0
+}
+
+} {
+
+}
+dynamic path {
+  start 16.0 -32.0
+  line to 16.0 0.0
+  line to 31.99997 2.746582e-4
+  line to 31.99997 -32.000214
+  line to 16.0 -32.0
+} {
+solid path {
+  start 16.0 -32.0
+  line to 16.0 0.0
+  line to 31.99997 2.746582e-4
+  line to 31.99997 -32.000214
+  line to 16.0 -32.0
+}
+
+} {
+
+}
+dynamic path {
+  start 31.999939 111.99994
+  line to 48.0 128.0
+  line to 48.0 64.0
+  line to 32.0 64.0
+  line to 31.999939 111.99994
+} {
+solid path {
+  start 31.999939 111.99994
+  line to 48.0 128.0
+  line to 48.0 64.0
+  line to 32.0 64.0
+  line to 31.999939 111.99994
+}
+
+} {
+
+}
+dynamic path {
+  start 31.999939 111.99994
+  line to 32.0 128.0
+  line to 48.0 128.0
+  line to 31.999939 111.99994
+} {
+solid path {
+  start 31.999939 111.99994
+  line to 32.0 128.0
+  line to 48.0 128.0
+  line to 31.999939 111.99994
+}
+
+} {
+
+}
+dynamic path {
+  start 31.99997 -32.000214
+  line to 48.000153 -31.999817
+  line to 48.0 -80.00006
+  line to 32.0 -80.000275
+  line to 31.99997 -32.000214
+} {
+solid path {
+  start 31.99997 -32.000214
+  line to 48.000153 -31.999817
+  line to 48.0 -80.00006
+  line to 32.0 -80.000275
+  line to 31.99997 -32.000214
+}
+
+} {
+
+}
+dynamic path {
+  start 31.99997 -32.000214
+  line to 31.99997 2.746582e-4
+  line to 48.000153 -6.1035156e-5
+  line to 48.000153 -31.999817
+  line to 31.99997 -32.000214
+} {
+solid path {
+  start 31.99997 -32.000214
+  line to 31.99997 2.746582e-4
+  line to 48.000153 -6.1035156e-5
+  line to 48.000153 -31.999817
+  line to 31.99997 -32.000214
+}
+
+} {
+
+}
+dynamic path {
+  start 31.99997 2.746582e-4
+  line to 32.0 48.0
+  line to 48.0 32.0
+  line to 48.000153 -6.1035156e-5
+  line to 31.99997 2.746582e-4
+} {
+solid path {
+  start 31.99997 2.746582e-4
+  line to 32.0 48.0
+  line to 48.0 32.0
+  line to 48.000153 -6.1035156e-5
+  line to 31.99997 2.746582e-4
+}
+
+} {
+
+}
+dynamic path {
+  start 32.0 -128.0
+  line to 32.0 -80.000275
+  line to 48.0 -80.00006
+  line to 48.0 -128.0
+  line to 32.0 -128.0
+} {
+solid path {
+  start 32.0 -128.0
+  line to 32.0 -80.000275
+  line to 48.0 -80.00006
+  line to 48.0 -128.0
+  line to 32.0 -128.0
+}
+
+} {
+
+}
+dynamic path {
+  start 32.0 48.0
+  line to 32.0 64.0
+  line to 48.0 64.0
+  line to 48.0 32.0
+  line to 32.0 48.0
+} {
+solid path {
+  start 32.0 48.0
+  line to 32.0 64.0
+  line to 48.0 64.0
+  line to 48.0 32.0
+  line to 32.0 48.0
+}
+
+} {
+
+}
+dynamic path {
+  start 48.0 -128.0
+  line to 48.0 -80.00006
+  line to 64.0 -80.0
+  line to 64.0 -128.0
+  line to 48.0 -128.0
+} {
+solid path {
+  start 48.0 -128.0
+  line to 48.0 -80.00006
+  line to 64.0 -80.0
+  line to 64.0 -128.0
+  line to 48.0 -128.0
+}
+
+} {
+
+}
+dynamic path {
+  start 48.0 -80.00006
+  line to 48.000153 -31.999817
+  line to 63.99991 -32.0
+  line to 64.0 -80.0
+  line to 48.0 -80.00006
+} {
+solid path {
+  start 48.0 -80.00006
+  line to 48.000153 -31.999817
+  line to 63.99991 -32.0
+  line to 64.0 -80.0
+  line to 48.0 -80.00006
+}
+
+} {
+
+}
+dynamic path {
+  start 48.0 32.0
+  line to 48.0 64.0
+  line to 64.00018 63.999695
+  line to 64.0 16.0
+  line to 48.0 32.0
+} {
+solid path {
+  start 48.0 32.0
+  line to 48.0 64.0
+  line to 64.00018 63.999695
+  line to 64.0 16.0
+  line to 48.0 32.0
+}
+
+} {
+
+}
+dynamic path {
+  start 48.0 32.0
+  line to 64.0 16.0
+  line to 63.999695 1.2207031e-4
+  line to 48.000153 -6.1035156e-5
+  line to 48.0 32.0
+} {
+solid path {
+  start 48.0 32.0
+  line to 64.0 16.0
+  line to 63.999695 1.2207031e-4
+  line to 48.000153 -6.1035156e-5
+  line to 48.0 32.0
+}
+
+} {
+
+}
+dynamic path {
+  start 48.0 64.0
+  line to 48.0 128.0
+  line to 64.0 128.0
+  line to 64.00018 63.999695
+  line to 48.0 64.0
+} {
+solid path {
+  start 48.0 64.0
+  line to 48.0 128.0
+  line to 64.0 128.0
+  line to 64.00018 63.999695
+  line to 48.0 64.0
+}
+
+} {
+
+}
+dynamic path {
+  start 48.000153 -31.999817
+  line to 48.000153 -6.1035156e-5
+  line to 63.999695 1.2207031e-4
+  line to 63.99991 -32.0
+  line to 48.000153 -31.999817
+} {
+solid path {
+  start 48.000153 -31.999817
+  line to 48.000153 -6.1035156e-5
+  line to 63.999695 1.2207031e-4
+  line to 63.99991 -32.0
+  line to 48.000153 -31.999817
+}
+
+} {
+
+}
+dynamic path {
+  start 63.999695 1.2207031e-4
+  line to 64.0 16.0
+  line to 80.00026 -6.1035156e-5
+  line to 63.999695 1.2207031e-4
+} {
+solid path {
+  start 63.999695 1.2207031e-4
+  line to 64.0 16.0
+  line to 80.00026 -6.1035156e-5
+  line to 63.999695 1.2207031e-4
+}
+
+} {
+
+}
+dynamic path {
+  start 63.999695 1.2207031e-4
+  line to 80.00026 -6.1035156e-5
+  line to 111.99986 -31.999939
+  line to 63.99991 -32.0
+  line to 63.999695 1.2207031e-4
+} {
+solid path {
+  start 63.999695 1.2207031e-4
+  line to 80.00026 -6.1035156e-5
+  line to 111.99986 -31.999939
+  line to 63.99991 -32.0
+  line to 63.999695 1.2207031e-4
+}
+
+} {
+
+}
+dynamic path {
+  start 63.99991 -32.0
+  line to 111.99986 -31.999939
+  line to 128.0 -48.0
+  line to 128.0 -80.0
+  line to 64.0 -80.0
+  line to 63.99991 -32.0
+} {
+solid path {
+  start 63.99991 -32.0
+  line to 111.99986 -31.999939
+  line to 128.0 -48.0
+  line to 128.0 -80.0
+  line to 64.0 -80.0
+  line to 63.99991 -32.0
+}
+
+} {
+
+}
+dynamic path {
+  start 64.0 -128.0
+  line to 64.0 -80.0
+  line to 128.0 -80.0
+  line to 128.0 -128.0
+  line to 64.0 -128.0
+} {
+solid path {
+  start 64.0 -128.0
+  line to 64.0 -80.0
+  line to 128.0 -80.0
+  line to 128.0 -128.0
+  line to 64.0 -128.0
+}
+
+} {
+
+}
+dynamic path {
+  start 64.0 16.0
+  line to 64.00018 63.999695
+  line to 128.0 64.0
+  line to 128.0 0.0
+  line to 80.00026 -6.1035156e-5
+  line to 64.0 16.0
+} {
+solid path {
+  start 64.0 16.0
+  line to 64.00018 63.999695
+  line to 128.0 64.0
+  line to 128.0 0.0
+  line to 80.00026 -6.1035156e-5
+  line to 64.0 16.0
+}
+
+} {
+
+}
+dynamic path {
+  start 64.0 128.0
+  line to 128.0 128.0
+  line to 128.0 64.0
+  line to 64.00018 63.999695
+  line to 64.0 128.0
+} {
+solid path {
+  start 64.0 128.0
+  line to 128.0 128.0
+  line to 128.0 64.0
+  line to 64.00018 63.999695
+  line to 64.0 128.0
+}
+
+} {
+
+}
+dynamic path {
+  start 80.00026 -6.1035156e-5
+  line to 128.0 0.0
+  line to 128.0 -32.0
+  line to 111.99986 -31.999939
+  line to 80.00026 -6.1035156e-5
+} {
+solid path {
+  start 80.00026 -6.1035156e-5
+  line to 128.0 0.0
+  line to 128.0 -32.0
+  line to 111.99986 -31.999939
+  line to 80.00026 -6.1035156e-5
+}
+
+} {
+
+}
+dynamic path {
+  start 111.99986 -31.999939
+  line to 128.0 -32.0
+  line to 128.0 -48.0
+  line to 111.99986 -31.999939
+} {
+solid path {
+  start 111.99986 -31.999939
+  line to 128.0 -32.0
+  line to 128.0 -48.0
+  line to 111.99986 -31.999939
+}
+
+} {
+
+}
+compound {
+path {
+  start -64.0 128.0
+  line to -64.0 128.0
+}
+translate -72.0 136.0 compound {
+text "0"
+path {
+  start -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start -32.0 -128.0
+  line to -32.0 -128.0
+}
+translate -40.0 -136.0 compound {
+text "3"
+path {
+  start 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 16.0 -128.0
+  line to 16.0 -128.0
+}
+translate 8.0 -136.0 compound {
+text "1"
+path {
+  start 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+}
+
+}
+translate 8.0 -152.0 compound {
+text "1"
+path {
+  start 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 32.0 128.0
+  line to 32.0 128.0
+}
+translate 24.0 136.0 compound {
+text "3"
+path {
+  start -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 32.0 128.0
+  line to 32.0 128.0
+}
+translate 24.0 120.0 compound {
+text "4"
+path {
+  start -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 64.0 -128.0
+  line to 64.0 -128.0
+}
+translate 56.0 -136.0 compound {
+text "3"
+path {
+  start 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 128.0 -80.0
+  line to 128.0 -80.0
+}
+translate 136.0 -88.0 compound {
+text "0"
+path {
+  start 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 128.0 -48.0
+  line to 128.0 -48.0
+}
+translate 128.0 -59.313705 compound {
+text "4"
+path {
+  start 11.313708 0.0
+  line to 0.0 -11.313708
+  line to -11.313708 0.0
+  line to 0.0 11.313708
+  line to 11.313708 0.0
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 -32.0
+  line to -128.0 -32.0
+}
+translate -136.0 -40.0 compound {
+text "5"
+path {
+  start -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 128.0 0.0
+  line to 128.0 0.0
+}
+translate 136.0 -8.0 compound {
+text "1"
+path {
+  start 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+}
+
+}
+translate 152.0 -8.0 compound {
+text "3"
+path {
+  start 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 128.0 64.0
+  line to 128.0 64.0
+}
+translate 136.0 56.0 compound {
+text "1"
+path {
+  start 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+}
+
+}
+translate 152.0 56.0 compound {
+text "1"
+path {
+  start 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 64.0 128.0
+  line to 64.0 128.0
+}
+translate 72.0 136.0 compound {
+text "0"
+path {
+  start -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 64.0 128.0
+  line to 64.0 128.0
+}
+translate 72.0 120.0 compound {
+text "3"
+path {
+  start 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 32.0 128.0
+  line to 32.0 128.0
+}
+translate 24.0 136.0 compound {
+text "3"
+path {
+  start -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 32.0 128.0
+  line to 32.0 128.0
+}
+translate 40.0 136.0 compound {
+text "4"
+path {
+  start -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 16.0 -128.0
+  line to 16.0 -128.0
+}
+translate 24.0 -136.0 compound {
+text "3"
+path {
+  start 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start -32.0 128.0
+  line to -32.0 128.0
+}
+translate -24.0 136.0 compound {
+text "1"
+path {
+  start -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+}
+
+}
+translate -24.0 152.0 compound {
+text "1"
+path {
+  start -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 128.0 -48.0
+  line to 128.0 -48.0
+}
+translate 139.31372 -48.0 compound {
+text "1"
+path {
+  start 11.313708 0.0
+  line to 0.0 -11.313708
+  line to -11.313708 0.0
+  line to 0.0 11.313708
+  line to 11.313708 0.0
+}
+
+}
+
+}
+compound {
+path {
+  start -64.0 128.0
+  line to -64.0 128.0
+}
+translate -56.0 136.0 compound {
+text "3"
+path {
+  start -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 64.0
+  line to -128.0 64.0
+}
+translate -136.0 72.0 compound {
+text "1"
+path {
+  start -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 0.0
+  line to -128.0 0.0
+}
+translate -136.0 8.0 compound {
+text "5"
+path {
+  start -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 -32.0
+  line to -128.0 -32.0
+}
+translate -136.0 -24.0 compound {
+text "3"
+path {
+  start -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+}
+
+}
+translate -152.0 -24.0 compound {
+text "1"
+path {
+  start -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+}
+
+}
+
+}
+compound {
+path {
+  start 64.0 128.0
+  line to 64.0 128.0
+}
+translate 72.0 136.0 compound {
+text "0"
+path {
+  start 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 -80.0
+  line to -128.0 -80.0
+}
+translate -136.0 -72.0 compound {
+text "5"
+path {
+  start -8.0 -8.0
+  line to -8.0 8.0
+  line to 8.0 8.0
+  line to 8.0 -8.0
+  line to -8.0 -8.0
+}
+
+}
+
+}

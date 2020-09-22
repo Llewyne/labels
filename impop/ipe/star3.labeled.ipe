@@ -1,0 +1,586 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ipe version="70005" creator="HGeometry"><ipestyle name="basic">
+<color name="red" value="1 0 0"/>
+<color name="green" value="0 1 0"/>
+<color name="blue" value="0 0 1"/>
+<color name="yellow" value="1 1 0"/>
+<color name="orange" value="1 0.647 0"/>
+<color name="gold" value="1 0.843 0"/>
+<color name="purple" value="0.627 0.125 0.941"/>
+<color name="gray" value="0.745 0.745 0.745"/>
+<color name="brown" value="0.647 0.165 0.165"/>
+<color name="navy" value="0 0 0.502"/>
+<color name="pink" value="1 0.753 0.796"/>
+<color name="seagreen" value="0.18 0.545 0.341"/>
+<color name="turquoise" value="0.251 0.878 0.816"/>
+<color name="violet" value="0.933 0.51 0.933"/>
+<color name="darkblue" value="0 0 0.545"/>
+<color name="darkcyan" value="0 0.545 0.545"/>
+<color name="darkgray" value="0.663 0.663 0.663"/>
+<color name="darkgreen" value="0 0.392 0"/>
+<color name="darkmagenta" value="0.545 0 0.545"/>
+<color name="darkorange" value="1 0.549 0"/>
+<color name="darkred" value="0.545 0 0"/>
+<color name="lightblue" value="0.678 0.847 0.902"/>
+<color name="lightcyan" value="0.878 1 1"/>
+<color name="lightgray" value="0.827 0.827 0.827"/>
+<color name="lightgreen" value="0.565 0.933 0.565"/>
+<color name="lightyellow" value="1 1 0.878"/>
+<dashstyle name="dashed" value="[4] 0"/>
+<dashstyle name="dotted" value="[1 3] 0"/>
+<dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
+<dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
+<pen name="heavier" value="0.8"/>
+<pen name="fat" value="1.2"/>
+<pen name="ultrafat" value="2"/>
+<textsize name="large" value="\large"/>
+<textsize name="Large" value="\Large"/>
+<textsize name="LARGE" value="\LARGE"/>
+<textsize name="huge" value="\huge"/>
+<textsize name="Huge" value="\Huge"/>
+<textsize name="small" value="\small"/>
+<textsize name="footnote" value="\footnotesize"/>
+<textsize name="tiny" value="\tiny"/>
+<symbolsize name="small" value="2"/>
+<symbolsize name="tiny" value="1.1"/>
+<symbolsize name="large" value="5"/>
+<arrowsize name="small" value="5"/>
+<arrowsize name="tiny" value="3"/>
+<arrowsize name="large" value="10"/>
+<gridsize name="4 pts" value="4"/>
+<gridsize name="8 pts (~3 mm)" value="8"/>
+<gridsize name="16 pts (~6 mm)" value="16"/>
+<gridsize name="32 pts (~12 mm)" value="32"/>
+<gridsize name="10 pts (~3.5 mm)" value="10"/>
+<gridsize name="20 pts (~7 mm)" value="20"/>
+<gridsize name="14 pts (~5 mm)" value="14"/>
+<gridsize name="28 pts (~10 mm)" value="28"/>
+<gridsize name="56 pts (~20 mm)" value="56"/>
+<anglesize name="90 deg" value="90"/>
+<anglesize name="60 deg" value="60"/>
+<anglesize name="45 deg" value="45"/>
+<anglesize name="30 deg" value="30"/>
+<anglesize name="22.5 deg" value="22.5"/>
+<symbol name="mark/circle(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e 0.4 0 0 0.4 0 0 e
+</path></symbol>
+<symbol name="mark/disk(sx)" transformations="translations">
+<path fill="sym-stroke">
+0.6 0 0 0.6 0 0 e
+</path></symbol>
+<symbol name="mark/fdisk(sfx)" transformations="translations">
+<group><path fill="sym-fill">
+0.5 0 0 0.5 0 0 e
+</path><path fill="sym-stroke" fillrule="eofill">
+0.6 0 0 0.6 0 0 e 0.4 0 0 0.4 0 0 e
+</path></group></symbol>
+<symbol name="mark/box(sx)" transformations="translations">
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m 0.6 -0.6 l 0.6 0.6 l -0.6 0.6 l h
+-0.4 -0.4 m 0.4 -0.4 l 0.4 0.4 l -0.4 0.4 l h</path></symbol>
+<symbol name="mark/square(sx)" transformations="translations">
+<path fill="sym-stroke">
+-0.6 -0.6 m 0.6 -0.6 l 0.6 0.6 l -0.6 0.6 l h</path></symbol>
+<symbol name="mark/fsquare(sfx)" transformations="translations">
+<group><path fill="sym-fill">
+-0.5 -0.5 m 0.5 -0.5 l 0.5 0.5 l -0.5 0.5 l h</path>
+<path fill="sym-stroke" fillrule="eofill">
+-0.6 -0.6 m 0.6 -0.6 l 0.6 0.6 l -0.6 0.6 l h
+-0.4 -0.4 m 0.4 -0.4 l 0.4 0.4 l -0.4 0.4 l h</path></group></symbol>
+<symbol name="mark/cross(sx)" transformations="translations">
+<group><path fill="sym-stroke">
+-0.43 -0.57 m 0.57 0.43 l 0.43 0.57 l -0.57 -0.43 l h</path>
+<path fill="sym-stroke">
+-0.43 0.57 m 0.57 -0.43 l 0.43 -0.57 l -0.57 0.43 l h</path>
+</group></symbol>
+<symbol name="arrow/arc(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="sym-stroke">
+0 0 m -1.0 0.333 l -1.0 -0.333 l h</path></symbol>
+<symbol name="arrow/farc(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="white">
+0 0 m -1.0 0.333 l -1.0 -0.333 l h</path></symbol>
+<symbol name="arrow/ptarc(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="sym-stroke">
+0 0 m -1.0 0.333 l -0.8 0 l -1.0 -0.333 l h</path></symbol>
+<symbol name="arrow/fptarc(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="white">
+0 0 m -1.0 0.333 l -0.8 0 l -1.0 -0.333 l h</path></symbol>
+<symbol name="arrow/fnormal(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="white">
+0 0 m -1.0 0.333 l -1.0 -0.333 l h</path></symbol>
+<symbol name="arrow/pointed(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="sym-stroke">
+0 0 m -1.0 0.333 l -0.8 0 l -1.0 -0.333 l h</path></symbol>
+<symbol name="arrow/fpointed(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="white">
+0 0 m -1.0 0.333 l -0.8 0 l -1.0 -0.333 l h</path></symbol>
+<symbol name="arrow/linear(spx)">
+<path pen="sym-pen" stroke="sym-stroke">
+-1.0 0.333 m 0 0 l -1.0 -0.333 l</path></symbol>
+<symbol name="arrow/fdouble(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="white">
+0 0 m -1.0 0.333 l -1.0 -0.333 l h
+-1 0 m -2.0 0.333 l -2.0 -0.333 l h
+</path></symbol>
+<symbol name="arrow/double(spx)">
+<path pen="sym-pen" stroke="sym-stroke" fill="sym-stroke">
+0 0 m -1.0 0.333 l -1.0 -0.333 l h
+-1 0 m -2.0 0.333 l -2.0 -0.333 l h
+</path></symbol>
+<tiling name="falling" angle="-60" width="1" step="4"/>
+<tiling name="rising" angle="30" width="1" step="4"/>
+<textstyle name="center" begin="\begin{center}" end="\end{center}"/>
+<textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
+<textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
+</ipestyle><page><path stroke="blue">-128.0 128.0 m
+-112.001785 128.0 -96.00357 128.0 -80.0 128.0 c
+</path><path stroke="blue">-80.0 128.0 m
+-69.40374 128.0 -58.802116 128.0 -48.2005 128.0 c
+</path><path stroke="blue">-48.2005 128.0 m
+-40.917866 128.0 -33.635235 128.0 -26.3526 128.0 c
+</path><path stroke="blue">-26.3526 128.0 m
+-1.5661601 128.0 23.220278 128.0 48.0 128.0 c
+</path><path stroke="blue">48.0 128.0 m
+66.901146 128.0 85.79557 128.0 104.69 128.0 c
+</path><path stroke="blue">104.69 128.0 m
+112.46 128.0 120.23 128.0 128.0 128.0 c
+</path><path stroke="blue">128.0 128.0 m
+128.0 123.035 128.0 118.07 128.0 113.105 c
+</path><path stroke="blue">128.0 113.105 m
+128.0 107.49133 128.0 101.87767 128.0 96.264 c
+</path><path stroke="blue">128.0 96.264 m
+128.0 88.8296 128.0 81.3952 128.0 73.9608 c
+</path><path stroke="blue">128.0 73.9608 m
+128.0 54.640224 128.0 35.319653 128.0 16.0 c
+</path><path stroke="blue">128.0 16.0 m
+128.0 5.331049 128.0 -5.336981 128.0 -16.0 c
+</path><path stroke="blue">128.0 -16.0 m
+128.0 -29.408907 128.0 -42.812805 128.0 -56.2167 c
+</path><path stroke="blue">128.0 -56.2167 m
+128.0 -62.892467 128.0 -69.56823 128.0 -76.244 c
+</path><path stroke="blue">128.0 -76.244 m
+128.0 -93.496 128.0 -110.748 128.0 -128.0 c
+</path><path stroke="blue">128.0 -128.0 m
+109.169365 -128.0 90.33873 -128.0 71.5081 -128.0 c
+</path><path stroke="blue">71.5081 -128.0 m
+63.618565 -128.0 55.729034 -128.0 47.8395 -128.0 c
+</path><path stroke="blue">47.8395 -128.0 m
+40.2534 -128.0 32.6673 -128.0 25.0812 -128.0 c
+</path><path stroke="blue">25.0812 -128.0 m
+17.176483 -128.0 9.271767 -128.0 1.36705 -128.0 c
+</path><path stroke="blue">1.36705 -128.0 m
+-4.4206724 -128.0 -10.208395 -128.0 -16.0 -128.0 c
+</path><path stroke="blue">-16.0 -128.0 m
+-31.998552 -128.0 -48.000988 -128.0 -64.0 -128.0 c
+</path><path stroke="blue">-64.0 -128.0 m
+-69.335815 -128.0 -74.668205 -128.0 -80.0 -128.0 c
+</path><path stroke="blue">-80.0 -128.0 m
+-96.0004 -128.0 -112.0002 -128.0 -128.0 -128.0 c
+</path><path stroke="blue">-128.0 -128.0 m
+-128.0 -112.00151 -128.0 -96.00301 -128.0 -80.0 c
+</path><path stroke="blue">-128.0 -80.0 m
+-128.0 -69.33886 -128.0 -58.6732 -128.0 -48.0 c
+</path><path stroke="blue">-128.0 -48.0 m
+-128.0 -31.77866 -128.0 -15.549787 -128.0 0.67909 c
+</path><path stroke="blue">-128.0 0.67909 m
+-128.0 7.2031264 -128.0 13.727163 -128.0 20.2512 c
+</path><path stroke="blue">-128.0 20.2512 m
+-128.0 27.0787 -128.0 33.9062 -128.0 40.7337 c
+</path><path stroke="blue">-128.0 40.7337 m
+-128.0 46.8026 -128.0 52.8715 -128.0 58.9404 c
+</path><path stroke="blue">-128.0 58.9404 m
+-128.0 65.96269 -128.0 72.98499 -128.0 80.0 c
+</path><path stroke="blue">-128.0 80.0 m
+-128.0 96.00486 -128.0 112.002426 -128.0 128.0 c
+</path><path stroke="black">-128.0 58.9404 m
+-112.79146 62.158226 -97.58292 65.37605 -82.374725 68.5937 c
+</path><path stroke="black">-82.374725 68.5937 m
+-76.91898 69.74813 -71.4636 70.90239 -66.01389 72.0553 c
+</path><path stroke="black">-66.01389 72.0553 m
+-54.027477 74.59152 -42.046738 77.12641 -30.066 79.6613 c
+</path><path stroke="red">-30.066 79.6613 m
+-17.546837 82.310135 -5.0276732 84.95897 7.49149 87.6078 c
+</path><path stroke="black">7.49149 87.6078 m
+15.061985 89.20958 22.63248 90.811356 30.206821 92.413765 c
+</path><path stroke="black">30.206821 92.413765 m
+52.115482 97.04942 74.02799 101.685715 95.9405 106.322 c
+</path><path stroke="black">95.9405 106.322 m
+106.627 108.583 117.3135 110.844 128.0 113.105 c
+</path><path stroke="black">-128.0 20.2512 m
+-118.94334 22.940332 -109.886665 25.629467 -100.83 28.3186 c
+</path><path stroke="red">-100.83 28.3186 m
+-86.6325 32.534206 -72.43499 36.74981 -58.241066 40.964355 c
+</path><path stroke="red">-58.241066 40.964355 m
+-45.434193 44.767044 -32.630898 48.568672 -19.8276 52.3703 c
+</path><path stroke="black">-19.8276 52.3703 m
+-19.470127 52.47644 -19.112656 52.582584 -18.755234 52.688797 c
+</path><path stroke="black">-18.755234 52.688797 m
+-7.364219 56.070976 4.026744 59.453224 15.417759 62.835476 c
+</path><path stroke="black">15.417759 62.835476 m
+18.842405 63.852352 22.267103 64.869225 25.6918 65.8861 c
+</path><path stroke="red">25.6918 65.8861 m
+46.115566 71.95043 66.53933 78.01476 86.9631 84.0791 c
+</path><path stroke="black">86.9631 84.0791 m
+100.64207 88.14073 114.32103 92.20237 128.0 96.264 c
+</path><path stroke="black">-128.0 0.67909 m
+-103.340324 -20.049576 -78.68066 -40.77824 -54.02261 -61.50578 c
+</path><path stroke="black">-54.02261 -61.50578 m
+-52.316135 -62.939983 -50.611286 -64.37306 -48.904087 -65.8081 c
+</path><path stroke="black">-48.904087 -65.8081 m
+-41.580288 -71.964424 -34.25413 -78.12272 -26.930298 -84.27893 c
+</path><path stroke="black">-26.930298 -84.27893 m
+-15.493941 -93.892334 -4.0599046 -103.50367 7.37413 -113.115 c
+</path><path stroke="black">7.37413 -113.115 m
+13.276486 -118.07667 19.178843 -123.03833 25.0812 -128.0 c
+</path><path stroke="black">-128.0 40.7337 m
+-118.94334 36.595333 -109.886665 32.456966 -100.83 28.3186 c
+</path><path stroke="red">-100.83 28.3186 m
+-83.612305 20.451063 -66.39461 12.583527 -49.17926 4.717159 c
+</path><path stroke="red">-49.17926 4.717159 m
+-39.534653 0.31000832 -29.892391 -4.0959735 -20.250742 -8.501569 c
+</path><path stroke="red">-20.250742 -8.501569 m
+-10.893022 -12.7776375 -1.5359162 -17.053318 7.82119 -21.329 c
+</path><path stroke="black">7.82119 -21.329 m
+18.121193 -26.035534 28.421198 -30.742067 38.7212 -35.4486 c
+</path><path stroke="red">38.7212 -35.4486 m
+40.073914 -36.066715 41.42663 -36.684826 42.782566 -37.304333 c
+</path><path stroke="red">42.782566 -37.304333 m
+58.76846 -44.60906 74.75758 -51.91518 90.7467 -59.2213 c
+</path><path stroke="black">90.7467 -59.2213 m
+103.16447 -64.89553 115.58223 -70.56976 128.0 -76.244 c
+</path><path stroke="black">-48.2005 128.0 m
+-42.155666 111.8871 -36.110832 95.7742 -30.066 79.6613 c
+</path><path stroke="red">-30.066 79.6613 m
+-26.73402 70.77973 -23.40204 61.898163 -20.070618 53.017643 c
+</path><path stroke="red">-20.070618 53.017643 m
+-19.98924 52.801163 -19.90842 52.58573 -19.8276 52.3703 c
+</path><path stroke="black">-19.8276 52.3703 m
+-15.540102 40.94175 -11.252605 29.5132 -6.962024 18.07588 c
+</path><path stroke="black">-6.962024 18.07588 m
+-2.036342 4.946768 2.8924243 -8.191116 7.82119 -21.329 c
+</path><path stroke="red">7.82119 -21.329 m
+10.647042 -28.861456 13.472896 -36.393913 16.298359 -43.9254 c
+</path><path stroke="red">16.298359 -43.9254 m
+19.349865 -52.05928 22.400982 -60.192184 25.4521 -68.3251 c
+</path><path stroke="black">25.4521 -68.3251 m
+32.914566 -88.216736 40.377033 -108.10837 47.8395 -128.0 c
+</path><path stroke="black">-26.3526 128.0 m
+-15.071237 114.535934 -3.7898736 101.07187 7.49149 87.6078 c
+</path><path stroke="red">7.49149 87.6078 m
+11.732008 82.54683 15.9725275 77.485855 20.212654 72.425316 c
+</path><path stroke="red">20.212654 72.425316 m
+22.039297 70.245285 23.86555 68.0657 25.6918 65.8861 c
+</path><path stroke="black">25.6918 65.8861 m
+34.279987 55.63627 42.868176 45.386436 51.457325 35.13566 c
+</path><path stroke="black">51.457325 35.13566 m
+55.000343 30.906935 58.544323 26.677269 62.0883 22.4476 c
+</path><path stroke="red">62.0883 22.4476 m
+74.77223 7.309707 87.45616 -7.828185 100.13922 -22.965162 c
+</path><path stroke="red">100.13922 -22.965162 m
+100.327065 -23.18922 100.51403 -23.41236 100.701 -23.6355 c
+</path><path stroke="black">100.701 -23.6355 m
+109.80067 -34.4959 118.90033 -45.3563 128.0 -56.2167 c
+</path><path stroke="black">104.69 128.0 m
+101.7735 120.774 98.857 113.548 95.9405 106.322 c
+</path><path stroke="black">95.9405 106.322 m
+92.94804 98.9077 89.95557 91.4934 86.9631 84.0791 c
+</path><path stroke="red">86.9631 84.0791 m
+79.897224 66.572205 72.831345 49.065308 65.76533 31.55862 c
+</path><path stroke="red">65.76533 31.55862 m
+64.53975 28.521473 63.314022 25.484537 62.0883 22.4476 c
+</path><path stroke="black">62.0883 22.4476 m
+54.299267 3.1488671 46.510235 -16.149866 38.7212 -35.4486 c
+</path><path stroke="red">38.7212 -35.4486 m
+38.292503 -36.510773 37.863804 -37.572945 37.43224 -38.64196 c
+</path><path stroke="red">37.43224 -38.64196 m
+33.440773 -48.531776 29.446436 -58.428436 25.4521 -68.3251 c
+</path><path stroke="black">25.4521 -68.3251 m
+19.42611 -83.255066 13.40012 -98.185036 7.37413 -113.115 c
+</path><path stroke="black">7.37413 -113.115 m
+5.37177 -118.07667 3.3694098 -123.03833 1.36705 -128.0 c
+</path><path stroke="black">128.0 73.9608 m
+122.94864 55.901752 117.897285 37.842705 112.8472 19.788258 c
+</path><path stroke="black">112.8472 19.788258 m
+108.87926 5.602487 104.9126 -8.578682 100.94483 -22.763777 c
+</path><path stroke="black">100.94483 -22.763777 m
+100.86429 -23.051733 100.782646 -23.343616 100.701 -23.6355 c
+</path><path stroke="red">100.701 -23.6355 m
+97.3829 -35.497433 94.0648 -47.359367 90.7467 -59.2213 c
+</path><path stroke="black">90.7467 -59.2213 m
+84.33383 -82.14753 77.92097 -105.07377 71.5081 -128.0 c
+</path><path stroke="black">-128.0 -80.0 m
+-120.88802 -78.22201 -113.77604 -76.44401 -106.666565 -74.66667 c
+</path><path stroke="black">-106.666565 -74.66667 m
+-89.11719 -70.2793 -71.57031 -65.89258 -54.02261 -61.50578 c
+</path><path stroke="black">-54.02261 -61.50578 m
+-51.252605 -60.813152 -48.48177 -60.12044 -45.714233 -59.428406 c
+</path><path stroke="black">-45.714233 -59.428406 m
+-41.76823 -58.44206 -37.82552 -57.45638 -33.882385 -56.470398 c
+</path><path stroke="black">-33.882385 -56.470398 m
+-17.153646 -52.28841 -0.42447853 -48.10612 16.298359 -43.9254 c
+</path><path stroke="black">16.298359 -43.9254 m
+23.346354 -42.16341 30.388021 -40.402996 37.43224 -38.64196 c
+</path><path stroke="black">37.43224 -38.64196 m
+39.216145 -38.195965 41.002605 -37.749348 42.782566 -37.304333 c
+</path><path stroke="black">42.782566 -37.304333 m
+61.903645 -32.52409 81.01823 -27.745443 100.13922 -22.965162 c
+</path><path stroke="black">100.13922 -22.965162 m
+100.40365 -22.899088 100.67448 -22.83138 100.94483 -22.763777 c
+</path><path stroke="black">100.94483 -22.763777 m
+109.96354 -20.509115 118.98177 -18.254557 128.0 -16.0 c
+</path><path stroke="black">-80.0 128.0 m
+-75.33789 109.35156 -70.67578 90.703125 -66.01389 72.0553 c
+</path><path stroke="black">-66.01389 72.0553 m
+-65.3431 69.3724 -64.67252 66.6901 -64.0 64.0 c
+</path><path stroke="black">-64.0 64.0 m
+-62.078777 56.315105 -60.159504 48.63802 -58.241066 40.964355 c
+</path><path stroke="black">-58.241066 40.964355 m
+-55.219402 28.877605 -52.198566 16.794271 -49.17926 4.717159 c
+</path><path stroke="black">-49.17926 4.717159 m
+-45.229816 -11.0807295 -41.281902 -26.872396 -37.333313 -42.666504 c
+</path><path stroke="black">-37.333313 -42.666504 m
+-36.18294 -47.26823 -35.031902 -51.872395 -33.882385 -56.470398 c
+</path><path stroke="black">-33.882385 -56.470398 m
+-31.564453 -65.74219 -29.248047 -75.00781 -26.930298 -84.27893 c
+</path><path stroke="black">-26.930298 -84.27893 m
+-23.28776 -98.84896 -19.64388 -113.42448 -16.0 -128.0 c
+</path><path stroke="black">128.0 16.0 m
+122.95052 17.26237 117.90104 18.52474 112.8472 19.788258 c
+</path><path stroke="black">112.8472 19.788258 m
+97.15365 23.711588 81.45573 27.636068 65.76533 31.55862 c
+</path><path stroke="black">65.76533 31.55862 m
+60.992188 32.751953 56.226563 33.94336 51.457325 35.13566 c
+</path><path stroke="black">51.457325 35.13566 m
+36.679688 38.83008 21.898438 42.52539 7.110962 46.22223 c
+</path><path stroke="black">7.110962 46.22223 m
+-1.5078125 48.376953 -10.1328125 50.533203 -18.755234 52.688797 c
+</path><path stroke="black">-18.755234 52.688797 m
+-19.195313 52.79883 -19.632813 52.908203 -20.070618 53.017643 c
+</path><path stroke="black">-20.070618 53.017643 m
+-34.710938 56.677734 -49.351563 60.33789 -64.0 64.0 c
+</path><path stroke="black">-64.0 64.0 m
+-70.1276 65.5319 -76.2474 67.06185 -82.374725 68.5937 c
+</path><path stroke="black">-82.374725 68.5937 m
+-97.578125 72.39453 -112.78906 76.197266 -128.0 80.0 c
+</path><path stroke="black">48.0 128.0 m
+42.06901 116.13802 36.13802 104.27604 30.206821 92.413765 c
+</path><path stroke="black">30.206821 92.413765 m
+26.876303 85.7526 23.545572 79.09115 20.212654 72.425316 c
+</path><path stroke="black">20.212654 72.425316 m
+18.615885 69.23177 17.016928 66.03385 15.417759 62.835476 c
+</path><path stroke="black">15.417759 62.835476 m
+12.649739 57.29948 9.881511 51.76302 7.110962 46.22223 c
+</path><path stroke="black">7.110962 46.22223 m
+2.4205732 36.841145 -2.2721355 27.455729 -6.962024 18.07588 c
+</path><path stroke="black">-6.962024 18.07588 m
+-11.394531 9.2109375 -15.824218 0.35156298 -20.250742 -8.501569 c
+</path><path stroke="black">-20.250742 -8.501569 m
+-25.946615 -19.893229 -31.639322 -31.278646 -37.333313 -42.666504 c
+</path><path stroke="black">-37.333313 -42.666504 m
+-40.1263 -48.252605 -42.920574 -53.841145 -45.714233 -59.428406 c
+</path><path stroke="black">-45.714233 -59.428406 m
+-46.777344 -61.554688 -47.839844 -63.679688 -48.904087 -65.8081 c
+</path><path stroke="black">-48.904087 -65.8081 m
+-57.21745 -82.4349 -65.532555 -99.0651 -73.84601 -115.692154 c
+</path><path stroke="black">-73.84601 -115.692154 m
+-75.89844 -119.796875 -77.94922 -123.89844 -80.0 -128.0 c
+</path><path stroke="black">-128.0 -48.0 m
+-120.88932 -56.888348 -113.77865 -65.776695 -106.666565 -74.66667 c
+</path><path stroke="black">-106.666565 -74.66667 m
+-95.72787 -88.34017 -84.78776 -102.0153 -73.84601 -115.692154 c
+</path><path stroke="black">-73.84601 -115.692154 m
+-70.5651 -119.79362 -67.282555 -123.89681 -64.0 -128.0 c
+</path><path>48.0 128.0 m
+48.0 128.0 l
+</path><group><text pos="44.42229 138.73312" type="label">4</text><path>40.84458 149.46625 m
+55.15542 142.31082 l
+48.0 128.0 l
+33.689163 135.15543 l
+40.84458 149.46625 l
+</path></group><path>-128.0 -48.0 m
+-128.0 -48.0 l
+</path><group><text pos="-139.2445 -46.750614" type="label">0</text><path>-150.48901 -45.50123 m
+-137.99512 -35.506104 l
+-128.0 -48.0 l
+-140.4939 -57.995125 l
+-150.48901 -45.50123 l
+</path></group><path>-16.0 -128.0 m
+-16.0 -128.0 l
+</path><group><text pos="-21.820856 -137.70143" type="label">1</text><path>-12.119431 -143.52228 m
+-27.641712 -147.40286 l
+-31.522282 -131.88058 l
+-16.0 -128.0 l
+-12.119431 -143.52228 l
+</path></group><path>104.69 128.0 m
+104.69 128.0 l
+</path><group><text pos="100.265686 138.41275" type="label">5</text><path>95.84137 148.8255 m
+110.67844 142.83707 l
+104.69 128.0 l
+89.852936 133.98843 l
+95.84137 148.8255 l
+</path></group><path>25.0812 -128.0 m
+25.0812 -128.0 l
+</path><group><text pos="26.05717 -139.27153" type="label">0</text><path>37.328705 -138.29556 m
+27.033142 -150.54306 l
+14.785637 -140.2475 l
+25.0812 -127.99999 l
+37.328705 -138.29556 l
+</path></group><path>-48.2005 128.0 m
+-48.2005 128.0 l
+</path><group><text pos="-58.50076 132.68025" type="label">2</text><path>-68.80102 137.3605 m
+-53.82051 142.9805 l
+-48.2005 128.0 l
+-63.181007 122.38 l
+-68.80102 137.3605 l
+</path></group><path>128.0 73.9608 m
+128.0 73.9608 l
+</path><group><text pos="122.450714 83.820076" type="label">1</text><path>116.90142 93.67935 m
+132.31 89.36937 l
+128.0 73.9608 l
+112.59144 78.27078 l
+116.90142 93.67935 l
+</path></group><path>128.0 -76.244 m
+128.0 -76.244 l
+</path><group><text pos="131.95145 -86.84523" type="label">1</text><path>142.55267 -82.89378 m
+135.9029 -97.44646 l
+121.35022 -90.79668 l
+128.0 -76.244 l
+142.55267 -82.89378 l
+</path></group><path>-26.3526 128.0 m
+-26.3526 128.0 l
+</path><group><text pos="-37.62255 128.99408" type="label">6</text><path>-48.8925 129.98816 m
+-36.62847 140.26404 l
+-26.3526 128.0 l
+-38.61663 117.72412 l
+-48.8925 129.98816 l
+</path></group><path>128.0 -16.0 m
+128.0 -16.0 l
+</path><group><text pos="137.70143 -21.820854" type="label">1</text><path>143.52228 -12.11943 m
+147.40286 -27.641708 l
+131.88058 -31.522278 l
+128.0 -15.999999 l
+143.52228 -12.11943 l
+</path></group><group><text pos="153.22371 -17.940285" type="label">1</text><path>159.04456 -8.23886 m
+162.92514 -23.761139 l
+147.40286 -27.641708 l
+143.52228 -12.11943 l
+159.04456 -8.23886 l
+</path></group><path>128.0 16.0 m
+128.0 16.0 l
+</path><group><text pos="133.82085 6.298575" type="label">4</text><path>143.52228 12.119431 m
+139.6417 -3.4028506 l
+124.11942 0.47771978 l
+127.99999 16.0 l
+143.52228 12.119431 l
+</path></group><path>71.5081 -128.0 m
+71.5081 -128.0 l
+</path><group><text pos="77.05736 -137.8593" type="label">0</text><path>82.60661 -147.7186 m
+67.19806 -143.40857 l
+71.5081 -127.99999 l
+86.91666 -132.31003 l
+82.60661 -147.7186 l
+</path></group><path>-128.0 20.2512 m
+-128.0 20.2512 l
+</path><group><text pos="-133.39194 10.305001" type="label">6</text><path>-138.78387 0.35880184 m
+-143.33813 15.69695 l
+-127.999985 20.251202 l
+-123.44574 4.9130526 l
+-138.78387 0.35880184 l
+</path></group><path>-128.0 58.9404 m
+-128.0 58.9404 l
+</path><group><text pos="-134.17076 49.457684" type="label">1</text><path>-140.34152 39.974968 m
+-143.65347 55.628433 l
+-128.00002 58.9404 l
+-124.68805 43.286934 l
+-140.34152 39.974968 l
+</path></group><path>104.69 128.0 m
+104.69 128.0 l
+</path><group><text pos="115.10275 132.42432" type="label">1</text><path>110.67844 142.83707 m
+125.5155 136.84863 l
+119.52707 122.011566 l
+104.69 128.0 l
+110.67844 142.83707 l
+</path></group><path>48.0 128.0 m
+48.0 128.0 l
+</path><group><text pos="58.733128 131.5777" type="label">4</text><path>55.15542 142.31082 m
+69.466255 135.1554 l
+62.310837 120.844574 l
+48.0 127.999985 l
+55.15542 142.31082 l
+</path></group><path>-26.3526 128.0 m
+-26.3526 128.0 l
+</path><group><text pos="-25.35852 139.26996" type="label">2</text><path>-36.62847 140.26404 m
+-24.36444 150.53992 l
+-14.088569 138.27588 l
+-26.3526 128.0 l
+-36.62847 140.26404 l
+</path></group><path>47.8395 -128.0 m
+47.8395 -128.0 l
+</path><group><text pos="58.139763 -132.68024" type="label">6</text><path>68.440025 -137.36047 m
+53.459526 -142.9805 l
+47.8395 -128.0 l
+62.82 -122.379974 l
+68.440025 -137.36047 l
+</path></group><path>-16.0 -128.0 m
+-16.0 -128.0 l
+</path><group><text pos="-6.298575 -133.82085" type="label">1</text><path>3.4028506 -139.6417 m
+-12.119431 -143.52228 l
+-16.0 -127.99999 l
+-0.47771978 -124.11942 l
+3.4028506 -139.6417 l
+</path></group><path>-128.0 80.0 m
+-128.0 80.0 l
+</path><group><text pos="-133.82085 89.70142" type="label">4</text><path>-143.52228 83.88057 m
+-139.6417 99.40285 l
+-124.11942 95.52228 l
+-127.99999 80.0 l
+-143.52228 83.88057 l
+</path></group><path>-128.0 58.9404 m
+-128.0 58.9404 l
+</path><group><text pos="-137.48271 65.111145" type="label">0</text><path>-143.65347 55.62843 m
+-146.96542 71.28189 l
+-131.31195 74.59386 l
+-127.99999 58.940395 l
+-143.65347 55.62843 l
+</path></group><path>128.0 -76.244 m
+128.0 -76.244 l
+</path><group><text pos="138.60123 -72.29256" type="label">6</text><path>149.20245 -68.34111 m
+142.55267 -82.89378 l
+128.0 -76.244 l
+134.64978 -61.691326 l
+149.20245 -68.34111 l
+</path></group><path>128.0 96.264 m
+128.0 96.264 l
+</path><group><text pos="133.39192 106.210205" type="label">3</text><path>138.78384 116.15641 m
+143.33813 100.818275 l
+127.99999 96.264 l
+123.44572 111.602135 l
+138.78384 116.15641 l
+</path></group><path>25.0812 -128.0 m
+25.0812 -128.0 l
+</path><group><text pos="36.352734 -127.024025" type="label">0</text><path>47.624268 -126.04804 m
+37.328705 -138.29555 l
+25.0812 -128.0 l
+35.376762 -115.75249 l
+47.624268 -126.04804 l
+</path></group><path>-128.0 -48.0 m
+-128.0 -48.0 l
+</path><group><text pos="-126.75061 -36.75549" type="label">0</text><path>-137.99512 -35.5061 m
+-125.50122 -25.510979 l
+-115.5061 -38.004875 l
+-128.0 -48.0 l
+-137.99512 -35.5061 l
+</path></group><path>-128.0 -80.0 m
+-128.0 -80.0 l
+</path><group><text pos="-137.70142 -74.179146" type="label">1</text><path>-143.52228 -83.88057 m
+-147.40283 -68.35829 l
+-131.88055 -64.47772 l
+-127.99999 -80.0 l
+-143.52228 -83.88057 l
+</path></group><group><text pos="-153.2237 -78.059715" type="label">1</text><path>-159.04456 -87.76114 m
+-162.92511 -72.23886 l
+-147.40283 -68.35829 l
+-143.52228 -83.88057 l
+-159.04456 -87.76114 l
+</path></group></page></ipe>

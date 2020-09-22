@@ -1,0 +1,310 @@
+path {
+  start -128.0 128.0
+  line to -128.0 -48.0
+}
+path {
+  start -128.0 -48.0
+  line to -128.0 -96.0
+}
+path {
+  start -128.0 -96.0
+  line to -128.0 -128.0
+}
+path {
+  start -128.0 -128.0
+  line to 112.0 -128.0
+}
+path {
+  start 112.0 -128.0
+  line to 128.0 -128.0
+}
+path {
+  start 128.0 -128.0
+  line to 128.0 -96.0
+}
+path {
+  start 128.0 -96.0
+  line to 128.0 128.0
+}
+path {
+  start 128.0 128.0
+  line to 16.0 128.0
+}
+path {
+  start 16.0 128.0
+  line to -16.0 128.0
+}
+path {
+  start -16.0 128.0
+  line to -128.0 128.0
+}
+path {
+  start -100.462 -53.1633
+  line to -128.0 -96.0
+}
+path {
+  start -128.0 -48.0
+  line to -100.462 -53.1633
+}
+path {
+  start 112.0 -128.0
+  line to 92.6897 -89.3793
+}
+path {
+  start -100.462 -53.1633
+  line to 92.6897 -89.3793
+}
+path {
+  start 92.6897 -89.3793
+  line to -2.0 100.0
+}
+path {
+  start -2.0 100.0
+  line to -100.462 -53.1633
+}
+path {
+  start 16.0 128.0
+  line to -2.0 100.0
+}
+path {
+  start 92.6897 -89.3793
+  line to 128.0 -96.0
+}
+path {
+  start -2.0 100.0
+  line to -16.0 128.0
+}
+dynamic path {
+  start -128.0 -128.0
+  line to -128.0 -96.0
+  line to -100.462 -53.1633
+  line to 92.6897 -89.3793
+  line to 112.0 -128.0
+  line to -128.0 -128.0
+} {
+solid path {
+  start -128.0 -128.0
+  line to -128.0 -96.0
+  line to -100.462 -53.1633
+  line to 92.6897 -89.3793
+  line to 112.0 -128.0
+  line to -128.0 -128.0
+}
+
+} {
+
+}
+dynamic path {
+  start -128.0 -96.0
+  line to -128.0 -48.0
+  line to -100.462 -53.1633
+  line to -128.0 -96.0
+} {
+solid path {
+  start -128.0 -96.0
+  line to -128.0 -48.0
+  line to -100.462 -53.1633
+  line to -128.0 -96.0
+}
+
+} {
+
+}
+dynamic path {
+  start -128.0 -48.0
+  line to -128.0 128.0
+  line to -16.0 128.0
+  line to -2.0 100.0
+  line to -100.462 -53.1633
+  line to -128.0 -48.0
+} {
+solid path {
+  start -128.0 -48.0
+  line to -128.0 128.0
+  line to -16.0 128.0
+  line to -2.0 100.0
+  line to -100.462 -53.1633
+  line to -128.0 -48.0
+}
+
+} {
+
+}
+dynamic path {
+  start -100.462 -53.1633
+  line to -2.0 100.0
+  line to 92.6897 -89.3793
+  line to -100.462 -53.1633
+} {
+solid path {
+  start -100.462 -53.1633
+  line to -2.0 100.0
+  line to 92.6897 -89.3793
+  line to -100.462 -53.1633
+}
+
+} {
+
+}
+dynamic path {
+  start -16.0 128.0
+  line to 16.0 128.0
+  line to -2.0 100.0
+  line to -16.0 128.0
+} {
+solid path {
+  start -16.0 128.0
+  line to 16.0 128.0
+  line to -2.0 100.0
+  line to -16.0 128.0
+}
+
+} {
+
+}
+dynamic path {
+  start -2.0 100.0
+  line to 16.0 128.0
+  line to 128.0 128.0
+  line to 128.0 -96.0
+  line to 92.6897 -89.3793
+  line to -2.0 100.0
+} {
+solid path {
+  start -2.0 100.0
+  line to 16.0 128.0
+  line to 128.0 128.0
+  line to 128.0 -96.0
+  line to 92.6897 -89.3793
+  line to -2.0 100.0
+}
+
+} {
+
+}
+dynamic path {
+  start 92.6897 -89.3793
+  line to 128.0 -96.0
+  line to 128.0 -128.0
+  line to 112.0 -128.0
+  line to 92.6897 -89.3793
+} {
+solid path {
+  start 92.6897 -89.3793
+  line to 128.0 -96.0
+  line to 128.0 -128.0
+  line to 112.0 -128.0
+  line to 92.6897 -89.3793
+}
+
+} {
+
+}
+compound {
+path {
+  start 112.0 -128.0
+  line to 112.44721 -128.89442
+}
+translate 108.8695 -139.62755 compound {
+text "1"
+path {
+  start 10.733124 -3.5777192
+  line to -3.5777192 -10.733124
+  line to -10.733124 3.5777192
+  line to 3.5777192 10.733124
+  line to 10.733124 -3.5777192
+}
+
+}
+
+}
+compound {
+path {
+  start 128.0 -96.0
+  line to 128.98288 -96.18429
+}
+translate 135.37154 -105.521576 compound {
+text "0"
+path {
+  start 9.33729 6.388664
+  line to 6.388664 -9.33729
+  line to -9.33729 -6.388664
+  line to -6.388664 9.33729
+  line to 9.33729 6.388664
+}
+
+}
+
+}
+compound {
+path {
+  start 16.0 128.0
+  line to 16.540758 128.84117
+}
+translate 27.596245 131.24454 compound {
+text "1"
+path {
+  start -2.4033685 11.055489
+  line to 11.055489 2.4033685
+  line to 2.4033685 -11.055489
+  line to -11.055489 -2.4033685
+  line to -2.4033685 11.055489
+}
+
+}
+
+}
+compound {
+path {
+  start -16.0 128.0
+  line to -16.447214 128.89442
+}
+translate -12.869503 139.62755 compound {
+text "0"
+path {
+  start -10.733126 3.5777097
+  line to 3.5777097 10.733126
+  line to 10.733126 -3.5777097
+  line to -3.5777097 -10.733126
+  line to -10.733126 3.5777097
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 -48.0
+  line to -128.98288 -47.815716
+}
+translate -135.37157 -38.47845 compound {
+text "1"
+path {
+  start -9.337269 -6.3886943
+  line to -6.3886943 9.337269
+  line to 9.337269 6.3886943
+  line to 6.3886943 -9.337269
+  line to -9.337269 -6.3886943
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 -96.0
+  line to -128.54076 -96.84118
+}
+translate -139.59625 -99.24452 compound {
+text "0"
+path {
+  start 2.4033432 -11.055493
+  line to -11.055493 -2.4033432
+  line to -2.4033432 11.055493
+  line to 11.055493 2.4033432
+  line to 2.4033432 -11.055493
+}
+
+}
+
+}
