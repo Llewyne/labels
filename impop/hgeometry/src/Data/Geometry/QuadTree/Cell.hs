@@ -2,6 +2,7 @@
 module Data.Geometry.QuadTree.Cell where
 
 import Control.Lens (makeLenses, (^.),(&),(%~),ix, to)
+import Data.Bifunctor
 import Data.Ext
 import Data.Geometry.Box
 import Data.Geometry.Directions
@@ -10,6 +11,7 @@ import Data.Geometry.Point
 import Data.Geometry.Properties
 import Data.Geometry.QuadTree.Quadrants
 import Data.Geometry.Vector
+import Data.Intersection
 
 --------------------------------------------------------------------------------
 

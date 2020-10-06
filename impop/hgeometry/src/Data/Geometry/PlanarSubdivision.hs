@@ -24,6 +24,7 @@ import qualified Data.List.NonEmpty as NonEmpty
 import           Data.Geometry.PlanarSubdivision.Basic
 import           Data.Geometry.PlanarSubdivision.Merge
 import           Data.Geometry.Polygon
+import qualified Data.PlaneGraph as PG
 import           Data.Proxy
 
 
@@ -122,13 +123,13 @@ fromPolygon p (MultiPolygon vs hs) iD oD = case NonEmpty.nonEmpty hs of
 
 data HoleData f p = Outer !f | Hole !f !p deriving (Show,Eq)
 
-_holeData            :: HoleData f p -> f
-_holeData (Outer f)  = f
-_holeData (Hole f _) = f
+holeData            :: HoleData f p -> f
+holeData (Outer f)  = f
+holeData (Hole f _) = f
 
-_getP            :: HoleData f p -> Maybe p
-_getP (Outer _)  = Nothing
-_getP (Hole _ p) = Just p
+getP            :: HoleData f p -> Maybe p
+getP (Outer _)  = Nothing
+getP (Hole _ p) = Just p
 
 --------------------------------------------------------------------------------
 

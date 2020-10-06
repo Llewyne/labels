@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -Wno-orphans #-}
 module Data.Geometry.RangeTree.Measure where
 
 import Data.Measured.Class

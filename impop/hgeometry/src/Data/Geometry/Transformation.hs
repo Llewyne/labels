@@ -1,17 +1,56 @@
-{-# LANGUAGE Unsafe #-}
 {-# LANGUAGE UndecidableInstances #-}
 module Data.Geometry.Transformation where
 
-import           Control.Lens (iso,set,Iso,imap)
-import           Data.Geometry.Matrix
-import           Data.Geometry.Matrix.Internal (mkRow)
+import           Control.Lens (iso,Lens',set,Iso)
 import           Data.Geometry.Point
 import           Data.Geometry.Properties
 import           Data.Geometry.Vector
 import qualified Data.Geometry.Vector as V
 import           Data.Proxy
+import qualified Data.Vector.Fixed as FV
 import           GHC.TypeLits
+import           Linear.Matrix ((!*),(!*!))
+import qualified Linear.Matrix as Lin
+import           Unsafe.Coerce (unsafeCoerce)
 
+--------------------------------------------------------------------------------
+-- * Matrices
+
+-- | a matrix of n rows, each of m columns, storing values of type r
+newtype Matrix n m r = Matrix (Vector n (Vector m r))
+
+deriving instance (Show r, Arity n, Arity m) => Show (Matrix n m r)
+deriving instance (Eq r, Arity n, Arity m)   => Eq (Matrix n m r)
+deriving instance (Ord r, Arity n, Arity m)  => Ord (Matrix n m r)
+deriving instance (Arity n, Arity m)         => Functor (Matrix n m)
+deriving instance (Arity n, Arity m)         => Foldable (Matrix n m)
+deriving instance (Arity n, Arity m)         => Traversable (Matrix n m)
+
+multM :: (Arity r, Arity c, Arity c', Num a) => Matrix r c a -> Matrix c c' a -> Matrix r c' a
+(Matrix a) `multM` (Matrix b) = Matrix $ a !*! b
+
+mult :: (Arity m, Arity n, Num r) => Matrix n m r -> Vector m r -> Vector n r
+(Matrix m) `mult` v = m !* v
+
+-- | Produces the Identity Matrix
+identityMatrix :: (Arity d, Num r) => Matrix d d r
+identityMatrix = Matrix $ V.imap mkRow (pure 1)
+
+class Invertible n r where
+  inverse' :: Matrix n n r -> Matrix n n r
+
+instance Fractional r => Invertible 2 r where
+  -- >>> inverse' $ Matrix $ Vector2 (Vector2 1 2) (Vector2 3 4.0)
+  -- Matrix Vector2 [Vector2 [-2.0,1.0],Vector2 [1.5,-0.5]]
+  inverse' (Matrix m) = Matrix . unsafeCoerce . Lin.inv22 . unsafeCoerce $ m
+
+instance Fractional r => Invertible 3 r where
+  -- >>> inverse' $ Matrix $ Vector3 (Vector3 1 2 4) (Vector3 4 2 2) (Vector3 1 1 1.0)
+  -- Matrix Vector3 [Vector3 [0.0,0.5,-1.0],Vector3 [-0.5,-0.75,3.5],Vector3 [0.5,0.25,-1.5]]
+  inverse' (Matrix m) = Matrix . unsafeCoerce . Lin.inv33 . unsafeCoerce $ m
+
+instance Fractional r => Invertible 4 r where
+  inverse' (Matrix m) = Matrix . unsafeCoerce . Lin.inv44 . unsafeCoerce $ m
 
 --------------------------------------------------------------------------------
 -- * Transformations
@@ -80,16 +119,15 @@ instance (Fractional r, Arity d, Arity (d + 1))
 
 translation   :: (Num r, Arity d, Arity (d + 1))
               => Vector d r -> Transformation d r
-translation v = Transformation . Matrix $ imap transRow (snoc v 1)
+translation v = Transformation . Matrix $ V.imap transRow (snoc v 1)
 
 
 scaling   :: (Num r, Arity d, Arity (d + 1))
           => Vector d r -> Transformation d r
-scaling v = Transformation . Matrix $ imap mkRow (snoc v 1)
+scaling v = Transformation . Matrix $ V.imap mkRow (snoc v 1)
 
 uniformScaling :: (Num r, Arity d, Arity (d + 1)) => r -> Transformation d r
 uniformScaling = scaling . pure
-
 
 --------------------------------------------------------------------------------
 -- * Functions that execute transformations
@@ -110,6 +148,14 @@ scaleUniformlyBy :: ( IsTransformable g, Num (NumType g)
                     ) => NumType g -> g -> g
 scaleUniformlyBy = transformBy  . uniformScaling
 
+
+--------------------------------------------------------------------------------
+-- * Helper functions to easily create matrices
+
+-- | Creates a row with zeroes everywhere, except at position i, where the
+-- value is the supplied value.
+mkRow     :: forall d r. (Arity d, Num r) => Int -> r -> Vector d r
+mkRow i x = set (FV.element i) x zero
 
 -- | Row in a translation matrix
 -- transRow     :: forall n r. ( Arity n, Arity (n- 1), ((n - 1) + 1) ~ n
@@ -132,13 +178,3 @@ rotateTo (Vector3 u v w) = Transformation . Matrix $ Vector4 (snoc u        0)
                                                              (snoc v        0)
                                                              (snoc w        0)
                                                              (Vector4 0 0 0 1)
-
---------------------------------------------------------------------------------
--- * 2D Transformations
-
--- | Skew transformation that keeps the y-coordinates fixed and shifts
--- the x coordinates.
-skewX        :: Num r => r -> Transformation 2 r
-skewX lambda = Transformation . Matrix $ Vector3 (Vector3 1 lambda 0)
-                                                 (Vector3 0 1      0)
-                                                 (Vector3 0 0      1)

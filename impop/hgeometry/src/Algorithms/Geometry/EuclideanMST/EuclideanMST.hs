@@ -11,7 +11,7 @@
 --------------------------------------------------------------------------------
 module Algorithms.Geometry.EuclideanMST.EuclideanMST where
 
-import           Algorithms.Geometry.DelaunayTriangulation.DivideAndConquer
+import           Algorithms.Geometry.DelaunayTriangulation.Naive
 import           Algorithms.Geometry.DelaunayTriangulation.Types
 import           Algorithms.Graph.MST
 import           Control.Lens

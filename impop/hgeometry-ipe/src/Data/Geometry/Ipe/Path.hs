@@ -33,7 +33,6 @@ import           Data.Geometry.PolyLine
 import           Data.Geometry.Polygon (SimplePolygon)
 import           Data.Geometry.Properties
 import           Data.Geometry.Transformation
-import           Data.Geometry.Matrix
 import qualified Data.LSeq as LSeq
 import           Data.Traversable
 
@@ -77,11 +76,8 @@ instance Fractional r => IsTransformable (PathSegment r) where
     PolygonPath p            -> PolygonPath $ transformBy t p
     CubicBezierSegment b     -> CubicBezierSegment $ transformBy t b
     QuadraticBezierSegment b -> QuadraticBezierSegment $ transformBy t b
-    EllipseSegment e         -> EllipseSegment $ transformBy t e
-    -- TODO:
-    ArcSegment               -> ArcSegment
-    SplineSegment            -> SplineSegment
-    ClosedSplineSegment      -> ClosedSplineSegment
+    _                        -> error "transformBy: not implemented yet"
+
 
 
 -- | A path is a non-empty sequence of PathSegments.

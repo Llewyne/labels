@@ -37,6 +37,7 @@ import           Data.Geometry.PolyLine (PolyLine,fromLineSegment)
 import           Data.Geometry.Polygon
 import           Data.Geometry.Polygon.Convex
 import           Data.Geometry.Properties
+import           Data.Geometry.Transformation
 import qualified Data.LSeq as LSeq
 import           Data.List.NonEmpty (NonEmpty(..))
 import           Data.Maybe (fromMaybe)
@@ -200,6 +201,11 @@ ipeCircle = ipeEllipse . circleToEllipse
 ipeDisk   :: Floating r => IpeOut (Disk p r) Path r
 ipeDisk d = ipeCircle (Boundary d) ! attr SFill (IpeColor "0.722 0.145 0.137")
 
+ipeBezier :: IpeOut (BezierSpline 3 2 r) Path r
+ipeBezier b = (path $ CubicBezierSegment b) :+ mempty
+
+   
+
 -- | Helper to construct a path from a singleton item
 path :: PathSegment r -> Path r
 path = Path . LSeq.fromNonEmpty . (:| [])
@@ -219,9 +225,6 @@ ipeRectangle   :: Num r => IpeOut (Rectangle p r) Path r
 ipeRectangle r = ipePolygon $ fromPoints [tl,tr,br,bl]
   where
     Corners tl tr br bl = corners r
-    
-ipeBezier :: IpeOut (BezierSpline 3 2 r) Path r
-ipeBezier b = (path $ CubicBezierSegment b) :+ mempty
 
 --------------------------------------------------------------------------------
 -- * Group Converters

@@ -11,8 +11,7 @@
 --------------------------------------------------------------------------------
 module Data.Geometry.Ipe.FromIpe(
   -- * Individual readers
-    _asPoint
-  , _asLineSegment
+    _asLineSegment
   , _asRectangle
   , _asTriangle
 
@@ -65,10 +64,8 @@ import           Data.List.NonEmpty (NonEmpty(..))
 
 
 
--- | Extracts the point from a Symbol. When creating a symbol this
--- creates a disk that supports a stroke color.
-_asPoint :: Prism' (IpeSymbol r) (Point 2 r)
-_asPoint = prism' (flip Symbol "mark/disk(sx)") (Just . view symbolPoint)
+
+
 
 -- | Try to convert a path into a line segment, fails if the path is not a line
 -- segment or a polyline with more than two points.
@@ -212,10 +209,9 @@ class HasDefaultFromIpe g where
   defaultFromIpe :: (r ~ NumType g)
                  => Prism' (IpeObject r) (g :+ IpeAttributes (DefaultFromIpe g) r)
 
-instance HasDefaultFromIpe (Point 2 r) where
-  type DefaultFromIpe (Point 2 r) = IpeSymbol
-  defaultFromIpe = _withAttrs _IpeUse _asPoint
-    where
+-- instance HasDefaultFromIpe (Point 2 r) where
+--   type DefaultFromIpe (Point 2 r) = IpeSymbol
+--   defaultFromIpe = _withAttrs _IpeUse symbolPoint
 
 
 instance HasDefaultFromIpe (LineSegment 2 () r) where
@@ -249,15 +245,16 @@ instance HasDefaultFromIpe (MultiPolygon () r) where
 
 
 -- | Read all g's from some ipe page(s).
-readAll   :: (HasDefaultFromIpe g, r ~ NumType g)
-          => IpePage r -> [g :+ IpeAttributes (DefaultFromIpe g) r]
-readAll p = p^..content.traverse.defaultFromIpe
+readAll :: (HasDefaultFromIpe g, r ~ NumType g, Foldable f)
+        => f (IpePage r) -> [g :+ IpeAttributes (DefaultFromIpe g) r]
+readAll = foldMap (^..content.traverse.defaultFromIpe)
+
 
 -- | Convenience function from reading all g's from an ipe file. If there
 -- is an error reading or parsing the file the error is "thrown away".
 readAllFrom    :: (HasDefaultFromIpe g, r ~ NumType g, Coordinate r, Eq r)
                => FilePath -> IO [g :+ IpeAttributes (DefaultFromIpe g) r]
-readAllFrom fp = foldMap readAll <$> readSinglePageFile fp
+readAllFrom fp = readAll <$> readSinglePageFile fp
 
 fromSingleton :: a -> LSeq.LSeq 1 a
 fromSingleton = LSeq.fromNonEmpty . (:| [])

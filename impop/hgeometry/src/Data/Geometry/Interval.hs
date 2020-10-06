@@ -47,7 +47,6 @@ newtype Interval a r = GInterval { toRange :: Range (r :+ a) }
 
 _Range :: Lens' (Interval a r) (Range (r :+ a))
 _Range = lens toRange (const GInterval)
-{-# INLINE _Range #-}
 
 -- | Constrct an interval from a Range
 fromRange :: Range (r :+ a) -> Interval a r
@@ -59,10 +58,10 @@ instance (Show a, Show r) => Show (Interval a r) where
   show ~(Interval l u) = concat [ "Interval (", show l, ") (", show u,")"]
 
 instance Functor (Interval a) where
-  fmap f (GInterval r) = GInterval $ fmap (first f) r
+  fmap = T.fmapDefault
 
 instance F.Foldable (Interval a) where
-  foldMap f (GInterval r) = foldMap (f . (^.core)) r
+  foldMap = T.foldMapDefault
 
 instance T.Traversable (Interval a) where
   traverse f (GInterval r) = GInterval <$> T.traverse f' r
@@ -103,7 +102,6 @@ instance HasStart (Interval a r) where
   type StartCore (Interval a r) = r
   type StartExtra (Interval a r) = a
   start = _Range.lower.unEndPoint
-  {-# INLINE start #-}
 
 class HasEnd t where
   type EndCore t
@@ -114,7 +112,6 @@ instance HasEnd (Interval a r) where
   type EndCore (Interval a r) = r
   type EndExtra (Interval a r) = a
   end = _Range.upper.unEndPoint
-  {-# INLINE end #-}
 
 type instance Dimension (Interval a r) = 1
 type instance NumType   (Interval a r) = r

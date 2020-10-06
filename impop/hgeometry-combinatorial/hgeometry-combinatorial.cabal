@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                hgeometry-combinatorial
-version:             0.11.0.0
+version:             0.10.0.0
 synopsis:            Data structures, and Data types.
 description:
     The Non-geometric data types and algorithms used in HGeometry.
@@ -63,10 +63,7 @@ library
                     Data.UnBounded
                     Data.Intersection
                     Data.Range
-
                     Data.Ext
-                    -- Data.Ext.Multi
-
                     Data.LSeq
                     Data.CircularSeq
                     Data.Sequence.Util
@@ -79,8 +76,6 @@ library
                     Data.Util
 
                     Data.IndexedDoublyLinkedList
-                    -- Data.IndexedDoublyLinkedList.Unboxed
-                    Data.IndexedDoublyLinkedList.Bare
 
                     Data.DynamicOrd
 
@@ -88,8 +83,6 @@ library
 
                     Data.List.Set
                     Data.List.Util
-                    Data.List.Zipper
-                    Data.List.Alternating
 
                     -- * Planar Graphs
                     Data.Permutation
@@ -103,11 +96,7 @@ library
 
                     -- * Other
                     System.Random.Shuffle
-
                     Control.Monad.State.Persistent
-
-                    Control.CanAquire
-
                     Data.Yaml.Util
 
   other-modules:

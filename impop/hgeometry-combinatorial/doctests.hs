@@ -63,8 +63,4 @@ modules =
   , "Data.PlanarGraph.Core"
   , "Data.Tree.Util"
   , "Data.Set.Util"
-
-  , "Data.List.Util"
-  , "Data.List.Alternating"
-  , "Data.List.Zipper"
   ]

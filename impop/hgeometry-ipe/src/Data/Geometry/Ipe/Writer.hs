@@ -42,7 +42,7 @@ import           Data.Geometry.Point
 import           Data.Geometry.BezierSpline
 import           Data.Geometry.PolyLine
 import           Data.Geometry.Polygon (Polygon, outerBoundary, holeList, asSimplePolygon)
-import qualified Data.Geometry.Matrix as Matrix
+import qualified Data.Geometry.Transformation as GT
 import           Data.Geometry.Vector
 import qualified Data.LSeq as LSeq
 import           Data.List.NonEmpty (NonEmpty(..))
@@ -264,8 +264,8 @@ instance IpeWriteText r => IpeWrite (IpeSymbol r) where
 
 --------------------------------------------------------------------------------
 
-instance IpeWriteText r => IpeWriteText (Matrix.Matrix 3 3 r) where
-  ipeWriteText (Matrix.Matrix m) = unwords' [a,b,c,d,e,f]
+instance IpeWriteText r => IpeWriteText (GT.Matrix 3 3 r) where
+  ipeWriteText (GT.Matrix m) = unwords' [a,b,c,d,e,f]
     where
       (Vector3 r1 r2 _) = m
 
@@ -310,10 +310,11 @@ instance IpeWriteText r => IpeWriteText (BezierSpline 3 2 r) where
   ipeWriteText (Bezier3 p q r s) = unlines' . map ipeWriteText $ [MoveTo p, CurveTo q r s]
 
 instance IpeWriteText r => IpeWriteText (PathSegment r) where
-  ipeWriteText (PolyLineSegment p) = ipeWriteText p
-  ipeWriteText (PolygonPath     p) = ipeWriteText p
-  ipeWriteText (EllipseSegment  e) = ipeWriteText $ Ellipse (e^.ellipseMatrix)
-  ipeWriteText _                   = error "ipeWriteText: PathSegment, not implemented yet."
+  ipeWriteText (PolyLineSegment    p) = ipeWriteText p
+  ipeWriteText (PolygonPath        p) = ipeWriteText p
+  ipeWriteText (EllipseSegment     e) = ipeWriteText $ Ellipse (e^.ellipseMatrix)
+  ipeWriteText (CubicBezierSegment b) = ipeWriteText b
+  ipeWriteText _                      = error "ipeWriteText: PathSegment, not implemented yet."
 
 instance IpeWriteText r => IpeWrite (Path r) where
   ipeWrite p = (\t -> Element "path" [] [Text t]) <$> ipeWriteText p

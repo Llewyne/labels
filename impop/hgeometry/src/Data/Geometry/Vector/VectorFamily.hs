@@ -73,15 +73,6 @@ deriving instance Arity d => Foldable    (Vector d)
 deriving instance Arity d => Traversable (Vector d)
 deriving instance Arity d => Applicative (Vector d)
 
-
-
-instance Arity d => FunctorWithIndex     Int (Vector d) where
-  imap = V.imap
-instance Arity d => FoldableWithIndex    Int (Vector d)
-instance Arity d => TraversableWithIndex Int (Vector d) where
-  itraverse = V.imapM
-
-
 deriving instance Arity d => Additive (Vector d)
 deriving instance Arity d => Metric (Vector d)
 instance Arity d => Affine (Vector d) where
@@ -182,9 +173,6 @@ element' i = unV.(e (C :: C d) i)
 
 --------------------------------------------------------------------------------
 -- * Snoccing and consindg
-
-cons   :: (Arity d, Arity (d+1)) => r -> Vector d r -> Vector (d + 1) r
-cons x = vectorFromListUnsafe . (x:) . F.toList
 
 -- | Add an element at the back of the vector
 snoc     :: (Arity (d + 1), Arity d) => Vector d r -> r -> Vector (d + 1) r

@@ -20,6 +20,7 @@ module Data.Geometry.Vector( module Data.Geometry.Vector.VectorFamily
                            , scalarMultiple
                            -- reexports
                            , FV.replicate
+                           , FV.imap
                            , xComponent, yComponent, zComponent
                            ) where
 
@@ -34,7 +35,7 @@ import qualified Data.Vector.Fixed as FV
 import           GHC.TypeLits
 import           Linear.Affine (Affine(..), qdA, distanceA)
 import           Linear.Metric (dot,norm,signorm,quadrance)
-import           Linear.Vector as LV hiding (E(..))
+import           Linear.Vector as LV
 import           System.Random (Random(..))
 import           Test.QuickCheck (Arbitrary(..),infiniteList)
 

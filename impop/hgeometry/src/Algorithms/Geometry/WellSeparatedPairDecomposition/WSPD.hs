@@ -25,7 +25,7 @@ import           Data.Geometry.Vector
 import qualified Data.Geometry.Vector as GV
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.LSeq as LSeq
-import           Data.LSeq (LSeq, toSeq,pattern (:<|))
+import           Data.LSeq (LSeq,toSeq,ViewL(..),ViewR(..),pattern (:<|))
 import qualified Data.List as L
 import qualified Data.List.NonEmpty as NonEmpty
 import           Data.Maybe
@@ -37,7 +37,7 @@ import qualified Data.Vector as V
 import qualified Data.Vector.Mutable as MV
 import           GHC.TypeLits
 
--- import           Debug.Trace
+import           Debug.Trace
 
 --------------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ fairSplitTree     :: (Fractional r, Ord r, Arity d, 1 <= d
                   => NonEmpty.NonEmpty (Point d r :+ p) -> SplitTree d p r ()
 fairSplitTree pts = foldUp node' Leaf $ fairSplitTree' n pts'
   where
-    pts' = imap sortOn . pure . g $ pts
+    pts' = GV.imap sortOn . pure . g $ pts
     n    = length $ pts'^.GV.element (C :: C 0)
 
     sortOn' i = NonEmpty.sortWith (^.core.unsafeCoord i)
@@ -177,7 +177,6 @@ distributePoints' k levels pts
     level p = maybe (k-1) _unLevel $ levels V.! (p^.extra.core)
     append v i p = MV.read v i >>= MV.write v i . (S.|> p)
 
-fromSeqUnsafe :: S.Seq a -> LSeq n a
 fromSeqUnsafe = LSeq.promise . LSeq.fromSeq
 
 -- | Given a sequence of points, whose index is increasing in the first
@@ -267,11 +266,9 @@ compactEnds' (l0 :<| s0) = fmap fromSeqUnsafe . goL $ l0 S.<| toSeq s0
     goL s@(S.viewl -> l S.:< s') = hasLevel l >>= \case
                                      False -> goR s
                                      True  -> goL s'
-    goL _ = error "Unreachable, but cannot prove it in Haskell"
     goR s@(S.viewr -> s' S.:> r) = hasLevel r >>= \case
                                      False -> pure s
                                      True  -> goR s'
-    goR _ = error "Unreachable, but cannot prove it in Haskell"
 
 
 -- | Given the points, ordered by their j^th coordinate, split the point set
@@ -357,7 +354,7 @@ widths = fmap Range.width . extends
 --
 -- pre: points are sorted according to their dimension
 extends :: Arity d => GV.Vector d (PointSeq d p r) -> GV.Vector d (Range r)
-extends = imap (\i pts ->
+extends = GV.imap (\i pts ->
                      ClosedRange ((LSeq.head pts)^.core.unsafeCoord (i + 1))
                                  ((LSeq.last pts)^.core.unsafeCoord (i + 1)))
 
