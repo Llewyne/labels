@@ -29,10 +29,10 @@ library
     , Data.Geometry.PlanarSubdivision.Dynamic
     , Data.Geometry.BezierSpline
     , Algorithms.Geometry.Misc
-    , Eva.SATLabelin
-    , Extra.BezierSpline
+    , Eva.SATLabeling
   hs-source-dirs:
       src
+    , hgeometry
   build-depends:
       base >=4.7 && <5
     , hgeometry >= 0.10
