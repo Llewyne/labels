@@ -1,6 +1,6 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE TemplateHaskell #-}
-module Data.Geometry.BezierSpline(
+module Extra.BezierSpline(
     BezierSpline (BezierSpline)
   , controlPoints
   , fromPointSeq
