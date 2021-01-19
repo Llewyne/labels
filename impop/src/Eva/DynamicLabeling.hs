@@ -26,23 +26,26 @@ import CurveArrangement.Types
 
 import Nonogram
 
+import           Data.Geometry.Polygon
+
 _line :: Port -> Line 2 Float
 _line p = Data.Geometry.Line (_location p) (Nonogram._direction p)
 
 --Test
-p1 = Port (Point2 0 0) (Vector2 1 (1)) False
-p2 = Port (Point2 0 100) (Vector2 0 1) False
-p3 = Port (Point2 0 175) (Vector2 (-1) 1) False
-p4 = Port (Point2 0 250) (Vector2 0 1) False
-p5 = Port (Point2 0 325) (Vector2 1 (-1)) False
+pDummy1 = Port (Point2 0 0) (Vector2 1 1) True
+p1 = Port (Point2 0 2) (Vector2 (-1) 1) True
+p2 = Port (Point2 0 4) (Vector2 1 1) False
+p3 = Port (Point2 0 7) (Vector2 (-1) 1) True
+p4 = Port (Point2 0 9) (Vector2 1 1) False
+pDummy2 = Port (Point2 0 12) (Vector2 1 1) False
 
-test1 = [([p1],[1,2]::[Int]),([p2],[2,3]::[Int]),([p3],[1]::[Int]),([p4],[1]::[Int]),([p5],[1]::[Int])]
+-- test1 = [([p1],[1,2]::[Int]),([p2],[2,3]::[Int]),([p3],[1]::[Int]),([p4],[1]::[Int]),([p5],[1]::[Int])]
 
 width = 600
 
 height = 600
 
-boxSize = 3
+boxSize = 1
 
 boxPath = [(0,0),(boxSize,0),(boxSize,boxSize),(0,boxSize)]
 
@@ -78,17 +81,32 @@ type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 
 unit = 3
 
--- places labels dynamically
--- placeLabelsDynamic :: [UnplacedLabel] -> Frame -> [Label]
--- placeLabelsDynamic ls f = map (placeLabelsDynamicEdge ls_) (listEdges f)
---     where ls_ = assignPorts ls
+frame_ :: SimplePolygon () Float
+frame_ = fromPoints [Point2 (112.0) (-128.0) :+ (),Point2 (128.0) (-128.0) :+ (),Point2 (128.0) (-96.0) :+ (),Point2 (128.0) (128.0) :+ (),Point2 (16.0) (128.0) :+ (),Point2 (-16.0) (128.0) :+ (),Point2 (-128.0) (128.0) :+ (),Point2 (-128.0) (-48.0) :+ (),Point2 (-128.0) (-96.0) :+ (),Point2 (-128.0) (-128.0) :+ ()]
 
--- -- places labels dynamically on an edge
--- placeLabelsDynamicEdge :: [FSUnplacedLabel] -> LineSegment 2 () Float -> [Label]
--- placeLabelsDynamicEdge ls s = placeLabelsDynamicEdge_ 1 (length ls) (initLeaders (length ls)) ls_ s_
---     where
---         ls_ = dummy0 s_ : makeTopEdge (getEdgeLabels ls s) s ++ [dummyNplus1 s_] -- Rotated labels with added dummies
---         s_ = pivotLineSegment s
+uls :: [UnplacedLabel]
+uls = [([Port {_location = Point2 (112.0) (-128.0), Nonogram._direction = Vector2 (0.44721276) (-0.89442766), _side = True},Port {_location = Point2 (-16.0) (128.0), Nonogram._direction = Vector2 (-0.44721353) (0.89442724), _side = False}],[1]),
+    ([Port {_location = Point2 (128.0) (-96.0), Nonogram._direction = Vector2 (0.98287207) (-0.18428911), _side = True},Port {_location = Point2 (-128.0) (-48.0), Nonogram._direction = Vector2 (-0.98287266) (0.18428588), _side = False}],[0]),
+    ([Port {_location = Point2 (16.0) (128.0), Nonogram._direction = Vector2 (0.5407575) (0.84117854), _side = True},Port {_location = Point2 (-128.0) (-96.0), Nonogram._direction = Vector2 (-0.5407594) (-0.8411773), _side = False}],[1]),
+    ([Port {_location = Point2 (-16.0) (128.0), Nonogram._direction = Vector2 (-0.44721353) (0.89442724), _side = True},Port {_location = Point2 (112.0) (-128.0), Nonogram._direction = Vector2 (0.44721276) (-0.89442766), _side = False}],[0]),
+    ([Port {_location = Point2 (-128.0) (-48.0), Nonogram._direction = Vector2 (-0.98287266) (0.18428588), _side = True},Port {_location = Point2 (128.0) (-96.0), Nonogram._direction = Vector2 (0.98287207) (-0.18428911), _side = False}],[1]),
+    ([Port {_location = Point2 (-128.0) (-96.0), Nonogram._direction = Vector2 (-0.5407594) (-0.8411773), _side = True},Port {_location = Point2 (16.0) (128.0), Nonogram._direction = Vector2 (0.5407575) (0.84117854), _side = False}],[0])]
+
+-- places labels dynamically
+placeLabelsDynamic :: [UnplacedLabel] -> Frame -> [Label]
+placeLabelsDynamic ls f = concat $ map (placeLabelsDynamicEdge ls_) (listEdges f)
+    where ls_ = assignPorts ls
+
+-- -- -- places labels dynamically on an edge
+placeLabelsDynamicEdge :: [FSUnplacedLabel] -> LineSegment 2 () Float -> [Label]
+placeLabelsDynamicEdge ls s = zipWith placeLabel edgeLabels (placeLabelsDynamicEdge_ ls_ 1 (length edgeLabels) 1 1)
+    where
+        ls_ = dummy0 s_ : makeTopEdge edgeLabels s ++ [dummyNplus1 s_] -- Rotated labels with added dummies
+        s_ = pivotLineSegment s
+        edgeLabels = getEdgeLabels ls s
+
+placeLabel :: FSUnplacedLabel -> Int -> Label
+placeLabel ul e = Label (snd ul) (fst ul) (fromIntegral e)
 
 -- placeLabelsDynamicEdge_ :: Int -- Index of the first label 
 --     -> Int -- Index of the last label
@@ -104,16 +122,36 @@ minExtLength ls p1 p2 e1 e2 = r!(p1,p2)
             eMax = (p2-p1)^2
             f i j a b 
                 | i == j - 1 = a + b
-                | j - 1 > 1 = minimum [(f i k a c) + (f k j c b) - c | k<-[i+1..j-1], c<- [min a b], elem c (set k), valid i a j b k c]
+                | j - 1 > 1 = minimum [(f i k a c) + (f k j c b) - c | k<-[i+1..j-1], c<- [1..max 1 (min a b)], elem c (set k), valid i a j b k c]
             set k = [0..(p2-p1)^2]
             valid i a j b k c = fitLength (ls!!i) a (ls!!j) b (ls!!k) c
+
+-- placeLabelsDynamicEdge_ :: [Port] -> Int -> Int -> Int -> Int -> Array (Int, Int) (Int, (Int, Int))
+placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = e1:getLengths r p1 p2++[e2]
+    where
+            r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]]
+            eMax = (p2-p1)^2
+            f i j a b 
+                | i == j - 1 = (a + b,(0,0))
+                | j - 1 > 1 = minimum [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- [1..max 1 (min a b)], elem c (set k), valid i a j b k c]
+            set k = [0..(p2-p1)^2]
+            valid i a j b k c = fitLength (fst (ls!!i)) a (fst (ls!!j)) b (fst (ls!!k)) c
+
+-- test_ = placeLabelsDynamicEdge_ [pDummy1,p1,p2,p3,p4,pDummy2] 2 3 1 1
+
+-- getLengths :: (Ix t, Eq a1, Num t, Num a1) => Array (t, t) (a2, (t, a1)) -> t -> t -> [a1]
+getLengths r p1 p2
+    | p1 == p2 || snd l == (0,0) = []
+    | otherwise = getLengths r p1 (fst (snd l)) ++ [ snd (snd l)] ++ getLengths r (fst (snd l)) p2
+    where l = r!(p1,p2)
+ 
 
 -- determines if a leader with length len fits between two ports with lengths len1 and len2
 -- fitLength :: Port -> Integer -> Port -> Integer -> Port -> Integer -> Bool
 fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len 
     | s1 /= s2 = True
-    | leaderIntersect (pos1^.xCoord) m1 (pos^.xCoord) m (fromIntegral len1,fromIntegral len) = False
-    | leaderIntersect (pos^.xCoord) m (pos2^.xCoord) m2 (fromIntegral len,fromIntegral len2) = False
+    | leaderIntersect (pos1^.xCoord) m1 (pos^.xCoord) m (fromIntegral (len1 + boxSize),fromIntegral (len + boxSize)) = False
+    | leaderIntersect (pos^.xCoord) m (pos2^.xCoord) m2 (fromIntegral (len + boxSize),fromIntegral (len2 + boxSize)) = False
     | otherwise = True
     where
         m = (dir^.xComponent) / (dir^.yComponent)
@@ -123,10 +161,10 @@ fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len
 -- Do two leaders, defined by their y-coordinate position, slope and length, intersect
 leaderIntersect :: Float -> Float -> Float-> Float -> (Integer,Integer) -> Bool
 leaderIntersect y1 m1 y2 m2 (len1,len2) 
-    | m1 == m2 = False
-    | px <= 0 || (px > (fromIntegral len1) && px > (fromIntegral len2)) = False
-    | otherwise = True
-    where (px,_) = lineIntersection m1 y1 m2 y2
+    | m1 == m2 || px <= 0 = False
+    | ((px < ((sin (atan m1))*(fromIntegral len1))) && (px < abs ((sin (atan m2))*(fromIntegral len2)))) = True
+    | otherwise = False
+    where (px,py) = lineIntersection m1 y1 m2 y2
 
 -- intersection point = ((y2 - y1)/(m1-m2),(m1*y2-m2*y1)/(m1-m2)
 lineIntersection :: Float -> Float -> Float -> Float -> (Float,Float)
@@ -135,18 +173,20 @@ lineIntersection m1 b1 m2 b2 = ((b2-b1)/(m1-m2),(m1*b1-m2*b2)/(m1-m2))
 -- Assigns ports to unplaced labels 
 assignPorts :: [UnplacedLabel] -> [FSUnplacedLabel]
 assignPorts [] = []
-assignPorts ((ps,c):ls) =  (ps!!1, c):assignPorts_ ls
+assignPorts ((ps,c):ls) =  (ps!!0, c):assignPorts_ ls
 assignPorts_ [] = []
-assignPorts_ ((ps,c):ls) = (ps!!2, c):assignPorts ls
+assignPorts_ ((ps,c):ls) 
+    | length ps > 1 = (ps!!1, c):assignPorts ls
+    | otherwise = (ps!!0, c):assignPorts ls
 
 -- initialize leader lengths
 initLeaders l = (maxLength:leader1:take (l-2) (repeat 0))++ [leaderN,maxLength]
     where maxLength = l^2 -- maxLength of leader
 
 -- Makes dummies, assumes line segment is horizontal
-dummy0 :: LineSegment 2 () Float -> (Port, [Integer])
+dummy0 :: LineSegment 2 () Float -> FSUnplacedLabel
 dummy0 s = (Port (Point2 (((s^.start.core.xCoord)) - unit) ((s^.start.core.yCoord))) (Vector2 (-unit) unit) False,[0])
-dummyNplus1 :: LineSegment 2 () Float -> (Port, [Integer])
+dummyNplus1 :: LineSegment 2 () Float -> FSUnplacedLabel
 dummyNplus1 s = (Port (Point2 ((s^.end.core.xCoord) - unit) (s^.end.core.yCoord)) (Vector2 unit unit) True,[0])
 
 -- Sets start and end leader length

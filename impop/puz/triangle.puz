@@ -202,17 +202,17 @@ solid path {
 }
 compound {
 path {
-  start -16.0 128.0
-  line to -16.0 128.0
+  start 112.0 -128.0
+  line to 112.44721 -128.89442
 }
-translate -26.733128 131.5777 compound {
+translate 108.8695 -139.62755 compound {
 text "1"
 path {
-  start -10.733126 3.5777097
-  line to 3.5777097 10.733126
-  line to 10.733126 -3.5777097
-  line to -3.5777097 -10.733126
-  line to -10.733126 3.5777097
+  start 10.733124 -3.5777192
+  line to -3.5777192 -10.733124
+  line to -10.733124 3.5777192
+  line to 3.5777192 10.733124
+  line to 10.733124 -3.5777192
 }
 
 }
@@ -220,17 +220,17 @@ path {
 }
 compound {
 path {
-  start 128.0 -96.0
-  line to 128.0 -96.0
+  start 112.0 -128.0
+  line to 112.44721 -128.89442
 }
-translate 134.38866 -105.33729 compound {
+translate 123.180336 -132.47215 compound {
 text "0"
 path {
-  start 9.33729 6.388664
-  line to 6.388664 -9.33729
-  line to -9.33729 -6.388664
-  line to -6.388664 9.33729
-  line to 9.33729 6.388664
+  start 10.733124 -3.5777192
+  line to -3.5777192 -10.733124
+  line to -10.733124 3.5777192
+  line to 3.5777192 10.733124
+  line to 10.733124 -3.5777192
 }
 
 }
@@ -239,9 +239,9 @@ path {
 compound {
 path {
   start 16.0 128.0
-  line to 16.0 128.0
+  line to 16.540758 128.84117
 }
-translate 27.055489 130.40337 compound {
+translate 27.596245 131.24454 compound {
 text "1"
 path {
   start -2.4033685 11.055489
@@ -256,17 +256,53 @@ path {
 }
 compound {
 path {
-  start -16.0 128.0
-  line to -16.0 128.0
+  start 16.0 128.0
+  line to 16.540758 128.84117
 }
-translate -12.422291 138.73312 compound {
+translate 14.137389 139.89667 compound {
 text "0"
 path {
-  start -10.733126 3.5777097
-  line to 3.5777097 10.733126
-  line to 10.733126 -3.5777097
-  line to -3.5777097 -10.733126
-  line to -10.733126 3.5777097
+  start -2.4033685 11.055489
+  line to 11.055489 2.4033685
+  line to 2.4033685 -11.055489
+  line to -11.055489 -2.4033685
+  line to -2.4033685 11.055489
+}
+
+}
+
+}
+compound {
+path {
+  start 16.0 128.0
+  line to 16.540758 128.84117
+}
+translate 27.596245 131.24454 compound {
+text "1"
+path {
+  start -2.4033685 11.055489
+  line to 11.055489 2.4033685
+  line to 2.4033685 -11.055489
+  line to -11.055489 -2.4033685
+  line to -2.4033685 11.055489
+}
+
+}
+
+}
+compound {
+path {
+  start 16.0 128.0
+  line to 16.540758 128.84117
+}
+translate 14.137389 139.89667 compound {
+text "0"
+path {
+  start -2.4033685 11.055489
+  line to 11.055489 2.4033685
+  line to 2.4033685 -11.055489
+  line to -11.055489 -2.4033685
+  line to -2.4033685 11.055489
 }
 
 }
@@ -275,9 +311,27 @@ path {
 compound {
 path {
   start -128.0 -48.0
-  line to -128.0 -48.0
+  line to -128.98288 -47.815716
 }
-translate -134.38869 -38.66273 compound {
+translate -138.32014 -54.20441 compound {
+text "0"
+path {
+  start -9.337269 -6.3886943
+  line to -6.3886943 9.337269
+  line to 9.337269 6.3886943
+  line to 6.3886943 -9.337269
+  line to -9.337269 -6.3886943
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 -48.0
+  line to -128.98288 -47.815716
+}
+translate -135.37157 -38.47845 compound {
 text "1"
 path {
   start -9.337269 -6.3886943
@@ -292,17 +346,71 @@ path {
 }
 compound {
 path {
-  start -128.0 -96.0
-  line to -128.0 -96.0
+  start -128.0 -48.0
+  line to -128.98288 -47.815716
 }
-translate -139.0555 -98.40334 compound {
+translate -138.32014 -54.20441 compound {
 text "0"
 path {
-  start 2.4033432 -11.055493
-  line to -11.055493 -2.4033432
-  line to -2.4033432 11.055493
-  line to 11.055493 2.4033432
-  line to 2.4033432 -11.055493
+  start -9.337269 -6.3886943
+  line to -6.3886943 9.337269
+  line to 9.337269 6.3886943
+  line to 6.3886943 -9.337269
+  line to -9.337269 -6.3886943
+}
+
+}
+
+}
+compound {
+path {
+  start -128.0 -48.0
+  line to -128.98288 -47.815716
+}
+translate -135.37157 -38.47845 compound {
+text "1"
+path {
+  start -9.337269 -6.3886943
+  line to -6.3886943 9.337269
+  line to 9.337269 6.3886943
+  line to 6.3886943 -9.337269
+  line to -9.337269 -6.3886943
+}
+
+}
+
+}
+compound {
+path {
+  start 112.0 -128.0
+  line to 112.44721 -128.89442
+}
+translate 108.8695 -139.62755 compound {
+text "1"
+path {
+  start 10.733124 -3.5777192
+  line to -3.5777192 -10.733124
+  line to -10.733124 3.5777192
+  line to 3.5777192 10.733124
+  line to 10.733124 -3.5777192
+}
+
+}
+
+}
+compound {
+path {
+  start 112.0 -128.0
+  line to 112.44721 -128.89442
+}
+translate 123.180336 -132.47215 compound {
+text "0"
+path {
+  start 10.733124 -3.5777192
+  line to -3.5777192 -10.733124
+  line to -10.733124 3.5777192
+  line to 3.5777192 10.733124
+  line to 10.733124 -3.5777192
 }
 
 }

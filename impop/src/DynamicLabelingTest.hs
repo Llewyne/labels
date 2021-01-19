@@ -116,7 +116,7 @@ labelTest name = do
   since start
 
   -- place the labels
-  let pl  = placeLabelsDynamic 0 1 ((length upl)-1) 1 upl
+  let pl  = placeLabelsDynamic upl frame
   putStrLn $ "labels: " ++ show (length pl) 
   writeFile "log/labels.txt" $ unlines $ map show pl
   since start

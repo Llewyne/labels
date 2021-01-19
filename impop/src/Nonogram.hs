@@ -26,7 +26,7 @@ data Port = Port
   { _location  :: Point 2 Float
   , _direction :: Vector 2 Float
   , _side      :: Bool -- True if on right of direction vector (left if going into puzzle)
-  }deriving (Show,Eq)
+  }deriving (Show,Read, Eq)
 $(makeLenses ''Port)
 
 data Label = Label
