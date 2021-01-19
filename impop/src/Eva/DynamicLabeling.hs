@@ -93,9 +93,18 @@ uls = [([Port {_location = Point2 (112.0) (-128.0), Nonogram._direction = Vector
     ([Port {_location = Point2 (-128.0) (-96.0), Nonogram._direction = Vector2 (-0.5407594) (-0.8411773), _side = True},Port {_location = Point2 (16.0) (128.0), Nonogram._direction = Vector2 (0.5407575) (0.84117854), _side = False}],[0])]
 
 -- places labels dynamically
-placeLabelsDynamic :: [UnplacedLabel] -> Frame -> [Label]
-placeLabelsDynamic ls f = concat $ map (placeLabelsDynamicEdge ls_) (listEdges f)
+placeLabelsDynamic :: [UnplacedLabel] -> Frame -> [Label] 
+placeLabelsDynamic ls f = concat $ map (placeLabelsDynamicEdge ls_) (simplify $ listEdges f)
     where ls_ = assignPorts ls
+
+simplify :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
+simplify (l:ll:ls)
+    | abs (getM l - getM ll) < 0.01 || getM l == getM ll = simplify (((l&start .~ l^.start)&end .~ ll^.end) : ls)
+    | otherwise = l:(simplify (ll:ls))
+simplify [l] = [l]
+
+getM :: LineSegment 2 () Float -> Float
+getM l = (l^.end.core.xCoord - l^.start.core.xCoord) / (l^.end.core.yCoord - l^.start.core.yCoord)
 
 -- -- -- places labels dynamically on an edge
 placeLabelsDynamicEdge :: [FSUnplacedLabel] -> LineSegment 2 () Float -> [Label]

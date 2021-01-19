@@ -656,6 +656,24 @@ path {
 }
 compound {
 path {
+  start 47.8395 -128.0
+  line to 48.19075 -128.93628
+}
+translate 43.510513 -139.23654 compound {
+text "1"
+path {
+  start 10.3002615 -4.680236
+  line to -4.680236 -10.3002615
+  line to -10.3002615 4.680236
+  line to 4.680236 10.3002615
+  line to 10.3002615 -4.680236
+}
+
+}
+
+}
+compound {
+path {
   start 1.36705 -128.0
   line to 0.9928106 -128.92734
 }
@@ -674,42 +692,6 @@ path {
 }
 compound {
 path {
-  start 25.0812 -128.0
-  line to 25.846668 -128.64348
-}
-translate 37.118202 -127.6675 compound {
-text "0"
-path {
-  start 11.271534 0.9759722
-  line to 0.9759722 -11.271534
-  line to -11.271534 -0.9759722
-  line to -0.9759722 11.271534
-  line to 11.271534 0.9759722
-}
-
-}
-
-}
-compound {
-path {
-  start 47.8395 -128.0
-  line to 48.19075 -128.93628
-}
-translate 43.510513 -139.23654 compound {
-text "1"
-path {
-  start 10.3002615 -4.680236
-  line to -4.680236 -10.3002615
-  line to -10.3002615 4.680236
-  line to 4.680236 10.3002615
-  line to 10.3002615 -4.680236
-}
-
-}
-
-}
-compound {
-path {
   start 47.8395 -128.0
   line to 48.19075 -128.93628
 }
@@ -746,114 +728,6 @@ path {
 }
 compound {
 path {
-  start 47.8395 -128.0
-  line to 48.19075 -128.93628
-}
-translate 43.510513 -139.23654 compound {
-text "1"
-path {
-  start 10.3002615 -4.680236
-  line to -4.680236 -10.3002615
-  line to -10.3002615 4.680236
-  line to 4.680236 10.3002615
-  line to 10.3002615 -4.680236
-}
-
-}
-
-}
-compound {
-path {
-  start 47.8395 -128.0
-  line to 48.19075 -128.93628
-}
-translate 58.491013 -133.61652 compound {
-text "3"
-path {
-  start 10.3002615 -4.680236
-  line to -4.680236 -10.3002615
-  line to -10.3002615 4.680236
-  line to 4.680236 10.3002615
-  line to 10.3002615 -4.680236
-}
-
-}
-
-}
-compound {
-path {
-  start 128.0 -76.244
-  line to 128.90955 -76.659615
-}
-translate 132.861 -87.26084 compound {
-text "1"
-path {
-  start 10.601228 3.9514513
-  line to 3.9514513 -10.601228
-  line to -10.601228 -3.9514513
-  line to -3.9514513 10.601228
-  line to 10.601228 3.9514513
-}
-
-}
-
-}
-compound {
-path {
-  start 128.0 -76.244
-  line to 128.90955 -76.659615
-}
-translate 139.51077 -72.70817 compound {
-text "3"
-path {
-  start 10.601228 3.9514513
-  line to 3.9514513 -10.601228
-  line to -10.601228 -3.9514513
-  line to -3.9514513 10.601228
-  line to 10.601228 3.9514513
-}
-
-}
-
-}
-compound {
-path {
-  start 128.0 -76.244
-  line to 128.90955 -76.659615
-}
-translate 132.861 -87.26084 compound {
-text "1"
-path {
-  start 10.601228 3.9514513
-  line to 3.9514513 -10.601228
-  line to -10.601228 -3.9514513
-  line to -3.9514513 10.601228
-  line to 10.601228 3.9514513
-}
-
-}
-
-}
-compound {
-path {
-  start 128.0 -76.244
-  line to 128.90955 -76.659615
-}
-translate 139.51077 -72.70817 compound {
-text "3"
-path {
-  start 10.601228 3.9514513
-  line to 3.9514513 -10.601228
-  line to -10.601228 -3.9514513
-  line to -3.9514513 10.601228
-  line to 10.601228 3.9514513
-}
-
-}
-
-}
-compound {
-path {
   start 128.0 73.9608
   line to 128.26938 74.923836
 }
@@ -872,35 +746,17 @@ path {
 }
 compound {
 path {
-  start 128.0 73.9608
-  line to 128.26938 74.923836
+  start 128.0 -76.244
+  line to 128.90955 -76.659615
 }
-translate 138.12866 80.47313 compound {
-text "0"
-path {
-  start -5.5492926 9.859279
-  line to 9.859279 5.5492926
-  line to 5.5492926 -9.859279
-  line to -9.859279 -5.5492926
-  line to -5.5492926 9.859279
-}
-
-}
-
-}
-compound {
-path {
-  start 128.0 73.9608
-  line to 128.26938 74.923836
-}
-translate 122.72009 84.78311 compound {
+translate 132.861 -87.26084 compound {
 text "1"
 path {
-  start -5.5492926 9.859279
-  line to 9.859279 5.5492926
-  line to 5.5492926 -9.859279
-  line to -9.859279 -5.5492926
-  line to -5.5492926 9.859279
+  start 10.601228 3.9514513
+  line to 3.9514513 -10.601228
+  line to -10.601228 -3.9514513
+  line to -3.9514513 10.601228
+  line to 10.601228 3.9514513
 }
 
 }
@@ -944,17 +800,17 @@ path {
 }
 compound {
 path {
-  start 128.0 113.105
-  line to 128.97835 113.312
+  start 128.0 -76.244
+  line to 128.90955 -76.659615
 }
-translate 138.46103 107.141205 compound {
-text "1"
+translate 139.51077 -72.70817 compound {
+text "3"
 path {
-  start 6.170793 9.482685
-  line to 9.482685 -6.170793
-  line to -6.170793 -9.482685
-  line to -9.482685 6.170793
-  line to 6.170793 9.482685
+  start 10.601228 3.9514513
+  line to 3.9514513 -10.601228
+  line to -10.601228 -3.9514513
+  line to -3.9514513 10.601228
+  line to 10.601228 3.9514513
 }
 
 }
@@ -998,114 +854,6 @@ path {
 }
 compound {
 path {
-  start -26.3526 128.0
-  line to -26.994843 128.7665
-}
-translate -38.264793 129.76057 compound {
-text "3"
-path {
-  start -11.269952 0.99408054
-  line to 0.99408054 11.269952
-  line to 11.269952 -0.99408054
-  line to -0.99408054 -11.269952
-  line to -11.269952 0.99408054
-}
-
-}
-
-}
-compound {
-path {
-  start -26.3526 128.0
-  line to -26.994843 128.7665
-}
-translate -26.000763 140.03645 compound {
-text "1"
-path {
-  start -11.269952 0.99408054
-  line to 0.99408054 11.269952
-  line to 11.269952 -0.99408054
-  line to -0.99408054 -11.269952
-  line to -11.269952 0.99408054
-}
-
-}
-
-}
-compound {
-path {
-  start -128.0 58.9404
-  line to -128.97835 58.733402
-}
-translate -138.46106 64.90415 compound {
-text "0"
-path {
-  start -6.1707497 -9.482713
-  line to -9.482713 6.1707497
-  line to 6.1707497 9.482713
-  line to 9.482713 -6.1707497
-  line to -6.1707497 -9.482713
-}
-
-}
-
-}
-compound {
-path {
-  start -128.0 58.9404
-  line to -128.97835 58.733402
-}
-translate -138.46106 64.90415 compound {
-text "0"
-path {
-  start -6.1707497 -9.482713
-  line to -9.482713 6.1707497
-  line to 6.1707497 9.482713
-  line to 9.482713 -6.1707497
-  line to -6.1707497 -9.482713
-}
-
-}
-
-}
-compound {
-path {
-  start -128.0 20.2512
-  line to -128.95863 19.966558
-}
-translate -134.35057 10.02036 compound {
-text "3"
-path {
-  start -5.3919487 -9.946199
-  line to -9.946199 5.3919487
-  line to 5.3919487 9.946199
-  line to 9.946199 -5.3919487
-  line to -5.3919487 -9.946199
-}
-
-}
-
-}
-compound {
-path {
-  start -128.0 20.2512
-  line to -128.95863 19.966558
-}
-translate -138.90483 25.35851 compound {
-text "1"
-path {
-  start -5.3919487 -9.946199
-  line to -9.946199 5.3919487
-  line to 5.3919487 9.946199
-  line to 9.946199 -5.3919487
-  line to -5.3919487 -9.946199
-}
-
-}
-
-}
-compound {
-path {
   start -128.0 0.67909
   line to -128.76549 1.3225467
 }
@@ -1142,6 +890,24 @@ path {
 }
 compound {
 path {
+  start -128.0 58.9404
+  line to -128.97835 58.733402
+}
+translate -138.46106 64.90415 compound {
+text "0"
+path {
+  start -6.1707497 -9.482713
+  line to -9.482713 6.1707497
+  line to 6.1707497 9.482713
+  line to 9.482713 -6.1707497
+  line to -6.1707497 -9.482713
+}
+
+}
+
+}
+compound {
+path {
   start -128.0 20.2512
   line to -128.95863 19.966558
 }
@@ -1153,24 +919,6 @@ path {
   line to 5.3919487 9.946199
   line to 9.946199 -5.3919487
   line to -5.3919487 -9.946199
-}
-
-}
-
-}
-compound {
-path {
-  start -128.0 0.67909
-  line to -128.76549 1.3225467
-}
-translate -140.037 0.3463397 compound {
-text "0"
-path {
-  start -11.271513 -0.9762068
-  line to -0.9762068 11.271513
-  line to 11.271513 0.9762068
-  line to 0.9762068 -11.271513
-  line to -11.271513 -0.9762068
 }
 
 }

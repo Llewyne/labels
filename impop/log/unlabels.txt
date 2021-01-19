@@ -1,5 +1,4 @@
 ([Port {_location = Point2 [1.36705,-128.0], _direction = Vector2 [-0.37423944,-0.92733216], _side = True},Port {_location = Point2 [104.69,128.0], _direction = Vector2 [0.37427685,0.9273171], _side = False}],[3])
-([Port {_location = Point2 [25.0812,-128.0], _direction = Vector2 [0.76546913,-0.6434726], _side = True},Port {_location = Point2 [-128.0,0.67909], _direction = Vector2 [-0.7654825,0.64345664], _side = False}],[0])
 ([Port {_location = Point2 [47.8395,-128.0], _direction = Vector2 [0.35125157,-0.9362811], _side = True},Port {_location = Point2 [-48.2005,128.0], _direction = Vector2 [-0.35125062,0.9362815], _side = False}],[1])
 ([Port {_location = Point2 [71.5081,-128.0], _direction = Vector2 [-0.2693775,-0.9630347], _side = True},Port {_location = Point2 [128.0,73.9608], _direction = Vector2 [0.26937416,0.9630357], _side = False}],[1])
 ([Port {_location = Point2 [128.0,-76.244], _direction = Vector2 [0.90954244,-0.41561103], _side = True},Port {_location = Point2 [-128.0,40.7337], _direction = Vector2 [-0.9095437,0.41560838], _side = False}],[1])
@@ -13,4 +12,3 @@
 ([Port {_location = Point2 [-128.0,58.9404], _direction = Vector2 [-0.9783414,-0.20699772], _side = True},Port {_location = Point2 [128.0,113.105], _direction = Vector2 [0.9783424,0.20699327], _side = False}],[0])
 ([Port {_location = Point2 [-128.0,40.7337], _direction = Vector2 [-0.9095437,0.41560838], _side = True},Port {_location = Point2 [128.0,-76.244], _direction = Vector2 [0.90954244,-0.41561103], _side = False}],[3])
 ([Port {_location = Point2 [-128.0,20.2512], _direction = Vector2 [-0.95863426,-0.28464067], _side = True},Port {_location = Point2 [128.0,96.264], _direction = Vector2 [0.9586338,0.2846425], _side = False}],[1])
-([Port {_location = Point2 [-128.0,0.67909], _direction = Vector2 [-0.7654825,0.64345664], _side = True},Port {_location = Point2 [25.0812,-128.0], _direction = Vector2 [0.76546913,-0.6434726], _side = False}],[0])

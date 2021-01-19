@@ -27,8 +27,6 @@ LineSegment (Closed (Point2 [(-10083) % 100,141593 % 5000] :+ ())) (Closed (Poin
 LineSegment (Closed (Point2 [(-49569) % 2500,523703 % 10000] :+ ())) (Closed (Point2 [128459 % 5000,658861 % 10000] :+ ()))
 LineSegment (Closed (Point2 [128459 % 5000,658861 % 10000] :+ ())) (Closed (Point2 [869631 % 10000,840791 % 10000] :+ ()))
 LineSegment (Closed (Point2 [869631 % 10000,840791 % 10000] :+ ())) (Closed (Point2 [128 % 1,12033 % 125] :+ ()))
-LineSegment (Closed (Point2 [(-128) % 1,67909 % 100000] :+ ())) (Closed (Point2 [737413 % 100000,(-22623) % 200] :+ ()))
-LineSegment (Closed (Point2 [737413 % 100000,(-22623) % 200] :+ ())) (Closed (Point2 [62703 % 2500,(-128) % 1] :+ ()))
 LineSegment (Closed (Point2 [(-128) % 1,407337 % 10000] :+ ())) (Closed (Point2 [(-10083) % 100,141593 % 5000] :+ ()))
 LineSegment (Closed (Point2 [(-10083) % 100,141593 % 5000] :+ ())) (Closed (Point2 [782119 % 100000,(-21329) % 1000] :+ ()))
 LineSegment (Closed (Point2 [782119 % 100000,(-21329) % 1000] :+ ())) (Closed (Point2 [96803 % 2500,(-177243) % 5000] :+ ()))
