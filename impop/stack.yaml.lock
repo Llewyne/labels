@@ -32,6 +32,27 @@ packages:
       sha256: 013f38bbcd470e0319f605c3c053da0f3459b5df43e05b09b2710b694e319301
   original:
     hackage: type-level-natural-number-2.0@sha256:d9b757b3244edf511296007cbea1c16d5861f8ba6d131603361d313d4d73ed3c,2554
+- completed:
+    hackage: hgeometry-0.11.0.0@sha256:09ead201a6ac3492c0be8dda5a6b32792b9ae87cab730b8362d46ee8d5c2acb4,11714
+    pantry-tree:
+      size: 10298
+      sha256: b5665fbc036aa985218b44d8036dd0cfde388d26a236dc51acf6bf266f98609c
+  original:
+    hackage: hgeometry-0.11.0.0@sha256:09ead201a6ac3492c0be8dda5a6b32792b9ae87cab730b8362d46ee8d5c2acb4,11714
+- completed:
+    hackage: hgeometry-combinatorial-0.11.0.0@sha256:03176f235a1c49a415fe1266274dafca84deb917cbcbf9a654452686b4cd2bfe,8286
+    pantry-tree:
+      size: 3959
+      sha256: 917d3000636f5f5b5b693084228def875d3c5f89e592b4d38ef8f9051c1f7fbc
+  original:
+    hackage: hgeometry-combinatorial-0.11.0.0@sha256:03176f235a1c49a415fe1266274dafca84deb917cbcbf9a654452686b4cd2bfe,8286
+- completed:
+    hackage: hgeometry-ipe-0.11.0.0@sha256:b12615f8ab6f535f80f808bcafdd8ae64345c22140f8899d6d2dac605eb48600,6937
+    pantry-tree:
+      size: 2053
+      sha256: 801483da6a9d879e16bf9a86f5a8b3487e7ee70bf7e5713295b604745bad863d
+  original:
+    hackage: hgeometry-ipe-0.11.0.0@sha256:b12615f8ab6f535f80f808bcafdd8ae64345c22140f8899d6d2dac605eb48600,6937
 snapshots:
 - completed:
     size: 524154

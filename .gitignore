@@ -190,3 +190,6 @@ impop/hgeometry
 impop/hgeometry-combinatorial
 impop/hgeometry-ipe
 papers
+impop/hie.yaml
+impop/stack.yaml
+impop/stack.yaml.lock

@@ -39,6 +39,7 @@ import Nonogram.PathType
 import Misc.SpanningTree
 import Data.Tree
 
+import Extra.BezierSpline
 
 import Debug.Trace
 

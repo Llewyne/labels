@@ -4,18 +4,18 @@ cradle:
       config:
         cradle:
           none:
-    - path: "./hgeometry"
-      config:
-        cradle:
-          none:
-    - path: "./hgeometry-ipe"
-      config:
-        cradle:
-          none:
-    - path: "./hgeometry-combinatorial"
-      config:
-        cradle:
-          none:
+    # - path: "./hgeometry"
+    #   config:
+    #     cradle:
+    #       none:
+    # - path: "./hgeometry-ipe"
+    #   config:
+    #     cradle:
+    #       none:
+    # - path: "./hgeometry-combinatorial"
+    #   config:
+    #     cradle:
+    #       none:
     - path: "./"
       config:
           cradle:

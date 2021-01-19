@@ -30,9 +30,9 @@ resolver: lts-14.20
 #   - wai
 packages:
 - .
-- 'hgeometry'
-- 'hgeometry-combinatorial'
-- 'hgeometry-ipe'
+# - 'hgeometry'
+# - 'hgeometry-combinatorial'
+# - 'hgeometry-ipe'
 - 'mios-master'
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
@@ -52,6 +52,9 @@ extra-deps:
 - hexpat-0.20.13
 - approximate-equality-1.1.0.2@sha256:564a83a453ff76d8008ade85d2308808816cb35886ac4891d79ea80e3292222c,1981
 - type-level-natural-number-2.0@sha256:d9b757b3244edf511296007cbea1c16d5861f8ba6d131603361d313d4d73ed3c,2554
+- hgeometry-0.11.0.0@sha256:09ead201a6ac3492c0be8dda5a6b32792b9ae87cab730b8362d46ee8d5c2acb4,11714
+- hgeometry-combinatorial-0.11.0.0@sha256:03176f235a1c49a415fe1266274dafca84deb917cbcbf9a654452686b4cd2bfe,8286
+- hgeometry-ipe-0.11.0.0@sha256:b12615f8ab6f535f80f808bcafdd8ae64345c22140f8899d6d2dac605eb48600,6937
 
 # Override default flag values for local packages and extra-deps
 flags: 
