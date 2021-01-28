@@ -7,6 +7,7 @@ import Data.List hiding (intersect)
 import Data.List.Split
 import Debug.Trace
 import Data.Ord
+import Data.Vinyl hiding (Label)
 import Data.Vinyl.CoRec
 import Data.Ext
 
@@ -27,6 +28,10 @@ import CurveArrangement.Types
 import Nonogram
 
 import           Data.Geometry.Polygon
+import qualified Data.List as List
+import           Data.Bifunctor
+import           Data.Either (partitionEithers)
+import           Data.Maybe (mapMaybe)
 
 _line :: Port -> Line 2 Float
 _line p = Data.Geometry.Line (_location p) (Nonogram._direction p)
@@ -39,13 +44,13 @@ p3 = Port (Point2 0 7) (Vector2 (-1) 1) True
 p4 = Port (Point2 0 9) (Vector2 1 1) False
 pDummy2 = Port (Point2 0 12) (Vector2 1 1) False
 
--- test1 = [([p1],[1,2]::[Int]),([p2],[2,3]::[Int]),([p3],[1]::[Int]),([p4],[1]::[Int]),([p5],[1]::[Int])]
+-- test1 = [([p1],(1) (2)::[Int]),([p2],(2) (3)::[Int]),([p3],[1]::[Int]),([p4],[1]::[Int]),([p5],[1]::[Int])]
 
 width = 600
 
 height = 600
 
-boxSize = 1
+boxSize = 16
 
 boxPath = [(0,0),(boxSize,0),(boxSize,boxSize),(0,boxSize)]
 
@@ -79,19 +84,63 @@ parseVector _ = Vector2 0 0
 
 type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 
+--------------------------------------------------------------------------------
+-- Clue box type: rectangle that is not orthogonal
+type ClueBox = SimplePolygon () Float
+
+type instance IntersectionOf (ClueBox) (LineSegment 2 () Float) = [ NoIntersection, Point 2 Float, LineSegment 2 () Float]
+
+instance (ClueBox) `IsIntersectableWith` (LineSegment 2 () Float) where
+    nonEmptyIntersection = defaultNonEmptyIntersection
+
+    cb `intersect` ls =
+     case first List.nub . partitionEithers . mapMaybe collect $ sides of
+       ([],[])   -> coRec NoIntersection
+       (_, [s])  -> coRec $ first (const ()) s
+       ([a],_)   -> coRec a
+       ([a,b],_) -> coRec $ ClosedLineSegment (ext a) (ext b)
+       (_,_)     -> error "intersecting a line with a triangle. Triangle is degenerate"
+     where
+       sides = listEdges cb
+
+       collect   :: LineSegment 2 () Float -> Maybe (Either (Point 2 Float) (LineSegment 2 () Float))
+       collect s = match (s `intersect` ls) $
+                        (H $ \NoIntersection           -> Nothing)
+                     :& (H $ \(a :: Point 2 Float)         -> Just $ Left a)
+                     :& (H $ \(e :: LineSegment 2 () Float) -> Just $ Right e)
+                     :& RNil
+--------------------------------------------------------------------------
+
 unit = 3
 
 frame_ :: SimplePolygon () Float
 frame_ = fromPoints [Point2 (112.0) (-128.0) :+ (),Point2 (128.0) (-128.0) :+ (),Point2 (128.0) (-96.0) :+ (),Point2 (128.0) (128.0) :+ (),Point2 (16.0) (128.0) :+ (),Point2 (-16.0) (128.0) :+ (),Point2 (-128.0) (128.0) :+ (),Point2 (-128.0) (-48.0) :+ (),Point2 (-128.0) (-96.0) :+ (),Point2 (-128.0) (-128.0) :+ ()]
 
 uls :: [UnplacedLabel]
-uls = [([Port {_location = Point2 (112.0) (-128.0), Nonogram._direction = Vector2 (0.44721276) (-0.89442766), _side = True},Port {_location = Point2 (-16.0) (128.0), Nonogram._direction = Vector2 (-0.44721353) (0.89442724), _side = False}],[1]),
-    ([Port {_location = Point2 (128.0) (-96.0), Nonogram._direction = Vector2 (0.98287207) (-0.18428911), _side = True},Port {_location = Point2 (-128.0) (-48.0), Nonogram._direction = Vector2 (-0.98287266) (0.18428588), _side = False}],[0]),
-    ([Port {_location = Point2 (16.0) (128.0), Nonogram._direction = Vector2 (0.5407575) (0.84117854), _side = True},Port {_location = Point2 (-128.0) (-96.0), Nonogram._direction = Vector2 (-0.5407594) (-0.8411773), _side = False}],[1]),
-    ([Port {_location = Point2 (-16.0) (128.0), Nonogram._direction = Vector2 (-0.44721353) (0.89442724), _side = True},Port {_location = Point2 (112.0) (-128.0), Nonogram._direction = Vector2 (0.44721276) (-0.89442766), _side = False}],[0]),
-    ([Port {_location = Point2 (-128.0) (-48.0), Nonogram._direction = Vector2 (-0.98287266) (0.18428588), _side = True},Port {_location = Point2 (128.0) (-96.0), Nonogram._direction = Vector2 (0.98287207) (-0.18428911), _side = False}],[1]),
-    ([Port {_location = Point2 (-128.0) (-96.0), Nonogram._direction = Vector2 (-0.5407594) (-0.8411773), _side = True},Port {_location = Point2 (16.0) (128.0), Nonogram._direction = Vector2 (0.5407575) (0.84117854), _side = False}],[0])]
+uls = [([Port {_location = Point2 (1.36705) (-128.0), Nonogram._direction = Vector2 (-0.37423944) (-0.92733216), _side = True},Port {_location = Point2 (104.69) (128.0), Nonogram._direction = Vector2 (0.37427685) (0.9273171), _side = False}],[3]),
+    ([Port {_location = Point2 (47.8395) (-128.0), Nonogram._direction = Vector2 (0.35125157) (-0.9362811), _side = True},Port {_location = Point2 (-48.2005) (128.0), Nonogram._direction = Vector2 (-0.35125062) (0.9362815), _side = False}],[1]),
+    ([Port {_location = Point2 (71.5081) (-128.0), Nonogram._direction = Vector2 (-0.2693775) (-0.9630347), _side = True},Port {_location = Point2 (128.0) (73.9608), Nonogram._direction = Vector2 (0.26937416) (0.9630357), _side = False}],[1]),
+    ([Port {_location = Point2 (128.0) (-76.244), Nonogram._direction = Vector2 (0.90954244) (-0.41561103), _side = True},Port {_location = Point2 (-128.0) (40.7337), Nonogram._direction = Vector2 (-0.9095437) (0.41560838), _side = False}],[1]),
+    ([Port {_location = Point2 (128.0) (-56.2167), Nonogram._direction = Vector2 (0.6422371) (-0.7665061), _side = True},Port {_location = Point2 (-26.3526) (128.0), Nonogram._direction = Vector2 (-0.64224195) (0.766502), _side = False}],[3]),
+    ([Port {_location = Point2 (128.0) (73.9608), Nonogram._direction = Vector2 (0.26937416) (0.9630357), _side = True},Port {_location = Point2 (71.5081) (-128.0), Nonogram._direction = Vector2 (-0.2693775) (-0.9630347), _side = False}],[0]),
+    ([Port {_location = Point2 (128.0) (96.264), Nonogram._direction = Vector2 (0.9586338) (0.2846425), _side = True},Port {_location = Point2 (-128.0) (20.2512), Nonogram._direction = Vector2 (-0.95863426) (-0.28464067), _side = False}],[3]),
+    ([Port {_location = Point2 (128.0) (113.105), Nonogram._direction = Vector2 (0.9783424) (0.20699327), _side = True},Port {_location = Point2 (-128.0) (58.9404), Nonogram._direction = Vector2 (-0.9783414) (-0.20699772), _side = False}],[1]),
+    ([Port {_location = Point2 (104.69) (128.0), Nonogram._direction = Vector2 (0.37427685) (0.9273171), _side = True},Port {_location = Point2 (1.36705) (-128.0), Nonogram._direction = Vector2 (-0.37423944) (-0.92733216), _side = False}],[1]),
+    ([Port {_location = Point2 (-26.3526) (128.0), Nonogram._direction = Vector2 (-0.64224195) (0.766502), _side = True},Port {_location = Point2 (128.0) (-56.2167), Nonogram._direction = Vector2 (0.6422371) (-0.7665061), _side = False}],[1]),
+    ([Port {_location = Point2 (-48.2005) (128.0), Nonogram._direction = Vector2 (-0.35125062) (0.9362815), _side = True},Port {_location = Point2 (47.8395) (-128.0), Nonogram._direction = Vector2 (0.35125157) (-0.9362811), _side = False}],[3]),
+    ([Port {_location = Point2 (-128.0) (58.9404), Nonogram._direction = Vector2 (-0.9783414) (-0.20699772), _side = True},Port {_location = Point2 (128.0) (113.105), Nonogram._direction = Vector2 (0.9783424) (0.20699327), _side = False}],[0]),
+    ([Port {_location = Point2 (-128.0) (40.7337), Nonogram._direction = Vector2 (-0.9095437) (0.41560838), _side = True},Port {_location = Point2 (128.0) (-76.244), Nonogram._direction = Vector2 (0.90954244) (-0.41561103), _side = False}],[3]),
+    ([Port {_location = Point2 (-128.0) (20.2512), Nonogram._direction = Vector2 (-0.95863426) (-0.28464067), _side = True},Port {_location = Point2 (128.0) (96.264), Nonogram._direction = Vector2 (0.9586338) (0.2846425), _side = False}],[1])]
 
+testPs = [Port {_location = Point2 (1.36705) (-128.0), Nonogram._direction = Vector2 (-0.37423944) (-0.92733216), _side = False},Port {_location = Point2 (71.5081) (-128.0), Nonogram._direction = Vector2 (-0.2693775) (-0.9630347), _side = False},Port {_location = Point2 (47.8395) (-128.0), Nonogram._direction = Vector2 (0.35125157) (-0.9362811), _side = True},Port {_location = Point2 (47.8395) (-128.0), Nonogram._direction = Vector2 (0.35125157) (-0.9362811), _side = False}]
+
+pos :: Point 2 Float
+[Port pos1 dir1 s1,Port pos dir s,Port pos2 dir2 s2,Port pos3 dir3 s3] = testPs
+m = 0.766502 / (-0.64224195) ::Float
+m2 = (-0.9362811)/0.35125157 ::Float
+m1 = (-0.92733216) / (-0.37423944) ::Float
+b = pos^.yCoord
+b2 = pos2^.yCoord
 -- places labels dynamically
 placeLabelsDynamic :: [UnplacedLabel] -> Frame -> [Label] 
 placeLabelsDynamic ls f = concat $ map (placeLabelsDynamicEdge ls_) (simplify $ listEdges f)
@@ -104,7 +153,7 @@ simplify (l:ll:ls)
 simplify [l] = [l]
 
 getM :: LineSegment 2 () Float -> Float
-getM l = (l^.end.core.xCoord - l^.start.core.xCoord) / (l^.end.core.yCoord - l^.start.core.yCoord)
+getM l = (l^.end.core.yCoord - l^.start.core.yCoord) / (l^.end.core.xCoord - l^.start.core.xCoord)
 
 -- -- -- places labels dynamically on an edge
 placeLabelsDynamicEdge :: [FSUnplacedLabel] -> LineSegment 2 () Float -> [Label]
@@ -130,8 +179,9 @@ minExtLength ls p1 p2 e1 e2 = r!(p1,p2)
             r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]]
             eMax = (p2-p1)^2
             f i j a b 
-                | i == j - 1 = a + b
-                | j - 1 > 1 = minimum [(f i k a c) + (f k j c b) - c | k<-[i+1..j-1], c<- [1..max 1 (min a b)], elem c (set k), valid i a j b k c]
+                | i == j - 1 || ((length m) == 0) = a + b
+                | j - 1 > 1 = minimum m
+                    where m = [(f i k a c) + (f k j c b) - c | k<-[i+1..j-1], c<- [1..max 1 (min a b)], elem c (set k), valid i a j b k c]
             set k = [0..(p2-p1)^2]
             valid i a j b k c = fitLength (ls!!i) a (ls!!j) b (ls!!k) c
 
@@ -141,8 +191,9 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = e1:getLengths r p1 p2++[e2]
             r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]]
             eMax = (p2-p1)^2
             f i j a b 
-                | i == j - 1 = (a + b,(0,0))
-                | j - 1 > 1 = minimum [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- [1..max 1 (min a b)], elem c (set k), valid i a j b k c]
+                | i == j - 1 || ((length m) == 0) = (a + b,(0,0))
+                | j - 1 > 1 = minimum m
+                    where m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- [1..max 1 (min a b)], elem c (set k), valid i a j b k c]
             set k = [0..(p2-p1)^2]
             valid i a j b k c = fitLength (fst (ls!!i)) a (fst (ls!!j)) b (fst (ls!!k)) c
 
@@ -157,27 +208,65 @@ getLengths r p1 p2
 
 -- determines if a leader with length len fits between two ports with lengths len1 and len2
 -- fitLength :: Port -> Integer -> Port -> Integer -> Port -> Integer -> Bool
+fitLength :: Port -> Int -> Port -> Int -> Port -> Int -> Bool
 fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len 
-    | s1 /= s2 = True
-    | leaderIntersect (pos1^.xCoord) m1 (pos^.xCoord) m (fromIntegral (len1 + boxSize),fromIntegral (len + boxSize)) = False
-    | leaderIntersect (pos^.xCoord) m (pos2^.xCoord) m2 (fromIntegral (len + boxSize),fromIntegral (len2 + boxSize)) = False
+    | pos1 == pos || pos2 == pos = True
+    | intersects l1 l = False
+    | intersects l2 l = False
+    | intersects b l1 = False
+    | intersects b l2 = False
+    | intersects b1 l = False
+    | intersects b2 l = False
+    -- | intersects b1 b = False
+    -- | intersects b2 b = False
     | otherwise = True
     where
-        m = (dir^.xComponent) / (dir^.yComponent)
-        m1 = (dir1^.xComponent) / (dir1^.yComponent)
-        m2 = (dir2^.xComponent) / (dir2^.yComponent)
+        l1 = leader pos1 dir1 len1
+        l2 = leader pos2 dir2 len2
+        l = leader pos dir len
+        b1 = clueBoxPolygon (l1^.end.core) dir1 s1
+        b2 = clueBoxPolygon (l2^.end.core) dir2 s2
+        b = clueBoxPolygon (l^.end.core) dir s
 
--- Do two leaders, defined by their y-coordinate position, slope and length, intersect
-leaderIntersect :: Float -> Float -> Float-> Float -> (Integer,Integer) -> Bool
-leaderIntersect y1 m1 y2 m2 (len1,len2) 
-    | m1 == m2 || px <= 0 = False
-    | ((px < ((sin (atan m1))*(fromIntegral len1))) && (px < abs ((sin (atan m2))*(fromIntegral len2)))) = True
-    | otherwise = False
-    where (px,py) = lineIntersection m1 y1 m2 y2
+toLine :: LineSegment 2 () Float -> Line 2 Float
+toLine ls = lineThrough (ls^.start.core) (ls^.end.core)
 
--- intersection point = ((y2 - y1)/(m1-m2),(m1*y2-m2*y1)/(m1-m2)
+leader :: Point 2 Float -> Vector 2 Float -> Int -> LineSegment 2 () Float
+leader p v l =  ClosedLineSegment (p :+ ()) (q :+ ())
+    where
+    q = p .+^ ((signorm v)^*(fromIntegral l))
+
+clueBoxPolygon :: Point 2 Float -> Vector 2 Float -> Bool -> ClueBox
+clueBoxPolygon p v False = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()]
+    where
+        ub = signorm v^*(fromIntegral boxSize)
+        iv = inverseVector ub
+        p2 = p .+^ ub
+        p3 = p2 .+^ (Vector2 (-iv^.xComponent) (iv^.yComponent))
+        p4 = p3 .+^ (negated ub)
+clueBoxPolygon p v True = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()]
+    where
+        ub = signorm v^*(fromIntegral boxSize)
+        iv = inverseVector ub
+        p2 = p .+^ ub
+        p3 = p2 .+^ (Vector2 (iv^.xComponent) (-iv^.yComponent))
+        p4 = p3 .+^ (negated ub)
+
+inverseVector :: Vector 2 Float -> Vector 2 Float
+inverseVector v = Vector2 (v^.yComponent) (v^.xComponent)
+
+-- intersection point
+-- y = m1*x + b1
+-- y = m2*x + b2
+-- m1*x + b1 = m2*x + b2
+-- m1*x - m2*x = b2 - b1
+-- (m1-m2)*x = b2 - b1
+-- x = (b2-b1)/(m1-m2) 
+-- y = m1*x + b1
 lineIntersection :: Float -> Float -> Float -> Float -> (Float,Float)
-lineIntersection m1 b1 m2 b2 = ((b2-b1)/(m1-m2),(m1*b1-m2*b2)/(m1-m2))
+lineIntersection m1 b1 m2 b2 = (x,m1*x + b1)
+    where
+        x = (b2-b1)/(m1-m2)
 
 -- Assigns ports to unplaced labels 
 assignPorts :: [UnplacedLabel] -> [FSUnplacedLabel]
