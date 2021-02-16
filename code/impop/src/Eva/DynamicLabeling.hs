@@ -30,6 +30,8 @@ import           Data.Bifunctor
 import           Data.Either (partitionEithers)
 import           Data.Maybe (mapMaybe)
 
+import Debug.Trace
+
 _line :: Port -> Line 2 Float
 _line p = Data.Geometry.Line (_location p) (Nonogram._direction p)
 
@@ -40,6 +42,24 @@ _line p = Data.Geometry.Line (_location p) (Nonogram._direction p)
 -- p3 = Port (Point2 0 7) (Vector2 1 1) True
 -- p4 = Port (Point2 0 9) (Vector2 1 1) False
 -- pDummy2 = Port (Point2 0 12) (Vector2 1 1) False
+p1 = Point2 0 0
+p2 = Point2 20 0
+p3 = Point2 20 20
+p4 = Point2 0 20
+p5 = Point2 0 (-20)
+p6 = Point2 20 (-20)
+p7 = Point2 (-20) (-20)
+p8 = Point2 40 20
+ls1 = ClosedLineSegment (p1 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
+ls2 = ClosedLineSegment (p1 :+ ()) (p4 :+ ()) :: LineSegment 2 () Float
+ls3 = ClosedLineSegment (p5 :+ ()) (p4 :+ ()) :: LineSegment 2 () Float
+ls4 = ClosedLineSegment (p1 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
+ls5 = ClosedLineSegment (p6 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
+ls6 = ClosedLineSegment (p5 :+ ()) (p8 :+ ()) :: LineSegment 2 () Float
+ls7 = ClosedLineSegment (p4 :+ ()) (p8 :+ ()) :: LineSegment 2 () Float
+ls8 = ClosedLineSegment (p7 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
+lss = [ls1,ls2,ls3,ls4,ls5,ls6,ls7,ls8]
+lsss = lss ++ (map flipSegment lss)
 
 -- test1 = [([p1],(1) (2)::[Int]),([p2],(2) (3)::[Int]),([p3],[1]::[Int]),([p4],[1]::[Int]),([p5],[1]::[Int])]
 
@@ -96,7 +116,7 @@ instance (ClueBox) `IsIntersectableWith` (LineSegment 2 () Float) where
        (_, [s])  -> coRec $ first (const ()) s
        ([a],_)   -> coRec a
        ([a,b],_) -> coRec $ ClosedLineSegment (ext a) (ext b)
-       (_,_)     -> error "intersecting a line with a triangle. Triangle is degenerate"
+       (_,_)     -> error "intersecting a line with a box. Box is degenerate"
      where
        sides = listEdges cb
 
@@ -318,6 +338,8 @@ fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len
         b1 = clueBoxPolygon (l1^.end.core) dir1 s1
         b2 = clueBoxPolygon (l2^.end.core) dir2 s2
         b = clueBoxPolygon (l^.end.core) dir s
+
+intersectsTrace a b  = trace ((show a)++(show b)) (intersects a b)
 
 toLine :: LineSegment 2 () Float -> Line 2 Float
 toLine ls = lineThrough (ls^.start.core) (ls^.end.core)
