@@ -1,10 +1,10 @@
 {
 	"folders": [
 		{
-			"path": "impop"
+			"path": "papers"
 		},
 		{
-			"path": "papers"
+			"path": "code"
 		}
 	],
 	"settings": {}

@@ -1,0 +1,182 @@
+cabal-version: 1.12
+
+name:           impop
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/mloffler/impop#readme>
+homepage:       https://github.com/mloffler/impop#readme
+bug-reports:    https://github.com/mloffler/impop/issues
+author:         Maarten Löffler
+copyright:      2020 Maarten Löffler
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/mloffler/impop
+
+library
+  exposed-modules:
+      Test
+    , Draw, Convert
+    , CurveArrangement
+    , CurveArrangement.Basic
+    , CurveArrangement.Construct
+    , CurveArrangement.Dynamic
+    , CurveArrangement.ForceDirectedStubs
+    , CurveArrangement.Ipe
+    , CurveArrangement.Puz
+    , CurveArrangement.Types
+    , CurveArrangement.Loader
+    , Data.Geometry.PlanarSubdivision.ForceDirected
+    , Data.Geometry.PlanarSubdivision.More
+    , Data.Geometry.PlanarSubdivision.Dynamic
+    , Algorithms.Geometry.Misc
+    , Algorithms.Geometry.Snap
+    , Algorithms.Geometry.Cluster
+    , PSDGlossApp
+    , PSDGlossApp.Common
+    , PSDGlossApp.Editable
+    , PSDGlossApp.Forcible
+    , PSDGlossApp.Selectable
+    , PSDGlossApp.Traceable
+    , PSDGlossApp.Visible
+    , Misc.Ipe
+    , Misc.SpanningTree
+    , Misc.Time
+    , Nonogram
+    , Nonogram.Ipe
+    , Nonogram.PathType
+    , Nonogram.Puz
+    , PP.Puz
+    , Popular
+    , Eva.DynamicLabeling
+  other-modules:
+      Paths_impop
+  
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , hgeometry >= 0.11
+    , hgeometry-combinatorial >= 0.10
+    , hgeometry-ipe >= 0.10
+    , Rasterific
+    , gloss
+    , vector
+    , lens
+    , containers
+    , data-default
+    , hlist
+    , colour
+    , text
+    , clock, time
+    , directory, filepath
+    , extra
+    , mios
+    , split
+    , array
+    , vinyl
+  default-language: Haskell2010
+  default-extensions: TypeFamilies
+                    , GADTs
+                    , KindSignatures
+                    , DataKinds
+                    , TypeOperators
+                    , ConstraintKinds
+                    , PolyKinds
+                    , RankNTypes
+                    , TypeApplications
+                    , ScopedTypeVariables
+
+                    , PatternSynonyms
+                    , TupleSections
+                    , LambdaCase
+                    , ViewPatterns
+
+                    , StandaloneDeriving
+                    , GeneralizedNewtypeDeriving
+                    , DeriveFunctor
+                    , DeriveFoldable
+                    , DeriveTraversable
+
+                    , AutoDeriveTypeable
+
+
+                    , FlexibleInstances
+                    , FlexibleContexts
+                    , MultiParamTypeClasses
+
+executable impop-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_impop
+    -- , TestCurveArrangement
+    -- , TestDynamicPSD
+    , TestLabelPipeline  
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , impop
+    , hgeometry >= 0.11
+    , hgeometry-combinatorial >= 0.10
+    , hgeometry-ipe >= 0.10
+    , Rasterific
+    , gloss
+    , vector
+    , lens
+    , containers
+    , data-default
+    , hlist
+    , colour
+    , text
+    , clock, time
+    , directory, filepath
+    , extra
+    , mios
+  default-language: Haskell2010
+  default-extensions: TypeFamilies
+                    , GADTs
+                    , KindSignatures
+                    , DataKinds
+                    , TypeOperators
+                    , ConstraintKinds
+                    , PolyKinds
+                    , RankNTypes
+                    , TypeApplications
+                    , ScopedTypeVariables
+
+                    , PatternSynonyms
+                    , TupleSections
+                    , LambdaCase
+                    , ViewPatterns
+
+                    , StandaloneDeriving
+                    , GeneralizedNewtypeDeriving
+                    , DeriveFunctor
+                    , DeriveFoldable
+                    , DeriveTraversable
+
+                    , AutoDeriveTypeable
+
+
+                    , FlexibleInstances
+                    , FlexibleContexts
+                    , MultiParamTypeClasses
+
+test-suite impop-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_impop
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , impop
+  default-language: Haskell2010

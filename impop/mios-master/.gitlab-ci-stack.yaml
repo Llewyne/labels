@@ -1,4 +1,0 @@
-compiler: ghc-8.6.5
-resolver: lts-14.20
-allow-newer: true
-system-ghc: true

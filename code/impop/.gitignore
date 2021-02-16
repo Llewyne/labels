@@ -1,0 +1,7 @@
+.stack-work/
+*~
+log/
+puz/
+ipe/*.snapped.ipe
+ipe/*.labeled.ipe
+
