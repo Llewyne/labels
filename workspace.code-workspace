@@ -5,6 +5,12 @@
 		},
 		{
 			"path": "papers"
+		},
+		{
+			"path": "code"
+		},
+		{
+			"path": "impop-stack"
 		}
 	],
 	"settings": {}
