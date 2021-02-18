@@ -14,6 +14,7 @@ import Data.Ext
 import Data.Array((!),array)
 
 import Control.Lens
+import Control.Monad.Zip
 
 import Data.Geometry hiding (head,direction,init,replicate,unit)
 import Data.Geometry.PlanarSubdivision hiding(location)
@@ -42,24 +43,24 @@ _line p = Data.Geometry.Line (_location p) (Nonogram._direction p)
 -- p3 = Port (Point2 0 7) (Vector2 1 1) True
 -- p4 = Port (Point2 0 9) (Vector2 1 1) False
 -- pDummy2 = Port (Point2 0 12) (Vector2 1 1) False
-p1 = Point2 0 0
-p2 = Point2 20 0
-p3 = Point2 20 20
-p4 = Point2 0 20
-p5 = Point2 0 (-20)
-p6 = Point2 20 (-20)
-p7 = Point2 (-20) (-20)
-p8 = Point2 40 20
-ls1 = ClosedLineSegment (p1 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
-ls2 = ClosedLineSegment (p1 :+ ()) (p4 :+ ()) :: LineSegment 2 () Float
-ls3 = ClosedLineSegment (p5 :+ ()) (p4 :+ ()) :: LineSegment 2 () Float
-ls4 = ClosedLineSegment (p1 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
-ls5 = ClosedLineSegment (p6 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
-ls6 = ClosedLineSegment (p5 :+ ()) (p8 :+ ()) :: LineSegment 2 () Float
-ls7 = ClosedLineSegment (p4 :+ ()) (p8 :+ ()) :: LineSegment 2 () Float
-ls8 = ClosedLineSegment (p7 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
-lss = [ls1,ls2,ls3,ls4,ls5,ls6,ls7,ls8]
-lsss = lss ++ (map flipSegment lss)
+-- p1 = Point2 0 0
+-- p2 = Point2 20 0
+-- p3 = Point2 20 20
+-- p4 = Point2 0 20
+-- p5 = Point2 0 (-20)
+-- p6 = Point2 20 (-20)
+-- p7 = Point2 (-20) (-20)
+-- p8 = Point2 40 20
+-- ls1 = ClosedLineSegment (p1 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
+-- ls2 = ClosedLineSegment (p1 :+ ()) (p4 :+ ()) :: LineSegment 2 () Float
+-- ls3 = ClosedLineSegment (p5 :+ ()) (p4 :+ ()) :: LineSegment 2 () Float
+-- ls4 = ClosedLineSegment (p1 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
+-- ls5 = ClosedLineSegment (p6 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
+-- ls6 = ClosedLineSegment (p5 :+ ()) (p8 :+ ()) :: LineSegment 2 () Float
+-- ls7 = ClosedLineSegment (p4 :+ ()) (p8 :+ ()) :: LineSegment 2 () Float
+-- ls8 = ClosedLineSegment (p7 :+ ()) (p3 :+ ()) :: LineSegment 2 () Float
+-- lss = [ls1,ls2,ls3,ls4,ls5,ls6,ls7,ls8]
+-- lsss = lss ++ (map flipSegment lss)
 
 -- test1 = [([p1],(1) (2)::[Int]),([p2],(2) (3)::[Int]),([p3],[1]::[Int]),([p4],[1]::[Int]),([p5],[1]::[Int])]
 
@@ -194,6 +195,8 @@ p5 = Port (Point2 128 24) (Vector2 1 1) True -- Pink label
 p6 = Port (Point2 128 52) (Vector2 1 (-1)) False -- Blue label a and e 
 pDummy2 = Port (Point2 128 128) (Vector2 1 1) False
 
+edgeTest = OpenLineSegment ((Point2 128 (-10)) :+ ()) ((Point2 128 128) :+ ()) :: LineSegment 2 () Float
+
 caseA = [([p1],[1]),([p6],[6,6,6])] :: [UnplacedLabel]
 caseB = [([p1],[1]),([p2],[2]),([p3],[3,3])] :: [UnplacedLabel]
 caseC = [([p1],[1]),([p2],[2]),([p3],[3,3]),([p4],[4,4,4])] :: [UnplacedLabel]
@@ -212,13 +215,14 @@ dynamicPipeLine labels frame = do
     putStrLn $ "simplified frame to: " ++ show (length simpleFrame)
 
     -- place labels for each edge
-    map (placeLabelsDynamicEdgeIO aLabels) simpleFrame
+    mapM (placeLabelsDynamicEdgeIO aLabels) simpleFrame
     -- putStrLn $ "placed labels: " ++ show labels
 
     return ()
 
 placeLabelsDynamicEdgeIO :: [FSUnplacedLabel] -> LineSegment 2 () Float -> IO()
 placeLabelsDynamicEdgeIO labels edge = do
+    putStrLn $ "edge:" ++ show edge
     -- rotate line segment edge so it is horizontal
     let s = pivotLineSegment edge
     putStrLn $ "rotated edge:" ++ show s
@@ -236,21 +240,27 @@ placeLabelsDynamicEdgeIO labels edge = do
     putStrLn $ "with dummy labels: " ++ show allLabels
 
     -- place the labels
-    placedLabels <- zipWith placeLabel edgeLabels (placeLabelsDynamicEdgeIO_ allLabels 0 (length allLabels) 1000 1000)
-    putStrLn $ "placed labels: " ++ show placedLabels
+    placeLabelsDynamicEdgeIO_ allLabels 0 ((length allLabels)-1) 1000 1000
+
 
     return ()
 placeLabelsDynamicEdgeIO_ :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> IO()
 placeLabelsDynamicEdgeIO_ ls p1 p2 e1 e2 = do
+    putStrLn $ "amount labels;" ++ show (length ls)
+    putStrLn $ "p1: " ++ show p1
+    putStrLn $ "p2: " ++ show p2
+    putStrLn $ "e1: " ++ show e1
+    putStrLn $ "e2: " ++ show e2
     let f i j a b 
                 | i == j - 1 || ((length m) == 0) = (a + b,(0,0))
-                | j - 1 > 1 = minimum m
-                    where m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- [0..max 1 (min a b)], elem c (set k), valid i a j b k c]
-    let set k = take (((p2-p1)^2) + 2) [e*(boxSize+2)|e <- [0..]]
-    let valid i a j b k c = fitLength (fst (ls!!i)) a (fst (ls!!j)) b (fst (ls!!k)) c
+                | j - 1 > i = minimum m
+                    where 
+                        m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- [0..max 1 (min a b)], elem c (set k), valid i a j b k c]
+                        set k = take (((p2-p1)^2) + 2) [e*(boxSize+2)|e <- [0..]]
+                        valid i a j b k c = fitLength (fst (ls!!i)) a (fst (ls!!j)) b (fst (ls!!k)) c
 
-    let r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]]
-    putStrLn $ "result: " ++ show (e1:getLengths r p1 p2++[e2])
+    let r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..(p2-1)],j<-[(p1+1)..p2]]
+    putStrLn $ "result: " ++ show ((e1:getLengths r p1 p2)++[e2])
  
 
 -- places labels dynamically
@@ -259,10 +269,17 @@ placeLabelsDynamic ls f = concat $ map (placeLabelsDynamicEdge ls_) (simplify $ 
     where ls_ = assignPorts ls
 
 simplify :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
-simplify (l:ll:ls)
-    | abs (getM l - getM ll) < 0.01 || getM l == getM ll = simplify (((l&start .~ l^.start)&end .~ ll^.end) : ls)
-    | otherwise = l:(simplify (ll:ls))
-simplify [l] = [l]
+simplify ls
+    | abs (getM l - getM (last ll)) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : (init ll)
+    | otherwise = (l:ll)
+    where (l:ll) = simplify_ ls
+
+
+simplify_ :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
+simplify_ [l] = [l]
+simplify_ (l:ll:ls)
+    | abs (getM l - getM ll) < 0.01 || getM l == getM ll = simplify_ (((l&start .~ l^.start)&end .~ ll^.end) : ls)
+    | otherwise = l:(simplify_ (ll:ls))
 
 getM :: LineSegment 2 () Float -> Float
 getM l = (l^.end.core.yCoord - l^.start.core.yCoord) / (l^.end.core.xCoord - l^.start.core.xCoord)
@@ -406,10 +423,10 @@ leaderN = 1
 
 -- pivot the line segment so it is horizontal
 pivotLineSegment :: LineSegment 2 () Float -> LineSegment 2 () Float
-pivotLineSegment s = inty (OpenLineSegment ((pivotPoint (s^.start.core) pivot a) :+ ()) ((pivotPoint (s^.end.core) pivot a) :+ ()))
+pivotLineSegment s =  inty (OpenLineSegment ((pivotPoint (s^.start.core) pivot a) :+ ()) ((pivotPoint (s^.end.core) pivot a) :+ ()))
     where
         pivot = interpolate 0.5 s
-        a = atan (((s^.end.core.yCoord) - (s^.start.core.yCoord)) / ((s^.end.core.xCoord) - (s^.start.core.xCoord)))
+        a = acos (dot (lineSegmentDirection s) (Vector2 (-1) 0))
 
 --interpolate the y coordinates of a line segment
 inty ls = OpenLineSegment ((Point2 x1 y) :+ ()) ((Point2 x2 y) :+ ())
@@ -420,6 +437,9 @@ inty ls = OpenLineSegment ((Point2 x1 y) :+ ()) ((Point2 x2 y) :+ ())
         y2 = ls^.end.core.yCoord
         y = (y1+y2) / 2
 
+lineSegmentDirection :: LineSegment 2 () Float -> Vector 2 Float
+lineSegmentDirection ls = signorm (Vector2 ((ls^.end.core.xCoord) - (ls^.start.core.xCoord)) ((ls^.end.core.yCoord) - (ls^.start.core.yCoord)))
+
 -- rotates the labels so it is now the top edge
 makeTopEdge :: [FSUnplacedLabel] -> LineSegment 2 () Float -> [FSUnplacedLabel]
 makeTopEdge ls s = map (pivotLabel pivot a) ls
@@ -428,13 +448,21 @@ makeTopEdge ls s = map (pivotLabel pivot a) ls
         a = atan (((s^.end.core.yCoord) - (s^.start.core.yCoord)) / ((s^.end.core.xCoord) - (s^.start.core.xCoord)))
 
 pivotLabel :: Point 2 Float -> Float -> FSUnplacedLabel -> FSUnplacedLabel
-pivotLabel pivot a (p,c) = ((Port (pivotPoint (p^.location) pivot a) (p^.direction) (p^.side)),c)
+pivotLabel pivot a (p,c) = ((Port (pivotPoint (p^.location) pivot a) (pivotVector (p^.direction) pivot a) (p^.side)),c)
 
 pivotPoint :: Point 2 Float -> Point 2 Float -> Float -> Point 2 Float
-pivotPoint p pivot a = Point2 ((px*c) - (py*s)) ((px*s)+(py*c)) 
+pivotPoint p pivot a = Point2 ((px*c) - (py*s) + pivot^.xCoord) ((px*s)+(py*c) + pivot^.yCoord) 
     where
         px = p^.xCoord - pivot^.xCoord
         py = p^.yCoord - pivot^.yCoord
+        c = cos a
+        s = sin a
+
+pivotVector :: Vector 2 Float -> Point 2 Float -> Float -> Vector 2 Float
+pivotVector p pivot a = Vector2 ((px*c) - (py*s)) ((px*s)+(py*c)) 
+    where
+        px = p^.xComponent - pivot^.xCoord
+        py = p^.yComponent - pivot^.yCoord
         c = cos a
         s = sin a
 
@@ -444,7 +472,12 @@ splitEdges ls f = map (getEdgeLabels ls) (listEdges f)
 
 -- gets the labels for a specific edge from a set of labels
 getEdgeLabels :: [FSUnplacedLabel] ->LineSegment 2 () Float -> [FSUnplacedLabel]
-getEdgeLabels ls s = filter (labelOnSegment s) ls 
+getEdgeLabels ls s = sortBy sortLabel (filter (labelOnSegment s) ls)
+
+sortLabel :: FSUnplacedLabel -> FSUnplacedLabel -> Ordering
+sortLabel (p1,_) (p2,_)
+    | p1^.location < p2^.location = LT
+    | otherwise = GT
 
 -- determines if a label is on a segment
 labelOnSegment :: LineSegment 2 () Float -> FSUnplacedLabel -> Bool
