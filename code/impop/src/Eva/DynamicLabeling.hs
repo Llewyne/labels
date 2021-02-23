@@ -19,6 +19,7 @@ import Control.Monad.Zip
 import Data.Geometry hiding (head,direction,init,replicate,unit)
 import Data.Geometry.PlanarSubdivision hiding(location)
 --import Data.Geometry.Ipe
+import Data.Geometry.Transformation
 
 import CurveArrangement
 import CurveArrangement.Types
@@ -197,7 +198,7 @@ pDummy2 = Port (Point2 128 128) (Vector2 1 1) False
 
 edgeTest = OpenLineSegment ((Point2 128 (-10)) :+ ()) ((Point2 128 128) :+ ()) :: LineSegment 2 () Float
 
-caseA = [([p1],[1]),([p6],[6,6,6])] :: [UnplacedLabel]
+caseA = [([p1],[1,1,1,1]),([p6],[6,6,6])] :: [UnplacedLabel]
 caseB = [([p1],[1]),([p2],[2]),([p3],[3,3])] :: [UnplacedLabel]
 caseC = [([p1],[1]),([p2],[2]),([p3],[3,3]),([p4],[4,4,4])] :: [UnplacedLabel]
 caseE = [([p1],[1]),([p2],[2]),([p3],[3,3]),([p6],[6,6])] :: [UnplacedLabel]
@@ -252,12 +253,13 @@ placeLabelsDynamicEdgeIO_ ls p1 p2 e1 e2 = do
     putStrLn $ "e1: " ++ show e1
     putStrLn $ "e2: " ++ show e2
     let f i j a b 
-                | i == j - 1 || ((length m) == 0) = (a + b,(0,0))
-                | j - 1 > i = minimum m
+                | i == j - 1 || ((length m) == 0) = (a + b,(0,0)) --`debug` ("END i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " length m:" ++ show (length m))
+                | j - 1 > i = minimum m -- `debug` ("FOUND i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " m:" ++ show (minimum m))
                     where 
                         m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- [0..max 1 (min a b)], elem c (set k), valid i a j b k c]
-                        set k = take (((p2-p1)^2) + 2) [e*(boxSize+2)|e <- [0..]]
-                        valid i a j b k c = fitLength (fst (ls!!i)) a (fst (ls!!j)) b (fst (ls!!k)) c
+                        set k = take (((p2-p1)^2) + 2) [e*(boxSize)|e <- [0..]]
+                        valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) `debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
+                        boxLength l = boxSize * length (snd l)
 
     let r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..(p2-1)],j<-[(p1+1)..p2]]
     putStrLn $ "result: " ++ show ((e1:getLengths r p1 p2)++[e2])
@@ -332,26 +334,29 @@ getLengths r p1 p2
     | p1 == p2 || snd l == (0,0) = []
     | otherwise = getLengths r p1 (fst (snd l)) ++ [ snd (snd l)] ++ getLengths r (fst (snd l)) p2
     where l = r!(p1,p2)
+
+    
+debug = flip trace
  
 
 -- determines if a leader with length len fits between two ports with lengths len1 and len2
 -- fitLength :: Port -> Integer -> Port -> Integer -> Port -> Integer -> Bool
 fitLength :: Port -> Int -> Port -> Int -> Port -> Int -> Bool
 fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len 
-    | pos1 == pos || pos2 == pos = True
-    | intersects l1 l = False
-    | intersects l2 l = False
-    | intersects b l1 = False
-    | intersects b l2 = False
-    | intersects b1 l = False
-    | intersects b2 l = False
-    | intersects b1 b = False
-    | intersects b2 b = False
-    | otherwise = True
+    | pos1 == pos || pos2 == pos = True `debug` "true: positions are the same"
+    | intersects l1 l = False `debug` "false: i intersects k"
+    | intersects l2 l = False `debug` "false: j intersects k"
+    | intersects b l1 = False `debug` "false: box k intersects i"
+    | intersects b l2 = False `debug` "false: box k intersects j"
+    | intersects b1 l = False `debug` "false: box i intersects k"
+    | intersects b2 l = False `debug` "false: box j intersects k"
+    | intersects b1 b = False `debug` "false: box i intersects box k"
+    | intersects b2 b = False `debug` "false: box j intersects box k"
+    | otherwise = True `debug` "true: no intersection"
     where
-        l1 = leader pos1 dir1 len1
-        l2 = leader pos2 dir2 len2
-        l = leader pos dir len
+        l1 = (leader pos1 dir1 len1) `debug` ("i: " ++ show (leader pos1 dir1 len1))
+        l2 = (leader pos2 dir2 len2) `debug` ("j: " ++ show (leader pos2 dir2 len2)) 
+        l = (leader pos dir len) `debug` ("k: " ++ show (leader pos dir len))
         b1 = clueBoxPolygon (l1^.end.core) dir1 s1
         b2 = clueBoxPolygon (l2^.end.core) dir2 s2
         b = clueBoxPolygon (l^.end.core) dir s
@@ -459,7 +464,7 @@ pivotPoint p pivot a = Point2 ((px*c) - (py*s) + pivot^.xCoord) ((px*s)+(py*c) +
         s = sin a
 
 pivotVector :: Vector 2 Float -> Point 2 Float -> Float -> Vector 2 Float
-pivotVector p pivot a = Vector2 ((px*c) - (py*s)) ((px*s)+(py*c)) 
+pivotVector p pivot a = Vector2 ((px*c) - (py*s) + pivot^.xCoord) ((px*s)+(py*c) + pivot^.yCoord) 
     where
         px = p^.xComponent - pivot^.xCoord
         py = p^.yComponent - pivot^.yCoord
@@ -520,3 +525,9 @@ intersectionLength p1 p2 = case ip of
     Just p -> euclideanDist (_location p1) p
     Nothing -> read "Infinity" :: Float
     where ip = asA (intersect (_line p1) (_line p2))
+
+
+rotationMatrix :: Float -> Transformation 2 Float
+rotationMatrix a = Transformation . Matrix $ Vector3 (Vector3 (cos a) (sin a) 0)
+                                                     (Vector3 (-(sin a)) (cos a) 0)
+                                                     (Vector3 0 0 1)
