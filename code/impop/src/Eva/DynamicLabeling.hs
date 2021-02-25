@@ -20,6 +20,7 @@ import Data.Geometry hiding (head,direction,init,replicate,unit)
 import Data.Geometry.PlanarSubdivision hiding(location)
 --import Data.Geometry.Ipe
 import Data.Geometry.Transformation
+import Data.Geometry.Matrix
 
 import CurveArrangement
 import CurveArrangement.Types
@@ -258,7 +259,7 @@ placeLabelsDynamicEdgeIO_ ls p1 p2 e1 e2 = do
                     where 
                         m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- [0..max 1 (min a b)], elem c (set k), valid i a j b k c]
                         set k = take (((p2-p1)^2) + 2) [e*(boxSize)|e <- [0..]]
-                        valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) `debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
+                        valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) --`debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
                         boxLength l = boxSize * length (snd l)
 
     let r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..(p2-1)],j<-[(p1+1)..p2]]
@@ -343,20 +344,20 @@ debug = flip trace
 -- fitLength :: Port -> Integer -> Port -> Integer -> Port -> Integer -> Bool
 fitLength :: Port -> Int -> Port -> Int -> Port -> Int -> Bool
 fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len 
-    | pos1 == pos || pos2 == pos = True `debug` "true: positions are the same"
-    | intersects l1 l = False `debug` "false: i intersects k"
-    | intersects l2 l = False `debug` "false: j intersects k"
-    | intersects b l1 = False `debug` "false: box k intersects i"
-    | intersects b l2 = False `debug` "false: box k intersects j"
-    | intersects b1 l = False `debug` "false: box i intersects k"
-    | intersects b2 l = False `debug` "false: box j intersects k"
-    | intersects b1 b = False `debug` "false: box i intersects box k"
-    | intersects b2 b = False `debug` "false: box j intersects box k"
-    | otherwise = True `debug` "true: no intersection"
+    | pos1 == pos || pos2 == pos = True --`debug` "true: positions are the same"
+    | intersects l1 l = False --`debug` "false: i intersects k"
+    | intersects l2 l = False --`debug` "false: j intersects k"
+    | intersects b l1 = False --`debug` "false: box k intersects i"
+    | intersects b l2 = False --`debug` "false: box k intersects j"
+    | intersects b1 l = False --`debug` "false: box i intersects k"
+    | intersects b2 l = False --`debug` "false: box j intersects k"
+    | intersects b1 b = False --`debug` "false: box i intersects box k"
+    | intersects b2 b = False --`debug` "false: box j intersects box k"
+    | otherwise = True --`debug` "true: no intersection"
     where
-        l1 = (leader pos1 dir1 len1) `debug` ("i: " ++ show (leader pos1 dir1 len1))
-        l2 = (leader pos2 dir2 len2) `debug` ("j: " ++ show (leader pos2 dir2 len2)) 
-        l = (leader pos dir len) `debug` ("k: " ++ show (leader pos dir len))
+        l1 = (leader pos1 dir1 len1) --`debug` ("i: " ++ show (leader pos1 dir1 len1))
+        l2 = (leader pos2 dir2 len2) --`debug` ("j: " ++ show (leader pos2 dir2 len2)) 
+        l = (leader pos dir len) --`debug` ("k: " ++ show (leader pos dir len))
         b1 = clueBoxPolygon (l1^.end.core) dir1 s1
         b2 = clueBoxPolygon (l2^.end.core) dir2 s2
         b = clueBoxPolygon (l^.end.core) dir s
@@ -428,7 +429,7 @@ leaderN = 1
 
 -- pivot the line segment so it is horizontal
 pivotLineSegment :: LineSegment 2 () Float -> LineSegment 2 () Float
-pivotLineSegment s =  inty (OpenLineSegment ((pivotPoint (s^.start.core) pivot a) :+ ()) ((pivotPoint (s^.end.core) pivot a) :+ ()))
+pivotLineSegment s =  inty (OpenLineSegment ((pivotP (s^.start.core) pivot a) :+ ()) ((pivotP (s^.end.core) pivot a) :+ ()))
     where
         pivot = interpolate 0.5 s
         a = acos (dot (lineSegmentDirection s) (Vector2 (-1) 0))
@@ -453,23 +454,13 @@ makeTopEdge ls s = map (pivotLabel pivot a) ls
         a = atan (((s^.end.core.yCoord) - (s^.start.core.yCoord)) / ((s^.end.core.xCoord) - (s^.start.core.xCoord)))
 
 pivotLabel :: Point 2 Float -> Float -> FSUnplacedLabel -> FSUnplacedLabel
-pivotLabel pivot a (p,c) = ((Port (pivotPoint (p^.location) pivot a) (pivotVector (p^.direction) pivot a) (p^.side)),c)
+pivotLabel pivot a (p,c) = ((Port (pivotP (p^.location) pivot a) (pivotV (p^.direction) pivot a) (p^.side)),c)
 
-pivotPoint :: Point 2 Float -> Point 2 Float -> Float -> Point 2 Float
-pivotPoint p pivot a = Point2 ((px*c) - (py*s) + pivot^.xCoord) ((px*s)+(py*c) + pivot^.yCoord) 
-    where
-        px = p^.xCoord - pivot^.xCoord
-        py = p^.yCoord - pivot^.yCoord
-        c = cos a
-        s = sin a
+orig = Point2 0 0
 
-pivotVector :: Vector 2 Float -> Point 2 Float -> Float -> Vector 2 Float
-pivotVector p pivot a = Vector2 ((px*c) - (py*s) + pivot^.xCoord) ((px*s)+(py*c) + pivot^.yCoord) 
-    where
-        px = p^.xComponent - pivot^.xCoord
-        py = p^.yComponent - pivot^.yCoord
-        c = cos a
-        s = sin a
+pivotP p pivot a = transformBy ((translation (pivot .-. orig)) |.| (rotationMatrix a) |.| (translation (orig .-. pivot))) p
+pivotV p pivot a = transformBy ((translation (pivot .-. orig)) |.| (rotationMatrix a) |.| (translation (orig .-. pivot))) p
+
 
 -- splits a set of labels by edge
 splitEdges :: [FSUnplacedLabel] -> Frame -> [[FSUnplacedLabel]]
@@ -528,6 +519,6 @@ intersectionLength p1 p2 = case ip of
 
 
 rotationMatrix :: Float -> Transformation 2 Float
-rotationMatrix a = Transformation . Matrix $ Vector3 (Vector3 (cos a) (sin a) 0)
-                                                     (Vector3 (-(sin a)) (cos a) 0)
-                                                     (Vector3 0 0 1)
+rotationMatrix a = Transformation . Matrix $ Vector3 (Vector3 (cos a)       (sin a) 0)
+                                                     (Vector3 (-(sin a))    (cos a) 0)
+                                                     (Vector3 0             0       1)
