@@ -277,9 +277,9 @@ placeLabelsDynamicEdgeIO_ ls p1 p2 e1 e2 = do
     putStrLn $ "e1: " ++ show e1
     putStrLn $ "e2: " ++ show e2
     let f i j a b 
-                | i == j - 1  = (a + b,(0,0)) -- `debug` ("END i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " length m:" ++ show (length m))
-                | length m == 0 = (100000,(-1,0))
-                | j - 1 > i = minimum m -- `debug` ("FOUND i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " m:" ++ show (minimum m))
+                | i == j - 1  = (a + b,(0,0))  `debug` ("END i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " length m:" ++ show (length m))
+                | length m == 0 = (1000000,(-1,0)) 
+                | j - 1 > i = minimum m  `debug` ("FOUND i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " m:" ++ show (minimum m))
                     where 
                         m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ]
                         set k = filter (\x-> x < max 1 (min a b)) (take ((p2-p1) + 2) [e*(boxSize)|e <- [0..]] )
@@ -313,13 +313,13 @@ getM l = (l^.end.core.yCoord - l^.start.core.yCoord) / (l^.end.core.xCoord - l^.
 
 -- -- -- places labels dynamically on an edge
 placeLabelsDynamicEdge :: [FSUnplacedLabel] -> LineSegment 2 () Float -> [Label]
-placeLabelsDynamicEdge ls s = zipWith placeLabel edgeLabels (placeLabelsDynamicEdge_ ls_ 1 (length edgeLabels) 1 1)
+placeLabelsDynamicEdge labels edge = zipWith placeLabel allLabels (placeLabelsDynamicEdge_ allLabels 0 ((length allLabels)-1) 1000 1000)
     where
-        ls_ = dummy0 s_ : makeTopEdge edgeLabels m mv ++ [dummyNplus1 s_] -- Rotated labels with added dummies
-        s_ = transformBy m s
-        edgeLabels = getEdgeLabels ls s
-        m = toBaseTransformation s
-        mv = transformOriginV (toVectorBase s)
+        allLabels = dummy0 s : (makeTopEdge edgeLabels m mv) ++ [dummyNplus1 s] -- Rotated labels with added dummies
+        s = transformBy m edge
+        edgeLabels = getEdgeLabels labels edge
+        m = toBaseTransformation edge
+        mv = transformOriginV (toVectorBase edge)
 
 placeLabel :: FSUnplacedLabel -> Int -> Label
 placeLabel ul e = Label (snd ul) (fst ul) (fromIntegral e)
@@ -343,19 +343,32 @@ minExtLength ls p1 p2 e1 e2 = r!(p1,p2)
             set k = [0..(p2-p1)^2]
             valid i a j b k c = fitLength (ls!!i) a (ls!!j) b (ls!!k) c
 
--- placeLabelsDynamicEdge_ :: [Port] -> Int -> Int -> Int -> Int -> Array (Int, Int) (Int, (Int, Int))
-placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = e1:(getLengths r p1 p2)++[e2]
+
+plde :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> (Int,[Int])
+plde ls i j a b
+    | i == j - 1 = (a+b,[])
+    | length m == 0 = (10000,[])
+    | j - 1 > 1 = minimum m
     where
-            r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]]
-            f i j a b 
-                | i == j - 1  = (a + b,(0,0))
-                | length m == 0 = (1000000,(-1,0))
-                | j - 1 > 1 = minimum m
-                    where 
-                        m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- set k, valid i a j b k c ]
-                        set k = filter (\x-> x < max 1 (min a b)) (take ((p2-p1) + 2) [e*(boxSize)|e <- [0..]] )
-                        valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) --`debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
-                        boxLength l = boxSize * length (snd l)
+        m = [(fst (plde ls i k a c) + fst (plde ls k j c b) - c,snd (plde ls i k a c) ++ [c] ++ snd (plde ls k j c b))| k<-[i+1..j-1], c<- set k, valid i a j b k c ]
+        set k = filter (\x-> x < max 1 (min a b)) (take ((j-i) + 2) [e*(boxSize)|e <- [0..]] )
+        valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) --`debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
+        boxLength l = boxSize * length (snd l)
+
+-- placeLabelsDynamicEdge_ :: [Port] -> Int -> Int -> Int -> Int -> Array (Int, Int) (Int, (Int, Int))
+placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = 
+    let r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]]
+        f i j a b 
+            | i == j - 1  = (a + b,(0,0)) `debug` ("END i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " length m:" ++ show (length m))
+            | length m == 0 = (1000000,(-1,0))
+            | j - 1 > 1 = minimum m  `debug` ("FOUND i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " m:" ++ show (minimum m))
+            | otherwise =  (1000000,(-1,0)) `debug`("other i:" ++ show i ++ " j:" ++ show j ++ " a:" ++ show a ++ " b:" ++ show b ++ " length m:" ++ show (length m))
+                where 
+                    m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<- set k, valid i a j b k c ]
+                    set k = filter (\x-> x < max 1 (min a b)) (take ((p2-p1) + 2) [e*(boxSize)|e <- [0..]] )
+                    valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) --`debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
+                    boxLength l = boxSize * length (snd l)
+    in (e1:getLengths r p1 p2)++[e2]
 
 -- test_ = placeLabelsDynamicEdge_ [pDummy1,p1,p2,p3,p4,pDummy2] 2 3 1 1
 
