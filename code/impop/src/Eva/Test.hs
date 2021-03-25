@@ -1,7 +1,7 @@
 module Eva.Test where
 
 import Nonogram
-import Data.Geometry hiding (head,direction,init,replicate,unit)
+import Data.Geometry hiding (head,direction,init,replicate,unit, _direction)
 import Data.Geometry.Polygon
 import Data.Ext
 import Control.Lens
@@ -57,3 +57,20 @@ caseA = [([p6],[6,6,6]),([p1],[1,1,1,1])] :: [UnplacedLabel]
 caseB = [([p3],[3,3]),([p2],[2]),([p1],[1])] :: [UnplacedLabel]
 caseC = [([p5],[5]),([p4],[4,4,4]),([p3],[3,3]),([p2],[2]),([p1],[1])] :: [UnplacedLabel]
 caseE = [([p6],[6,6]),([p3],[3,3]),([p2],[2]),([p1],[1])] :: [UnplacedLabel]
+
+a = Label {_clue = [0], _port = Port {_location = Point2 (100.184) (-128.0), _direction = Vector2 (-0.14785302) (-0.9890093), _side = False}, _offset = 0.0}
+
+caseABox :: [UnplacedLabel]
+caseABox = [
+     ([Port {_location = Point2 (-128.0) (-70.1027), _direction = Vector2 (-0.6361346) (-0.7715781), _side = True},Port {_location = Point2 (35.3276) (128.0), _direction = Vector2 (0.6361346) (0.771578), _side = False}],[0])
+    ,([Port {_location = Point2 (-128.0) (-53.4049), _direction = Vector2 (-0.5963863) (-0.80269754), _side = True},Port {_location = Point2 (6.7798004) (128.0), _direction = Vector2 (0.5963863) (0.8026976), _side = False}],[0])
+    ,([Port {_location = Point2 (-96.6386) (128.0), _direction = Vector2 (-0.36783025) (0.9298929), _side = True},Port {_location = Point2 (4.6252503) (-128.0), _direction = Vector2 (0.36783013) (-0.92989296), _side = False}],[0])
+    ,([Port {_location = Point2 (4.6252503) (-128.0), _direction = Vector2 (0.36783013) (-0.92989296), _side = True},Port {_location = Point2 (-96.6386) (128.0), _direction = Vector2 (-0.36783025) (0.9298929), _side = False}],[0])
+    ,([Port {_location = Point2 (6.7798004) (128.0), _direction = Vector2 (0.5963863) (0.8026976), _side = True},Port {_location = Point2 (-128.0) (-53.4049), _direction = Vector2 (-0.5963863) (-0.80269754), _side = False}],[0])
+    ,([Port {_location = Point2 (-54.6249) (128.0), _direction = Vector2 (-0.5129494) (0.8584188), _side = True},Port {_location = Point2 (98.3482) (-128.0), _direction = Vector2 (0.5129492) (-0.85841894), _side = False}],[0])
+    ,([Port {_location = Point2 (35.3276) (128.0), _direction = Vector2 (0.6361346) (0.771578), _side = True},Port {_location = Point2 (-128.0) (-70.1027), _direction = Vector2 (-0.6361346) (-0.7715781), _side = False}],[0])
+    ,([Port {_location = Point2 (-49.2385) (128.0), _direction = Vector2 (-0.5982082) (0.80134076), _side = True},Port {_location = Point2 (128.0) (-109.423), _direction = Vector2 (0.5982084) (-0.8013405), _side = False}],[0])
+    ,([Port {_location = Point2 (-48.6999) (-128.0), _direction = Vector2 (-0.8971849) (-0.44165522), _side = True},Port {_location = Point2 (128.0) (-41.0163), _direction = Vector2 (0.8971848) (0.44165537), _side = False}],[0])
+    ,([Port {_location = Point2 (98.3482) (-128.0), _direction = Vector2 (0.5129492) (-0.85841894), _side = True},Port {_location = Point2 (-54.6249) (128.0), _direction = Vector2 (-0.5129494) (0.8584188), _side = False}],[0])
+    ,([Port {_location = Point2 (128.0) (-109.423), _direction = Vector2 (0.5982084) (-0.8013405), _side = True},Port {_location = Point2 (-49.2385) (128.0), _direction = Vector2 (-0.5982082) (0.80134076), _side = False}],[0])
+    ,([Port {_location = Point2 (128.0) (-41.0163), _direction = Vector2 (0.8971848) (0.44165537), _side = True},Port {_location = Point2 (-48.6999) (-128.0), _direction = Vector2 (-0.8971849) (-0.44165522), _side = False}],[0])]

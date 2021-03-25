@@ -12,6 +12,26 @@ import Data.Geometry.PlanarSubdivision hiding(location)
 import Data.Geometry.Transformation
 import Data.Geometry.Matrix
 
+
+-- simplify a list of line segments by merging parallel lines that share an endpoint
+simplify 
+    :: [LineSegment 2 () Float] -- List of line segments
+    -> [LineSegment 2 () Float] -- Simplified list of line segments
+simplify ls
+    | abs (getM l - getM (last ll)) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : init ll
+    | otherwise = l:ll
+    where (l:ll) = simplify_ ls
+
+simplify_ :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
+simplify_ [l] = [l]
+simplify_ (l:ll:ls)
+    | abs (getM l - getM ll) < 0.01 || getM l == getM ll = simplify_ (((l&start .~ l^.start)&end .~ ll^.end) : ls)
+    | otherwise = l:simplify_ (ll:ls)
+
+-- get the slope of a line segment
+getM :: LineSegment 2 () Float -> Float
+getM l = (l^.end.core.yCoord - l^.start.core.yCoord) / (l^.end.core.xCoord - l^.start.core.xCoord)
+
 -- convert a line segment to a line
 toLine :: LineSegment 2 () Float -> Line 2 Float
 toLine ls = lineThrough (ls^.start.core) (ls^.end.core)

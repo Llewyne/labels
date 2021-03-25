@@ -26,7 +26,7 @@ import Data.Geometry.Polygon
 import Eva.Util
 import Eva.ClueBox hiding (boxSize)
 import Eva.Test
-
+import SAT.Mios (CNFDescription (..), solveSAT)
 
 type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 
@@ -35,28 +35,62 @@ unit = 3
 
 
 -- places labels dynamically
-placeLabelsDynamic :: [UnplacedLabel] -> Frame -> [Label] 
-placeLabelsDynamic ls f = concatMap (placeLabelsDynamicEdge ls_) (simplify $ listEdges f)
-    where ls_ = assignPorts ls
+placeLabelsDynamic :: [UnplacedLabel] -> Frame -> IO [Label] 
+placeLabelsDynamic ls f = do
+    ls_ <- assignPorts ls
+    return $ concatMap (placeLabelsDynamicEdge ls_) (simplify $ listEdges f)
+    
 
--- simplify a list of line segments by merging parallel lines that share an endpoint
-simplify 
-    :: [LineSegment 2 () Float] -- List of line segments
-    -> [LineSegment 2 () Float] -- Simplified list of line segments
-simplify ls
-    | abs (getM l - getM (last ll)) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : init ll
-    | otherwise = l:ll
-    where (l:ll) = simplify_ ls
+assignPorts :: [UnplacedLabel] -> IO [FSUnplacedLabel]
+assignPorts ul = do
+    let ml = mapVars ul
+    -- mapM_ (putStrLn . show) ml
+    let clauses = setClauses ml
+    -- putStrLn $ show clauses
+    let desc = CNFDescription (length $ concat ml) (length clauses) ""
+    asg <- solveSAT desc clauses
+    -- putStrLn $ show asg
+    return (map (assignPort (concat ml)) $ filter (0<) asg)
+              
 
-simplify_ :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
-simplify_ [l] = [l]
-simplify_ (l:ll:ls)
-    | abs (getM l - getM ll) < 0.01 || getM l == getM ll = simplify_ (((l&start .~ l^.start)&end .~ ll^.end) : ls)
-    | otherwise = l:simplify_ (ll:ls)
+assignPort :: [(Int,(UnplacedLabel,Int))] -> Int -> FSUnplacedLabel
+assignPort ml i = (port, clue)
+        where
+            clue = snd $ fst $ snd $ ml!!(i-1)
+            port = (fst $ fst $ snd $ ml!!(i-1))!!((snd $ snd $ ml!!(i-1))-1)
 
--- get the slope of a line segment
-getM :: LineSegment 2 () Float -> Float
-getM l = (l^.end.core.yCoord - l^.start.core.yCoord) / (l^.end.core.xCoord - l^.start.core.xCoord)
+
+-- Sets the clauses
+-- for each line l with ports p and q, xal = 1 (xal = 0) if the label above l is assigned to p (q). 
+-- And xbl = 1 (xbl = 0) if the label below l is assigned to p (q)
+-- If a label cant fit next to another label because the box would intersect the leader
+-- then  the clause: -xal or -xb'l is added
+-- also for each line l the clauses: xal or xbl, -xal or -xbl to ensure each line has exactly one label above and below
+setClauses :: [[(Int,(UnplacedLabel,Int))]] -> [[Int]]
+setClauses ml = map (\((a,_),(b,_))->[-a,-b]) (filter (not.fitBox) (filter differentPort (pairs (concat ml)))) -- clauses for overlapping 
+            ++ concat ( map (\ls->[[-(fst $ ls!!0),-(fst $ ls!!1)],[(fst $ ls!!0),(fst $ ls!!1)]]) ( filter (\x->length x == 2) ml)) -- make sure 1 of 2 ports is selected for every line
+            ++ map (\ls->[fst $ head ls]) (filter (\x->length x == 1) ml) 
+
+
+differentPort :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
+differentPort ((_,l1),(_,l2)) = (_location $ getPort l1) /= (_location $ getPort l2)
+
+getPort :: (UnplacedLabel,Int) -> Port
+getPort ((ps,_),i) = ps!!(i-1)
+
+pairs :: [a] -> [(a, a)]
+pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
+
+-- map the variables for the SAT clauses, result is a list of pairs where the first element is the index of the variable and the second element the port assignment
+mapVars :: [UnplacedLabel] -> [[(Int,(UnplacedLabel,Int))]]
+mapVars ul = _mapVars (map getVar ul) 1
+
+_mapVars :: [[(UnplacedLabel,Int)]] -> Int -> [[(Int,(UnplacedLabel,Int))]]
+_mapVars [] _ = []
+_mapVars (v:vs) i = zip [i..] v : _mapVars vs (i + (length v))
+
+getVar :: UnplacedLabel -> [(UnplacedLabel,Int)]
+getVar ul = [(a,b)|a<-[ul],b<-[1..(length (fst ul))] ]
 
 -- Places labels dynamically on an edge, it is assumed the edge is horizontal and the labels extend upwards
 placeLabelsDynamicEdge 
@@ -87,7 +121,7 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 =
                 | null m = (1000000,(-1 * boxSize,0)) 
                 | j - 1 > i = minimum m
                     where 
-                        m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ]
+                        m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ] `debug` (show i ++ show j)
                         set k = filter (\x-> x < max 1 (min a b)) (take (max (p2-p1 + 2) 5) [e*boxSize|e <- [0..]] )
                         valid i a j b k c = fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))
                         boxLength l = boxSize * length (snd l)
@@ -102,24 +136,19 @@ getLengths r p1 p2
 
 debug = flip trace
  
--- Determines if l' might fit in between l1 and l2 if it is extended
-fitBox 
-    :: Port     -- Port of l1
-    -> Port     -- Port of l2
-    -> Port     -- Port of l'
-    -> Bool
-fitBox (Port pos1 dir1 s1) (Port pos2 dir2 s2) (Port pos dir s) 
+-- Determines if l' might fit with to l1
+fitBox :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
+fitBox ((_,(p1,i1)),(_,(p2,i2))) 
     | pos1 == pos || pos2 == pos = True -- `debug` "true: positions are the same"
     | intersects l1 l = False -- `debug` "false: i intersects k"
-    | intersects l2 l = False -- `debug` "false: j intersects k"
     | intersects b l1 = False -- `debug` "false: box k intersects i"
-    | intersects b l2 = False -- `debug` "false: box k intersects j"
     | otherwise = True -- `debug` "true: no intersection"
     where
         l1 = (leader pos1 dir1 boxSize) --`debug` ("i: " ++ show (leader pos1 dir1 len1))
-        l2 = (leader pos2 dir2 boxSize) --`debug` ("j: " ++ show (leader pos2 dir2 len2)) 
         l = (leader pos dir boxSize) --`debug` ("k: " ++ show (leader pos dir len))
         b = clueBoxPolygon (l^.end.core) dir s
+        Port pos1 dir1 s1 = getPort (p1,i1)
+        Port pos dir s = getPort (p2,i2)
 
 -- Determines if l' fits in between l1 and l2
 fitLength 
@@ -150,15 +179,6 @@ fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len
         b = clueBoxPolygon (l^.end.core) dir s
 
 intersectsTrace a b  = trace ((show a)++(show b)) (intersects a b)
-
--- Assigns ports to unplaced labels 
-assignPorts :: [UnplacedLabel] -> [FSUnplacedLabel]
-assignPorts [] = []
-assignPorts ((ps,c):ls) =  (head ps, c):assignPorts ls
-assignPorts_ [] = []
-assignPorts_ ((ps,c):ls) 
-    | length ps > 1 = (ps!!1, c):assignPorts ls
-    | otherwise = (head ps, c):assignPorts ls
 
 -- initialize leader lengths
 initLeaders l = (maxLength:leader1:take (l-2) (repeat 0))++ [leaderN,maxLength]

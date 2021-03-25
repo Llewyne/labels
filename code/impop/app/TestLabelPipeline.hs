@@ -92,7 +92,7 @@ labelTest name = do
   since start
 
   -- place the labels
-  let pl  = placeLabelsDynamic upl frame
+  pl  <- placeLabelsDynamic upl frame
   putStrLn $ "labels: " ++ show (length pl)
   writeFile "log/labels.txt" $ unlines $ map show pl
   since start
