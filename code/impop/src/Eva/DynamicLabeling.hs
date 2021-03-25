@@ -295,6 +295,7 @@ placeLabelsDynamic :: [UnplacedLabel] -> Frame -> [Label]
 placeLabelsDynamic ls f = concat $ map (placeLabelsDynamicEdge ls_) (simplify $ listEdges f)
     where ls_ = assignPorts ls
 
+
 simplify :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
 simplify ls
     | abs (getM l - getM (last ll)) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : (init ll)
@@ -313,9 +314,9 @@ getM l = (l^.end.core.yCoord - l^.start.core.yCoord) / (l^.end.core.xCoord - l^.
 
 -- -- -- places labels dynamically on an edge
 placeLabelsDynamicEdge :: [FSUnplacedLabel] -> LineSegment 2 () Float -> [Label]
-placeLabelsDynamicEdge labels edge = zipWith placeLabel allLabels lengths
+placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths
     where
-        lengths = 1000:(getLengths placedLabels 0 ((length allLabels)-1)) ++ [1000]
+        lengths = (getLengths placedLabels 0 ((length allLabels)-1))
         placedLabels = (placeLabelsDynamicEdge_ allLabels 0 ((length allLabels)-1) 1000 1000)
         allLabels = dummy0 s : (makeTopEdge edgeLabels m mv) ++ [dummyNplus1 s] -- Rotated labels with added dummies
         s = transformBy m edge
@@ -365,7 +366,7 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 =
                 | j - 1 > i = minimum m
                     where 
                         m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ]
-                        set k = filter (\x-> x < max 1 (min a b)) (take ((p2-p1) + 2) [e*(boxSize)|e <- [0..]] )
+                        set k = filter (\x-> x < max 1 (min a b)) (take (max ((p2-p1) + 2) 5) [e*(boxSize)|e <- [0..]] )
                         valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) --`debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
                         boxLength l = boxSize * length (snd l)
     in (array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]])
@@ -450,7 +451,7 @@ lineIntersection m1 b1 m2 b2 = (x,m1*x + b1)
 -- Assigns ports to unplaced labels 
 assignPorts :: [UnplacedLabel] -> [FSUnplacedLabel]
 assignPorts [] = []
-assignPorts ((ps,c):ls) =  (ps!!0, c):assignPorts_ ls
+assignPorts ((ps,c):ls) =  (ps!!0, c):assignPorts ls
 assignPorts_ [] = []
 assignPorts_ ((ps,c):ls) 
     | length ps > 1 = (ps!!1, c):assignPorts ls

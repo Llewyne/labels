@@ -37,7 +37,7 @@ import Nonogram.PathType
 
 import Misc.SpanningTree
 
-import Eva.SATLabelingExtensible
+import Eva.SATLabeling
 
 testStar = labelTest "star"
 
@@ -118,7 +118,7 @@ labelTest name = do
   since start
 
   -- place the labels
-  pl <- placeLabelsSATExtensible upl
+  pl <- placeLabelsSAT upl
   putStrLn $ "labels: " ++ show (length pl) 
   writeFile "log/labels.txt" $ unlines $ map show pl
   since start

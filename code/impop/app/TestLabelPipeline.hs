@@ -40,6 +40,8 @@ import Misc.SpanningTree
 
 import Eva.DynamicLabeling
 
+import Data.List
+
 main :: IO ()
 main = do
   putStrLn "enter file name (without extension)"
@@ -78,7 +80,7 @@ labelTest name = do
   since start
 
   -- collect clues in unplaced labels
-  let upl = determineClues caf sol
+  let upl = nub $ determineClues caf sol
   putStrLn $ "unplaced labels: " ++ show (length upl)  
   writeFile "log/unlabels.txt" $ unlines $ map show upl
   since start
@@ -91,7 +93,7 @@ labelTest name = do
 
   -- place the labels
   let pl  = placeLabelsDynamic upl frame
-  putStrLn $ "labels: " ++ show (length pl) 
+  putStrLn $ "labels: " ++ show (length pl)
   writeFile "log/labels.txt" $ unlines $ map show pl
   since start
 
