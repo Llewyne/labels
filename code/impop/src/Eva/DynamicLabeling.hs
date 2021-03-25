@@ -223,170 +223,84 @@ caseC = [([p5],[5]),([p4],[4,4,4]),([p3],[3,3]),([p2],[2]),([p1],[1])] :: [Unpla
 caseE = [([p6],[6,6]),([p3],[3,3]),([p2],[2]),([p1],[1])] :: [UnplacedLabel]
 
 
--- dynamic labeling pipeline
-dynamicPipeLine :: [UnplacedLabel] -> Frame -> IO()
-dynamicPipeLine labels frame = do
-    -- pick a port for each label
-    let aLabels = assignPorts labels
-    putStrLn $ "assigned ports: " ++ show (length aLabels)
-
-    -- simplify the frame to only boundary
-    let simpleFrame = simplify $ listEdges frame
-    putStrLn $ "simplified frame to: " ++ show (length simpleFrame)
-
-    -- place labels for each edge
-    mapM (placeLabelsDynamicEdgeIO aLabels) simpleFrame
-    -- putStrLn $ "placed labels: " ++ show labels
-
-    return ()
-
-placeLabelsDynamicEdgeIO :: [FSUnplacedLabel] -> LineSegment 2 () Float -> IO()
-placeLabelsDynamicEdgeIO labels edge = do
-    -- putStrLn $ "edge:" ++ show edge
-
-    let m = toBaseTransformation edge
-    let mv =transformOriginV (toVectorBase edge)
-    putStrLn $ "transformation matrix rotation" ++ show mv
-    -- rotate line segment edge so it is horizontal
-    let s = transformBy m edge
-    putStrLn $ "rotated edge:" ++ show s
-
-    -- get labels for the edge
-    let edgeLabels = getEdgeLabels labels edge
-    putStrLn $ "labels for this edge:" ++ show edgeLabels
-
-    -- pivot labels so they match the pivoted edge
-    let transformedLabels = makeTopEdge edgeLabels m mv
-    putStrLn $ "pivoted labels:" ++ show transformedLabels
-
-    -- add dummy labels
-    let allLabels = dummy0 s : transformedLabels ++ [dummyNplus1 s]
-    putStrLn $ "with dummy labels: " ++ show allLabels
-
-    -- place the labels
-    placeLabelsDynamicEdgeIO_ allLabels 0 ((length allLabels)-1) 1000 1000
-
-
-    return ()
-
-placeLabelsDynamicEdgeIO_ :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> IO()
-placeLabelsDynamicEdgeIO_ ls p1 p2 e1 e2 = do
-    putStrLn $ "amount labels;" ++ show (length ls)
-    putStrLn $ "p1: " ++ show p1
-    putStrLn $ "p2: " ++ show p2
-    putStrLn $ "e1: " ++ show e1
-    putStrLn $ "e2: " ++ show e2
-    let f i j a b 
-                | i == j - 1  = (a + b,(0,0))
-                | length m == 0 = (1000000,(-1,0)) 
-                | j - 1 > i = minimum m
-                    where 
-                        m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ]
-                        set k = filter (\x-> x < max 1 (min a b)) (take ((p2-p1) + 2) [e*(boxSize)|e <- [0..]] )
-                        valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) --`debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
-                        boxLength l = boxSize * length (snd l)
-
-    let r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]]
-    putStrLn $ "result: " ++ show ((e1:getLengths r p1 p2)++[e2])
- 
-
 -- places labels dynamically
 placeLabelsDynamic :: [UnplacedLabel] -> Frame -> [Label] 
-placeLabelsDynamic ls f = concat $ map (placeLabelsDynamicEdge ls_) (simplify $ listEdges f)
+placeLabelsDynamic ls f = concatMap (placeLabelsDynamicEdge ls_) (simplify $ listEdges f)
     where ls_ = assignPorts ls
 
-
-simplify :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
+-- simplify a list of line segments by merging parallel lines that share an endpoint
+simplify 
+    :: [LineSegment 2 () Float] -- List of line segments
+    -> [LineSegment 2 () Float] -- Simplified list of line segments
 simplify ls
-    | abs (getM l - getM (last ll)) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : (init ll)
-    | otherwise = (l:ll)
+    | abs (getM l - getM (last ll)) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : init ll
+    | otherwise = l:ll
     where (l:ll) = simplify_ ls
-
 
 simplify_ :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
 simplify_ [l] = [l]
 simplify_ (l:ll:ls)
     | abs (getM l - getM ll) < 0.01 || getM l == getM ll = simplify_ (((l&start .~ l^.start)&end .~ ll^.end) : ls)
-    | otherwise = l:(simplify_ (ll:ls))
+    | otherwise = l:simplify_ (ll:ls)
 
+-- get the slope of a line segment
 getM :: LineSegment 2 () Float -> Float
 getM l = (l^.end.core.yCoord - l^.start.core.yCoord) / (l^.end.core.xCoord - l^.start.core.xCoord)
 
--- -- -- places labels dynamically on an edge
-placeLabelsDynamicEdge :: [FSUnplacedLabel] -> LineSegment 2 () Float -> [Label]
+-- Places labels dynamically on an edge, it is assumed the edge is horizontal and the labels extend upwards
+placeLabelsDynamicEdge 
+    :: [FSUnplacedLabel]        -- List of unplaced labels with fixed side assignment
+    -> LineSegment 2 () Float   -- The edge on which labels are placed
+    -> [Label]                  -- The placed labels
 placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths
     where
-        lengths = (getLengths placedLabels 0 ((length allLabels)-1))
-        placedLabels = (placeLabelsDynamicEdge_ allLabels 0 ((length allLabels)-1) 1000 1000)
-        allLabels = dummy0 s : (makeTopEdge edgeLabels m mv) ++ [dummyNplus1 s] -- Rotated labels with added dummies
+        lengths = getLengths placedLabels 0 (length allLabels - 1)
+        placedLabels = placeLabelsDynamicEdge_ allLabels 0 (length allLabels - 1) 1000 1000
+        allLabels = dummy0 s : makeTopEdge edgeLabels m mv ++ [dummyNplus1 s] -- Rotated labels with added dummies
         s = transformBy m edge
         edgeLabels = getEdgeLabels labels edge
         m = toBaseTransformation edge
         mv = transformOriginV (toVectorBase edge)
 
-placeLabel :: FSUnplacedLabel -> Int -> Label
+-- place the label
+placeLabel 
+    :: FSUnplacedLabel  -- The unplaced label
+    -> Int              -- The extension length
+    -> Label            -- The placed label
 placeLabel ul e = Label (snd ul) (fst ul) (fromIntegral e)
-
--- placeLabelsDynamicEdge_ :: Int -- Index of the first label 
---     -> Int -- Index of the last label
---     -> [Float] -- Leader lengths (0 if unassigned)
---     -> [FSUnplacedLabel] -- Unplaced labels with fixed port assignment
---     -> LineSegment 2 () Float -- Edge to be labeled
---     -> [Label] -- Placed labels
--- placeLabelsDynamicEdge_ i1 iN leaders labels s = 
-    
-minExtLength :: [Port] -> Int -> Int -> Int -> Int -> Int
-minExtLength ls p1 p2 e1 e2 = r!(p1,p2)
-    where
-            r = array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]]                                                      -- minimum total extension length for ports [p1..p2]
-            f i j a b                                                                                                                       -- T[i,j,a,b]
-                | i == j - 1 = a + b
-                | j - 1 > 1 = minimum [(f i k a c) + (f k j c b) - c | k<-[i+1..j-1], c <- [0.. (min a b)], elem c (set k), valid i a j b k c]
-                | otherwise = error "j = i"
-            set k = [0..(p2-p1)^2]
-            valid i a j b k c = fitLength (ls!!i) a (ls!!j) b (ls!!k) c
-
-
-plde :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> (Int,[Int])
-plde ls i j a b
-    | i == j - 1 = (a+b,[])
-    | length m == 0 = (10000,[])
-    | j - 1 > 1 = minimum m
-    where
-        m = [(fst (plde ls i k a c) + fst (plde ls k j c b) - c,snd (plde ls i k a c) ++ [c] ++ snd (plde ls k j c b))| k<-[i+1..j-1], c<- set k, valid i a j b k c ]
-        set k = filter (\x-> x < max 1 (min a b)) (take ((j-i) + 2) [e*(boxSize)|e <- [0..]] )
-        valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) --`debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
-        boxLength l = boxSize * length (snd l)
 
 -- placeLabelsDynamicEdge_ :: [Port] -> Int -> Int -> Int -> Int -> Array (Int, Int) (Int, (Int, Int))
 placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = 
    let f i j a b 
                 | i == j - 1  = (a + b,(0,0))
-                | length m == 0 = (1000000,(-1,0)) 
+                | null m = (1000000,(-1 * boxSize,0)) 
                 | j - 1 > i = minimum m
                     where 
                         m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ]
-                        set k = filter (\x-> x < max 1 (min a b)) (take (max ((p2-p1) + 2) 5) [e*(boxSize)|e <- [0..]] )
-                        valid i a j b k c = (fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))) --`debug` ("check intersection, i: " ++ show i ++ " j: " ++ show j ++ " k: " ++ show k ++ " a: " ++ show (a + boxLength (ls!!i)) ++ " b: " ++ show (b + boxLength (ls!!j)) ++ " c: " ++ show (c + boxLength (ls!!k)))
+                        set k = filter (\x-> x < max 1 (min a b)) (take (max (p2-p1 + 2) 5) [e*boxSize|e <- [0..]] )
+                        valid i a j b k c = fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))
                         boxLength l = boxSize * length (snd l)
-    in (array((p1,p1),(p2,p2)) [((i,j),(f i j e1 e2))|i<-[p1..p2],j<-[p1..p2]])
-
--- test_ = placeLabelsDynamicEdge_ [pDummy1,p1,p2,p3,p4,pDummy2] 2 3 1 1
+    in array((p1,p1),(p2,p2)) [((i,j),f i j e1 e2)|i<-[p1..p2],j<-[p1..p2]]
 
 -- getLengths :: (Ix t, Eq a1, Num t, Num a1) => Array (t, t) (a2, (t, a1)) -> t -> t -> [a1]
 getLengths r p1 p2
-    | port == -1 = take (p2-p1 + 1) (repeat (-1))
+    | port == -1 = replicate (p2-p1 + 1) (-1)
     | (port,l)== (0,0) = []
     | otherwise = getLengths r p1 port ++ [l] ++ getLengths r port p2
     where (_,(port,l)) = r!(p1,p2)
 
-    
 debug = flip trace
  
 
--- determines if a leader with length len fits between two ports with lengths len1 and len2
--- fitLength :: Port -> Integer -> Port -> Integer -> Port -> Integer -> Bool
-fitLength :: Port -> Int -> Port -> Int -> Port -> Int -> Bool
+-- Determines if l' fits in between l1 and l2
+fitLength 
+    :: Port     -- Port of l1
+    -> Int      -- Extension length of l1
+    -> Port     -- Port of l2
+    -> Int      -- Extension length of l2
+    -> Port     -- Port of l'
+    -> Int      -- Extension length of l'
+    -> Bool
 fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len 
     | pos1 == pos || pos2 == pos = True -- `debug` "true: positions are the same"
     | intersects l1 l = False -- `debug` "false: i intersects k"
@@ -408,15 +322,22 @@ fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len
 
 intersectsTrace a b  = trace ((show a)++(show b)) (intersects a b)
 
+-- convert a line segment to a line
 toLine :: LineSegment 2 () Float -> Line 2 Float
 toLine ls = lineThrough (ls^.start.core) (ls^.end.core)
 
+-- create a line segment that represents a leader, from a given starting position, direction and length
 leader :: Point 2 Float -> Vector 2 Float -> Int -> LineSegment 2 () Float
 leader p v l =  ClosedLineSegment (p :+ ()) (q :+ ())
     where
     q = p .+^ ((signorm v)^*(fromIntegral l))
 
-clueBoxPolygon :: Point 2 Float -> Vector 2 Float -> Bool -> ClueBox
+-- Create a clue box for line l
+clueBoxPolygon 
+    :: Point 2 Float    -- Attachment point
+    -> Vector 2 Float   -- Direction of l
+    -> Bool             -- Side that must be labeled. True if on right of direction vector (left if going into puzzle)
+    -> ClueBox
 clueBoxPolygon p v False = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()]
     where
         ub = signorm v^*(fromIntegral boxSize)
@@ -443,6 +364,8 @@ inverseVector v = Vector2 (v^.yComponent) (v^.xComponent)
 -- (m1-m2)*x = b2 - b1
 -- x = (b2-b1)/(m1-m2) 
 -- y = m1*x + b1
+
+-- Intersection point line l1:m1*x + b1 and l2:m2*x + b2
 lineIntersection :: Float -> Float -> Float -> Float -> (Float,Float)
 lineIntersection m1 b1 m2 b2 = (x,m1*x + b1)
     where
@@ -451,11 +374,11 @@ lineIntersection m1 b1 m2 b2 = (x,m1*x + b1)
 -- Assigns ports to unplaced labels 
 assignPorts :: [UnplacedLabel] -> [FSUnplacedLabel]
 assignPorts [] = []
-assignPorts ((ps,c):ls) =  (ps!!0, c):assignPorts ls
+assignPorts ((ps,c):ls) =  (head ps, c):assignPorts ls
 assignPorts_ [] = []
 assignPorts_ ((ps,c):ls) 
     | length ps > 1 = (ps!!1, c):assignPorts ls
-    | otherwise = (ps!!0, c):assignPorts ls
+    | otherwise = (head ps, c):assignPorts ls
 
 -- initialize leader lengths
 initLeaders l = (maxLength:leader1:take (l-2) (repeat 0))++ [leaderN,maxLength]
@@ -485,7 +408,11 @@ lineSegmentDirection :: LineSegment 2 () Float -> Vector 2 Float
 lineSegmentDirection ls = signorm (Vector2 ((ls^.end.core.xCoord) - (ls^.start.core.xCoord)) ((ls^.end.core.yCoord) - (ls^.start.core.yCoord)))
 
 -- rotates the labels so it is now the top edge
-makeTopEdge :: [FSUnplacedLabel] -> Transformation 2 Float -> Transformation 2 Float -> [FSUnplacedLabel]
+makeTopEdge 
+    :: [FSUnplacedLabel]        -- The unplaced labels
+    -> Transformation 2 Float   -- The translation transformation
+    -> Transformation 2 Float   -- The rotation transformation
+    -> [FSUnplacedLabel]
 makeTopEdge ls m mv = map (transformLabel m mv) ls
 
 transformLabel :: Transformation 2 Float -> Transformation 2 Float -> FSUnplacedLabel -> FSUnplacedLabel
@@ -509,37 +436,6 @@ sortLabel (p1,_) (p2,_)
 -- determines if a label is on a segment
 labelOnSegment :: LineSegment 2 () Float -> FSUnplacedLabel -> Bool
 labelOnSegment s l = onSegment ((fst l)^.location) s
-
--- places labels dynamically for one edge of the boundary
-
-
--- placeLabelsDynamic_ :: Int        --index of the first port
---     -> Float
---     -> Int              --index of the second port
---     -> Float
---     -> [UnplacedLabel]
---     -> [Label]
--- placeLabelsDynamic l1 e1 l2 e2 ls
---     | l1 > l2       = []
---     | l1 == l2      = []
---     | l1 + 1 == l2 && 
---         (intersectionLength p1 p2 >= (e2 + (fromIntegral (length (snd (ls!!l2))))*boxSize + 1) 
---         || intersectionLength p2 p1 >= (e1 + (fromIntegral (length (snd (ls!!l1))))*boxSize + 1))
---             = [Label (snd (ls!!l1)) p1 e1,Label (snd (ls!!l2)) p2 e2]
---     | otherwise     =  nub (left splitAt ++ right splitAt)
---         where
---             p1 = (head.fst) (ls!!l1)
---             p2 = (head.fst) (ls!!l2)
---             maxLength l 
---                 | e1 <= e2 = min (min (intersectionLength p1 ((head.fst) (ls!!l))) e1) e2
---                 | otherwise = min (min (intersectionLength p2 ((head.fst) (ls!!l))) e1) e2
---             splitAt
---                 | l1+2==l2  = (l1+1,1)
---                 | otherwise = maximumBy (\y->comparing snd y) ((0,0): filter (\(x,xl)-> (length (left (x,xl)) > 0) && (length (right (x,xl)) > 0)) [(l,el) | l<-[(l1+1)..(l2-1)],el <- [maxLength l]]) 
---             left (0,0) = []
---             left (x,xl) =  (placeLabelsDynamic l1 e1 x xl ls)
---             right (0,0) = []
---             right (x,xl) = (placeLabelsDynamic x xl l2 e2 ls)
 
 --determines the length of l2 is where it crosses l1
 intersectionLength :: Port -> Port -> Float
@@ -571,5 +467,6 @@ transformOriginV v = Transformation . Matrix $ Vector3 (Vector3 (-v^.xComponent)
 toVectorBase :: LineSegment 2 () Float -> Vector 2 Float
 toVectorBase ls = signorm (ls^.end.core .-. ls^.start.core)
 
+-- Transformation for translation to the origin
 toBaseTransformation :: LineSegment 2 () Float -> Transformation 2 Float
 toBaseTransformation ls = transformOrigin (ls^.end.core) (toVectorBase ls)
