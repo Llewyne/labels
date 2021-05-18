@@ -25,6 +25,13 @@ packages:
       sha256: e297cc2837a7e3b4ec6b956184d4c4b32bca91110d5ba270b059187691560047
   original:
     hackage: hexpat-0.20.13
+- completed:
+    hackage: ersatz-0.4.9@sha256:89c9d3952ef433e74dda540af4efb99344354a96de24627f02c47cf794bf038d,8901
+    pantry-tree:
+      size: 6824
+      sha256: 02b27a3e4d9b649514e1e6f919b58528d433d48d21a180dbcbd4664dcc9ec828
+  original:
+    hackage: ersatz-0.4.9
 snapshots:
 - completed:
     size: 524804

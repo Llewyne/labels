@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
-<ipe version="70206" creator="Ipe 7.2.7">
-<info created="D:20200520210504" modified="D:20200621224247"/>
+<ipe version="70218" creator="Ipe 7.2.18">
+<info created="D:20200520210504" modified="D:20210420132507"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -190,8 +190,8 @@ h
 <arrowsize name="small" value="5"/>
 <arrowsize name="tiny" value="3"/>
 <color name="red" value="1 0 0"/>
-<color name="green" value="0 1 0"/>
 <color name="blue" value="0 0 1"/>
+<color name="green" value="0 1 0"/>
 <color name="yellow" value="1 1 0"/>
 <color name="orange" value="1 0.647 0"/>
 <color name="gold" value="1 0.843 0"/>
@@ -215,18 +215,18 @@ h
 <color name="lightgray" value="0.827"/>
 <color name="lightgreen" value="0.565 0.933 0.565"/>
 <color name="lightyellow" value="1 1 0.878"/>
-<dashstyle name="dashed" value="[4] 0"/>
 <dashstyle name="dotted" value="[1 3] 0"/>
+<dashstyle name="dashed" value="[4] 0"/>
 <dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
 <dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
 <textsize name="large" value="\large"/>
+<textsize name="small" value="\small"/>
+<textsize name="tiny" value="\tiny"/>
 <textsize name="Large" value="\Large"/>
 <textsize name="LARGE" value="\LARGE"/>
 <textsize name="huge" value="\huge"/>
 <textsize name="Huge" value="\Huge"/>
-<textsize name="small" value="\small"/>
 <textsize name="footnote" value="\footnotesize"/>
-<textsize name="tiny" value="\tiny"/>
 <textstyle name="center" begin="\begin{center}" end="\end{center}"/>
 <textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
 <textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
@@ -256,37 +256,37 @@ h
 -249.39 249.23
 -249.39 249.23 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 -249.39 249.23 m
 -249.39 236.898
 -249.39 224.567
 -249.39 212.235 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 -249.39 212.235 m
 -249.39 169.612
 -249.39 126.989
 -249.39 84.366 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 -249.39 84.366 m
 -249.39 66.889
 -249.39 49.413
 -249.39 31.936 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 -249.39 31.936 m
 -249.39 -0.551
 -249.39 -33.038
 -249.39 -65.525 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 -249.39 -65.525 m
 -249.39 -106.055
 -249.39 -146.585
 -249.39 -187.115 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 -249.39 -187.115 m
 -249.39 -208.333
 -249.39 -229.552
@@ -304,7 +304,7 @@ h
 -249.39 -250.77
 -249.39 -250.77 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 -249.39 -250.77 m
 -82.723 -250.77
 83.943 -250.77
@@ -322,25 +322,25 @@ h
 250.61 -250.77
 250.61 -250.77 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 250.61 -250.77 m
 250.61 -220.568
 250.61 -190.367
 250.61 -160.165 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 250.61 -160.165 m
 250.61 -70.633
 250.61 18.9
 250.61 108.432 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 250.61 108.432 m
 250.61 140.703
 250.61 172.973
 250.61 205.244 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 250.61 205.244 m
 250.61 219.906
 250.61 234.568
@@ -358,7 +358,7 @@ h
 250.61 249.23
 250.61 249.23 c
 </path>
-<path stroke="purple" pen="fat">
+<path stroke="blue" pen="fat">
 250.61 249.23 m
 83.943 249.23
 -82.723 249.23

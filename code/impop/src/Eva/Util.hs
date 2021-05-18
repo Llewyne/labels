@@ -12,21 +12,29 @@ import Data.Geometry.PlanarSubdivision hiding(location)
 import Data.Geometry.Transformation
 import Data.Geometry.Matrix
 
+roundSegment :: LineSegment 2 () Float -> LineSegment 2 () Float
+roundSegment ls = ClosedLineSegment ((roundPoint $ ls^.start.core) :+ ()) ((roundPoint $ ls^.end.core) :+ ())
 
--- simplify a list of line segments by merging parallel lines that share an endpoint
+roundPoint :: Point 2 Float -> Point 2 Float
+roundPoint p = Point2 ((fromIntegral $ round $ p^.xCoord)::Float) ((fromIntegral $ round $ p^.yCoord)::Float)
+
+-- simplify a list of line segments by merging parallel lines
 simplify 
     :: [LineSegment 2 () Float] -- List of line segments
     -> [LineSegment 2 () Float] -- Simplified list of line segments
 simplify ls
-    | abs (getM l - getM (last ll)) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : init ll
+    | abs (abs(getM l) - abs(getM (last ll))) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : init ll
     | otherwise = l:ll
     where (l:ll) = simplify_ ls
 
 simplify_ :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
 simplify_ [l] = [l]
 simplify_ (l:ll:ls)
-    | abs (getM l - getM ll) < 0.01 || getM l == getM ll = simplify_ (((l&start .~ l^.start)&end .~ ll^.end) : ls)
+    | abs (abs(getM l) - abs(getM ll)) < 0.01 || getM l == getM ll = simplify_ (((l&start .~ l^.start)&end .~ ll^.end) : ls)
     | otherwise = l:simplify_ (ll:ls)
+
+removeZeroLength :: [LineSegment 2 () Float] -> [LineSegment 2 () Float]
+removeZeroLength = filter (\x->x^.start.core /= x^.end.core)
 
 -- get the slope of a line segment
 getM :: LineSegment 2 () Float -> Float
@@ -76,8 +84,8 @@ lineSegmentDirection ls = signorm (Vector2 ((ls^.end.core.xCoord) - (ls^.start.c
 
 
 rotationMatrix :: Float -> Transformation 2 Float
-rotationMatrix a = Transformation . Matrix $ Vector3 (Vector3 (cos a)       (sin a) 0)
-                                                     (Vector3 (-(sin a))    (cos a) 0)
+rotationMatrix a = Transformation . Matrix $ Vector3 (Vector3 (cos a)       (-(sin a)) 0)
+                                                     (Vector3 (sin a)    (cos a) 0)
                                                      (Vector3 0             0       1)
 
 -- Transformation matrix for a new basis defined by a point and a vector (direction of new x-axis)
@@ -90,8 +98,8 @@ transformOriginP p = Transformation . Matrix $ Vector3  (Vector3 1 0 (-p^.xCoord
                                                         (Vector3 0 0 1)
 
 transformOriginV :: Vector 2 Float -> Transformation 2 Float
-transformOriginV v = Transformation . Matrix $ Vector3 (Vector3 (-v^.xComponent) (-v^.yComponent) 0)
-                                                        (Vector3 (v^.yComponent) (-v^.xComponent)  0)
+transformOriginV v = Transformation . Matrix $ Vector3 (Vector3 (v^.xComponent) (v^.yComponent) 0)
+                                                        (Vector3 (-v^.yComponent) (v^.xComponent)  0)
                                                         (Vector3 0          0           1)
 
 toVectorBase :: LineSegment 2 () Float -> Vector 2 Float
@@ -99,4 +107,4 @@ toVectorBase ls = signorm (ls^.end.core .-. ls^.start.core)
 
 -- Transformation for translation to the origin
 toBaseTransformation :: LineSegment 2 () Float -> Transformation 2 Float
-toBaseTransformation ls = transformOrigin (ls^.end.core) (toVectorBase ls)
+toBaseTransformation ls = transformOrigin (ls^.start.core) (toVectorBase ls)

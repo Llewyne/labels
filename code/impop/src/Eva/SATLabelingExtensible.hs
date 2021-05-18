@@ -12,9 +12,16 @@ import Data.Geometry hiding (head,direction,init)
 import Data.Geometry.Polygon
 import Data.Geometry.Boundary
 import Data.Ext
-import Data.List
+import Data.List hiding (intersect)
+
+import Eva.ClueBox
 
 type UnplacedLabelExt = ([(Port,Float)], Clue)
+
+type Clause = ([Int], Float)
+
+maxWeight = 10000
+eMax = 5
 
 placeLabelsSATExtensible :: [UnplacedLabel] -> IO [Label]
 placeLabelsSATExtensible ul = do
@@ -26,7 +33,21 @@ placeLabelsSATExtensible ul = do
     asg <- solveSAT desc clauses
     -- putStrLn $ show asg
     return (map (makeLabelExt (concat ml)) $ filter (0<) asg)
-              
+
+printClauses :: [UnplacedLabel] -> IO ()
+printClauses ul = do
+    let ml = mapVars (map makeUnplacedLabelExt ul)
+    let clauses = setClauses ml
+    let allClause = (map makeHardClause clauses) ++ map setSoftClauses (concat ml)
+    let wClauses = map writeClause allClause
+    let t = ("c\nc test max format\nc\np wcnf " ++ show (length ml) ++ " " ++ show (length wClauses) ++ "\n") ++ concat wClauses
+    writeFile "testformat.txt" t
+
+writeClause ::  Clause -> String
+writeClause (c,w) = show w ++ " " ++ (concat $ map (\x -> show x ++ " ") c) ++ "0\n"
+
+makeHardClause :: [Int] -> Clause
+makeHardClause c = (c,maxWeight)
 
 makeLabel :: [(Int,(UnplacedLabel,Int))] -> Int -> Label
 makeLabel ml i = Label clue port 0
@@ -42,7 +63,7 @@ makeLabelExt ml i = Label clue port len
             len = snd (fst ( fst $ snd $ ml!!(i-1))!!(snd ( snd $ ml!!(i-1))-1))
 
 makeUnplacedLabelExt :: UnplacedLabel -> UnplacedLabelExt
-makeUnplacedLabelExt ul = ([(p,ls)|p<-fst ul,ls<-[1..2]],snd ul)
+makeUnplacedLabelExt ul = ([(p,ls)|p<-fst ul,ls<-[1..eMax]],snd ul)
 
 
 -- Sets the clauses
@@ -54,7 +75,11 @@ makeUnplacedLabelExt ul = ([(p,ls)|p<-fst ul,ls<-[1..2]],snd ul)
 setClauses :: [[(Int,(UnplacedLabelExt,Int))]] -> [[Int]]
 setClauses ml = map (\((a,_),(b,_))->[-a,-b]) (filter overlap (filter differentPort (pairs (concat ml)))) -- clauses for overlapping 
             ++ concatMap (\ls->[[-(fst $ head ls),-(fst $ ls!!1),-(fst $ ls!!2),-(fst $ ls!!3)],[fst $ head ls,fst $ ls!!1,fst $ ls!!2,fst $ ls!!3]]) ( filter (\x->length x == 2) ml) -- make sure 1 of 2 ports is selected for every line
-            ++ map (\ls->[fst $ head ls]) (filter (\x->length x == 1) ml) 
+            ++ map (\ls->[fst $ head ls]) (filter (\x->length x == 1) ml)
+
+setSoftClauses :: (Int,(UnplacedLabelExt,Int)) -> Clause
+setSoftClauses (c,(ul,p)) = ([c],- (log ((snd ((fst ul)!!(p-1)))/eMax)))
+
 
 differentPort :: ((Int,(UnplacedLabelExt,Int)),(Int,(UnplacedLabelExt,Int)))-> Bool
 differentPort ((_,l1),(_,l2)) = _location (getPort l1) /= _location (getPort l2)
@@ -78,11 +103,8 @@ getVar ul = [(a,b)|a<-[ul],b<-[1..(length (fst ul))] ]
 
 -- Determines if two labels overlap
 overlap :: ((Int,(UnplacedLabelExt,Int)),(Int,(UnplacedLabelExt,Int)))-> Bool
-overlap ((_,(l1,i1)),(_,(l2,i2))) = clueIntersect (clueBox (fst((fst l1)!!(i1-1)))) (clueBox (fst((fst l2)!!(i2-1))))
+overlap ((_,(l1,i1)),(_,(l2,i2))) = intersects (clueBox (fst((fst l1)!!(i1-1)))) (clueBox (fst((fst l2)!!(i2-1))))
 
--- Determines if two clues intersect IN ANY WAY (clues for the same line should already be filtered out)
-clueIntersect :: forall r. (Fractional r, Ord r) => SimplePolygon () r -> SimplePolygon () r -> Bool
-clueIntersect p1 p2 = or [intersects a b|a<-listEdges p1, b<-listEdges p2]
 
 size :: Rational
 size = 16
@@ -90,18 +112,13 @@ size = 16
 
 -- Gives the cluebox as a polygon from the port
 -- Need to convert everything to rational since the intersection functions don't always work otherwise
-clueBox :: Port -> SimplePolygon () Rational
-clueBox (Port (Point2 lx ly) (Vector2 vx vy) True) = fromPoints $ map ext ([Point2 _lx _ly, Point2 (_lx+(_vx*size)) (_ly+(_vy*size)),Point2 (_lx+((_vx*size)+(_vy*size))) (_ly+((_vy*size)-(_vx*size))),Point2 (_lx+(_vy*size)) (_ly-(_vx*size))] :: [Point 2 Rational])
-    where
-        _lx = toRational lx
-        _ly = toRational ly
-        _vx = toRational vx
-        _vy = toRational vy
+clueBox :: Port -> ClueBox
+clueBox (Port p v s) = clueBoxPolygon p v s
 
-clueBox (Port (Point2 lx ly) (Vector2 vx vy) False) = fromPoints $ map ext ([Point2 _lx _ly,Point2 (_lx-(_vy*size)) (_ly+(_vx*size)), Point2 (_lx+(_vx*size)) (_ly+(_vy*size)),Point2 (_lx+((_vx*size)-(_vy*size))) (_ly+((_vy*size)+(_vx*size)))] :: [Point 2 Rational])
-   where
-        _lx = toRational lx
-        _ly = toRational ly
-        _vx = toRational vx
-        _vy = toRational vy
+-- clueBox (Port (Point2 lx ly) (Vector2 vx vy) False) = fromPoints $ map ext ([Point2 _lx _ly,Point2 (_lx-(_vy*size)) (_ly+(_vx*size)), Point2 (_lx+(_vx*size)) (_ly+(_vy*size)),Point2 (_lx+((_vx*size)-(_vy*size))) (_ly+((_vy*size)+(_vx*size)))] :: [Point 2 Rational])
+--    where
+--         _lx = toRational lx
+--         _ly = toRational ly
+--         _vx = toRational vx
+--         _vy = toRational vy
 

@@ -33,26 +33,48 @@ type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 boxSize = 16
 unit = 3
 
+debug_log = True
 
 -- places labels dynamically
 placeLabelsDynamic :: [UnplacedLabel] -> Frame -> IO [Label] 
 placeLabelsDynamic ls f = do
+    mapM_ (checkValid f) ls
     ls_ <- assignPorts ls
-    return $ concatMap (placeLabelsDynamicEdge ls_) (simplify $ listEdges f)
+    let edges = listEdges frameTest --`debug` show ls_
+    let roundedEdges = map roundSegment edges --`debug` show (length edges)
+    let filteredEdges = removeZeroLength roundedEdges
+    let simplified = simplify filteredEdges --`debug` show (simplify filteredEdges)
+    return $ concatMap (placeLabelsDynamicEdge ls_) (simplify simplified)
     
+-- Check if an unplaced label is valid
+checkValid :: Frame -> UnplacedLabel -> IO ()
+checkValid f ul 
+    | all (isOnFrame f) (fst ul) = return ()
+    | otherwise = error ("not all ports are on the frame: " ++ show ul ++ show f)
+
+-- Determines if a port lies on the frame
+isOnFrame :: Frame -> Port -> Bool
+isOnFrame f p = (p^.location) `intersects` f
 
 assignPorts :: [UnplacedLabel] -> IO [FSUnplacedLabel]
 assignPorts ul = do
+    -- Create a variable for each port
     let ml = mapVars ul
     -- mapM_ (putStrLn . show) ml
+
+    -- Set the clauses
     let clauses = setClauses ml
-    -- putStrLn $ show clauses
+    --putStrLn $ show clauses
+
+    -- Create a problem description for the SAT solver
     let desc = CNFDescription (length $ concat ml) (length clauses) ""
+    -- Solve
     asg <- solveSAT desc clauses
-    -- putStrLn $ show asg
+
+    --putStrLn $ show asg
+
     return (map (assignPort (concat ml)) $ filter (0<) asg)
               
-
 assignPort :: [(Int,(UnplacedLabel,Int))] -> Int -> FSUnplacedLabel
 assignPort ml i = (port, clue)
         where
@@ -71,17 +93,20 @@ setClauses ml = map (\((a,_),(b,_))->[-a,-b]) (filter (not.fitBox) (filter diffe
             ++ concat ( map (\ls->[[-(fst $ ls!!0),-(fst $ ls!!1)],[(fst $ ls!!0),(fst $ ls!!1)]]) ( filter (\x->length x == 2) ml)) -- make sure 1 of 2 ports is selected for every line
             ++ map (\ls->[fst $ head ls]) (filter (\x->length x == 1) ml) 
 
-
+-- Determine if ports are unequal
 differentPort :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
 differentPort ((_,l1),(_,l2)) = (_location $ getPort l1) /= (_location $ getPort l2)
 
+--Shorthand for getting the ith possible port from an unplaced label
 getPort :: (UnplacedLabel,Int) -> Port
 getPort ((ps,_),i) = ps!!(i-1)
 
+--All possible pairs from a list
 pairs :: [a] -> [(a, a)]
 pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 
--- map the variables for the SAT clauses, result is a list of pairs where the first element is the index of the variable and the second element the port assignment
+-- map the variables for the SAT clauses,
+-- result is a list of pairs where the first element is the index of the variable and the second element the port assignment
 mapVars :: [UnplacedLabel] -> [[(Int,(UnplacedLabel,Int))]]
 mapVars ul = _mapVars (map getVar ul) 1
 
@@ -89,6 +114,7 @@ _mapVars :: [[(UnplacedLabel,Int)]] -> Int -> [[(Int,(UnplacedLabel,Int))]]
 _mapVars [] _ = []
 _mapVars (v:vs) i = zip [i..] v : _mapVars vs (i + (length v))
 
+-- Create variables for every port of an unplaced label
 getVar :: UnplacedLabel -> [(UnplacedLabel,Int)]
 getVar ul = [(a,b)|a<-[ul],b<-[1..(length (fst ul))] ]
 
@@ -97,10 +123,10 @@ placeLabelsDynamicEdge
     :: [FSUnplacedLabel]        -- List of unplaced labels with fixed side assignment
     -> LineSegment 2 () Float   -- The edge on which labels are placed
     -> [Label]                  -- The placed labels
-placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths
+placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths `debug` (show edge ++ "\n" ++ show mv ++ "\n" ++ show edgeLabels ++ "\n" ++ show allLabels)
     where
-        lengths = getLengths placedLabels 0 (length allLabels - 1)
-        placedLabels = placeLabelsDynamicEdge_ allLabels 0 (length allLabels - 1) 1000 1000
+        lengths = getLengths placedLabels 0 ((length allLabels) - 1)
+        placedLabels = placeLabelsDynamicEdge_ allLabels 0 ((length allLabels) - 1) 100 100 `debug` ("length alllabels - 1: " ++ show ((length allLabels) -1))
         allLabels = dummy0 s : makeTopEdge edgeLabels m mv ++ [dummyNplus1 s] -- Rotated labels with added dummies
         s = transformBy m edge
         edgeLabels = getEdgeLabels labels edge
@@ -117,24 +143,35 @@ placeLabel ul e = Label (snd ul) (fst ul) (fromIntegral e)
 -- placeLabelsDynamicEdge_ :: [Port] -> Int -> Int -> Int -> Int -> Array (Int, Int) (Int, (Int, Int))
 placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = 
    let f i j a b 
-                | i == j - 1  = (a + b,(0,0))
-                | null m = (1000000,(-1 * boxSize,0)) 
-                | j - 1 > i = minimum m
+                | i == j - 1  = (a+b,(-1,0)) `debug` ("I AND J ADJACENT|| i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
+                | null m = (1000000,(0,0)) `debug` ("M NULL|| i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
+                | j - 1 > i = minimum m `debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
-                        m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ] `debug` (show i ++ show j)
-                        set k = filter (\x-> x < max 1 (min a b)) (take (max (p2-p1 + 2) 5) [e*boxSize|e <- [0..]] )
+                        m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
+                        set k = [minLength (fst (ls!!k)) + e | e <- [0..min a b], e `mod` boxSize == 0]
                         valid i a j b k c = fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))
                         boxLength l = boxSize * length (snd l)
     in array((p1,p1),(p2,p2)) [((i,j),f i j e1 e2)|i<-[p1..p2],j<-[p1..p2]]
+
+-- Determines the minimum length for the label to clear the boundary
+minLength :: Port -> Int
+minLength (Port p d s) | (x > 0 && s) || (x < 0 && not s) = minlength `debug` (show minlength ++ ", " ++ show p ++ show d ++ show s)  -- direction is tot the top right and label is on right side
+                       | otherwise = 0 `debug` "minlength 0"
+                            where
+                                x = d^.xComponent
+                                y = d^.yComponent 
+                                minlength = ceiling ((fromIntegral boxSize) / (y / (abs x)))
+                       
 
 -- getLengths :: (Ix t, Eq a1, Num t, Num a1) => Array (t, t) (a2, (t, a1)) -> t -> t -> [a1]
 getLengths r p1 p2
     | port == -1 = replicate (p2-p1 + 1) (-1)
     | (port,l)== (0,0) = []
     | otherwise = getLengths r p1 port ++ [l] ++ getLengths r port p2
-    where (_,(port,l)) = r!(p1,p2)
+    where (_,(port,l)) = r!(p1,p2) `debug` show r
 
-debug = flip trace
+debug x y | debug_log = flip trace x y
+        | otherwise = x
  
 -- Determines if l' might fit with to l1
 fitBox :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
@@ -144,8 +181,8 @@ fitBox ((_,(p1,i1)),(_,(p2,i2)))
     | intersects b l1 = False -- `debug` "false: box k intersects i"
     | otherwise = True -- `debug` "true: no intersection"
     where
-        l1 = (leader pos1 dir1 boxSize) --`debug` ("i: " ++ show (leader pos1 dir1 len1))
-        l = (leader pos dir boxSize) --`debug` ("k: " ++ show (leader pos dir len))
+        l1 = (leader pos1 dir1 boxSize) --debug` ("i: " ++ show (leader pos1 dir1 boxSize))
+        l = (leader pos dir boxSize) --`debug` ("k: " ++ show (leader pos dir boxSize))
         b = clueBoxPolygon (l^.end.core) dir s
         Port pos1 dir1 s1 = getPort (p1,i1)
         Port pos dir s = getPort (p2,i2)
@@ -160,20 +197,20 @@ fitLength
     -> Int      -- Extension length of l'
     -> Bool
 fitLength (Port pos1 dir1 s1) len1 (Port pos2 dir2 s2) len2 (Port pos dir s) len 
-    | pos1 == pos || pos2 == pos = True -- `debug` "true: positions are the same"
-    | intersects l1 l = False -- `debug` "false: i intersects k"
-    | intersects l2 l = False -- `debug` "false: j intersects k"
-    | intersects b l1 = False -- `debug` "false: box k intersects i"
-    | intersects b l2 = False -- `debug` "false: box k intersects j"
-    | intersects b1 l = False -- `debug` "false: box i intersects k"
-    | intersects b2 l = False -- `debug` "false: box j intersects k"
-    | intersects b1 b = False -- `debug` ("false: box i " ++ show b1 ++ " intersects box k" ++ show b)
-    | intersects b2 b = False -- `debug` "false: box j intersects box k"
-    | otherwise = True -- `debug` "true: no intersection"
+    | pos1 == pos || pos2 == pos = True  -- `debug` "true: positions are the same"
+    | intersects l1 l = False  -- `debug` "false: i intersects k"
+    | intersects l2 l = False  -- `debug` "false: j intersects k"
+    | intersects b l1 = False  -- `debug` "false: box k intersects i"
+    | intersects b l2 = False  -- `debug` "false: box k intersects j"
+    | intersects b1 l = False  -- `debug` "false: box i intersects k"
+    | intersects b2 l = False  -- `debug` "false: box j intersects k"
+    | intersects b1 b = False  -- `debug` ("false: box i " ++ show b1 ++ " intersects box k" ++ show b)
+    | intersects b2 b = False  -- `debug` "false: box j intersects box k"
+    | otherwise = True  -- `debug` "true: no intersection"
     where
-        l1 = (leader pos1 dir1 len1) --`debug` ("i: " ++ show (leader pos1 dir1 len1))
-        l2 = (leader pos2 dir2 len2) --`debug` ("j: " ++ show (leader pos2 dir2 len2)) 
-        l = (leader pos dir len) --`debug` ("k: " ++ show (leader pos dir len))
+        l1 = (leader pos1 dir1 len1) -- `debug` ("i: " ++ show (leader pos1 dir1 len1))
+        l2 = (leader pos2 dir2 len2) -- `debug` ("j: " ++ show (leader pos2 dir2 len2)) 
+        l = (leader pos dir len) -- `debug` ("k: " ++ show (leader pos dir len))
         b1 = clueBoxPolygon (l1^.end.core) dir1 s1
         b2 = clueBoxPolygon (l2^.end.core) dir2 s2
         b = clueBoxPolygon (l^.end.core) dir s
@@ -200,7 +237,7 @@ makeTopEdge
     -> Transformation 2 Float   -- The translation transformation
     -> Transformation 2 Float   -- The rotation transformation
     -> [FSUnplacedLabel]
-makeTopEdge ls m mv = map (transformLabel m mv) ls
+makeTopEdge ls m mv = sortOn (\(p,_)-> p^.location.xCoord) (map (transformLabel m mv) ls)
 
 transformLabel :: Transformation 2 Float -> Transformation 2 Float -> FSUnplacedLabel -> FSUnplacedLabel
 transformLabel m mv (p,c) = (Port (transformBy m (p^.location))  (transformBy mv (p^.direction)) (p^.side),c)
@@ -230,3 +267,39 @@ intersectionLength p1 p2 = case ip of
     Just p -> euclideanDist (_location p1) p
     Nothing -> read "Infinity" :: Float
     where ip = asA (intersect (_line p1) (_line p2))
+
+------------------
+
+rotationFrame = fromPoints [(Point2 128 (-128)) :+ (),(Point2 (-128) (-128)) :+ (),(Point2 (-128) (128)) :+ (),(Point2 128 (128)) :+ ()] :: SimplePolygon () Float
+
+testRotation = mapM (testRotationEdge testLabels) (listEdges rotationFrame)
+testPoint1 = Point2 10 128
+testPoint2 = Point2 128 (-10)
+testPoint3 = Point2 (-10) (-128)
+testPoint4 = Point2 (-128) 10
+
+testDirection1 = Vector2 1 1
+testDirection2 = Vector2 1 (-1)
+testDirection3 = Vector2 (-1) 1
+testDirection4 = Vector2 (-1) (-1)
+
+testPorts = [Port testPoint1 testDirection3 False, Port testPoint1 testDirection3 True,Port testPoint1 testDirection1 False, Port testPoint1 testDirection1 True,
+                Port testPoint2 testDirection1 False, Port testPoint2 testDirection1 True,Port testPoint2 testDirection2 False, Port testPoint2 testDirection2 True,
+                Port testPoint3 testDirection2 False, Port testPoint3 testDirection2 True,Port testPoint3 testDirection4 False, Port testPoint3 testDirection1 True,
+    	        Port testPoint4 testDirection4 False, Port testPoint4 testDirection4 True,Port testPoint4 testDirection3 False, Port testPoint4 testDirection3 True]
+testLabels = map (\p->(p,[0])) testPorts
+
+testRotationEdge ls e = do
+    putStrLn $ show e
+    let m = toBaseTransformation e
+    let mv = transformOriginV (toVectorBase e)
+    let s = transformBy m e 
+    putStrLn $ show s
+    putStrLn "----------------------------------"
+    let eL = getEdgeLabels ls e
+    putStrLn $ show eL
+    let rL = makeTopEdge eL m mv
+    putStrLn $ show rL
+    putStrLn "----------------------------------"
+    putStrLn "----------------------------------"
+

@@ -51,7 +51,7 @@ p6 = Port (Point2 110 0) (Vector2 (-1) 1) True -- Blue label a and e
 pDummy2 = Port (Point2 128 0) (Vector2 1 1) True
 
 edgeTest = OpenLineSegment ((Point2 128 0) :+ ()) ((Point2 0 0) :+ ()) :: LineSegment 2 () Float
-frameTest = fromPoints [(Point2 128 0) :+ (),(Point2 0 0) :+ (),(Point2 0 (-128)) :+ (),(Point2 128 (-128)) :+ ()] :: SimplePolygon () Float
+frameTest = fromPoints [(Point2 128 (-128)) :+ (),(Point2 (-128) (-128)) :+ (),(Point2 (-128) (128)) :+ (),(Point2 128 (128)) :+ ()] :: SimplePolygon () Float
 
 caseA = [([p6],[6,6,6]),([p1],[1,1,1,1])] :: [UnplacedLabel]
 caseB = [([p3],[3,3]),([p2],[2]),([p1],[1])] :: [UnplacedLabel]
@@ -74,3 +74,88 @@ caseABox = [
     ,([Port {_location = Point2 (98.3482) (-128.0), _direction = Vector2 (0.5129492) (-0.85841894), _side = True},Port {_location = Point2 (-54.6249) (128.0), _direction = Vector2 (-0.5129494) (0.8584188), _side = False}],[0])
     ,([Port {_location = Point2 (128.0) (-109.423), _direction = Vector2 (0.5982084) (-0.8013405), _side = True},Port {_location = Point2 (-49.2385) (128.0), _direction = Vector2 (-0.5982082) (0.80134076), _side = False}],[0])
     ,([Port {_location = Point2 (128.0) (-41.0163), _direction = Vector2 (0.8971848) (0.44165537), _side = True},Port {_location = Point2 (-48.6999) (-128.0), _direction = Vector2 (-0.8971849) (-0.44165522), _side = False}],[0])]
+
+complicatedFrame =[
+    ClosedLineSegment ((Point2 (-128.0) (-119.0)) :+ ()) ((Point2 (-128.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-128.0)) :+ ()) ((Point2 (-109.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-109.0) (-128.0)) :+ ()) ((Point2 (-109.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-109.0) (-128.0)) :+ ()) ((Point2 (-109.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-109.0) (-128.0)) :+ ()) ((Point2 (-63.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-63.0) (-128.0)) :+ ()) ((Point2 (-63.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-63.0) (-128.0)) :+ ()) ((Point2 (-63.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-63.0) (-128.0)) :+ ()) ((Point2 (-39.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-39.0) (-128.0)) :+ ()) ((Point2 (-39.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-39.0) (-128.0)) :+ ()) ((Point2 (-39.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-39.0) (-128.0)) :+ ()) ((Point2 (-34.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-34.0) (-128.0)) :+ ()) ((Point2 (-34.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-34.0) (-128.0)) :+ ()) ((Point2 (-34.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-34.0) (-128.0)) :+ ()) ((Point2 (-24.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-24.0) (-128.0)) :+ ()) ((Point2 (-24.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-24.0) (-128.0)) :+ ()) ((Point2 (-24.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-24.0) (-128.0)) :+ ()) ((Point2 (-3.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-3.0) (-128.0)) :+ ()) ((Point2 (-3.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-3.0) (-128.0)) :+ ()) ((Point2 (-3.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-3.0) (-128.0)) :+ ()) ((Point2 (28.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (28.0) (-128.0)) :+ ()) ((Point2 (28.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (28.0) (-128.0)) :+ ()) ((Point2 (28.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (28.0) (-128.0)) :+ ()) ((Point2 (47.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (47.0) (-128.0)) :+ ()) ((Point2 (47.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (47.0) (-128.0)) :+ ()) ((Point2 (47.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (47.0) (-128.0)) :+ ()) ((Point2 (48.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (48.0) (-128.0)) :+ ()) ((Point2 (48.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (48.0) (-128.0)) :+ ()) ((Point2 (48.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (48.0) (-128.0)) :+ ()) ((Point2 (66.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (66.0) (-128.0)) :+ ()) ((Point2 (66.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (66.0) (-128.0)) :+ ()) ((Point2 (66.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (66.0) (-128.0)) :+ ()) ((Point2 (78.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (78.0) (-128.0)) :+ ()) ((Point2 (78.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (78.0) (-128.0)) :+ ()) ((Point2 (78.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (78.0) (-128.0)) :+ ()) ((Point2 (87.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (87.0) (-128.0)) :+ ()) ((Point2 (87.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (87.0) (-128.0)) :+ ()) ((Point2 (87.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (87.0) (-128.0)) :+ ()) ((Point2 (128.0) (-128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (128.0) (-128.0)) :+ ()) ((Point2 (128.0) (128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (128.0) (128.0)) :+ ()) ((Point2 (-128.0) (128.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (128.0)) :+ ()) ((Point2 (-128.0) (56.0)) :+ ()),
+    ClosedLineSegment ((Point2 (-128.0) (56.0)) :+ ()) ((Point2 (-128.0) (51.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (51.0)) :+ ()) ((Point2 (-128.0) (51.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (51.0)) :+ ()) ((Point2 (-128.0) (51.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (51.0)) :+ ()) ((Point2 (-128.0) (31.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (31.0)) :+ ()) ((Point2 (-128.0) (31.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (31.0)) :+ ()) ((Point2 (-128.0) (31.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (31.0)) :+ ()) ((Point2 (-128.0) (2.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (2.0)) :+ ()) ((Point2 (-128.0) (2.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (2.0)) :+ ()) ((Point2 (-128.0) (2.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (2.0)) :+ ()) ((Point2 (-128.0) (-25.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-25.0)) :+ ()) ((Point2 (-128.0) (-25.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-25.0)) :+ ()) ((Point2 (-128.0) (-25.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-25.0)) :+ ()) ((Point2 (-128.0) (-34.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-34.0)) :+ ()) ((Point2 (-128.0) (-34.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-34.0)) :+ ()) ((Point2 (-128.0) (-34.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-34.0)) :+ ()) ((Point2 (-128.0) (-44.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-44.0)) :+ ()) ((Point2 (-128.0) (-44.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-44.0)) :+ ()) ((Point2 (-128.0) (-44.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-44.0)) :+ ()) ((Point2 (-128.0) (-56.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-56.0)) :+ ()) ((Point2 (-128.0) (-56.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-56.0)) :+ ()) ((Point2 (-128.0) (-56.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-56.0)) :+ ()) ((Point2 (-128.0) (-64.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-64.0)) :+ ()) ((Point2 (-128.0) (-64.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-64.0)) :+ ()) ((Point2 (-128.0) (-64.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-64.0)) :+ ()) ((Point2 (-128.0) (-68.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-68.0)) :+ ()) ((Point2 (-128.0) (-68.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-68.0)) :+ ()) ((Point2 (-128.0) (-68.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-68.0)) :+ ()) ((Point2 (-128.0) (-81.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-81.0)) :+ ()) ((Point2 (-128.0) (-81.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-81.0)) :+ ()) ((Point2 (-128.0) (-81.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-81.0)) :+ ()) ((Point2 (-128.0) (-92.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-92.0)) :+ ()) ((Point2 (-128.0) (-91.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-91.0)) :+ ()) ((Point2 (-128.0) (-103.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-103.0)) :+ ()) ((Point2 (-128.0) (-103.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-103.0)) :+ ()) ((Point2 (-128.0) (-103.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-103.0)) :+ ()) ((Point2 (-128.0) (-119.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-119.0)) :+ ()) ((Point2 (-128.0) (-119.0)) :+ ()),	
+    ClosedLineSegment ((Point2 (-128.0) (-119.0)) :+ ()) ((Point2 (-128.0) (-119.0)) :+ ())] :: [LineSegment 2 () Float]
+
+complFrameOrig :: SimplePolygon () Float
+complFrameOrig = fromPoints [(Point2 (-127.680756) (-118.58617)) :+ (),(Point2 (-127.680855) (-127.680855)) :+ (),(Point2 (-109.12295) (-127.680885)) :+ (),(Point2 (-109.186) (-128.0)) :+ (),(Point2 (-109.12295) (-127.680885)) :+ (),(Point2 (-94.39228) (-127.680695)) :+ (),(Point2 (-94.5052) (-128.0)) :+ (),(Point2 (-94.39228) (-127.680695)) :+ (),(Point2 (-63.2311) (-127.68097)) :+ (),(Point2 (-63.2293) (-128.0)) :+ (),(Point2 (-63.2311) (-127.68097)) :+ (),(Point2 (-39.33151) (-127.68096)) :+ (),(Point2 (-39.2937) (-128.0)) :+ (),(Point2 (-39.33151) (-127.68096)) :+ (),(Point2 (-34.35943) (-127.68095)) :+ (),(Point2 (-34.2822) (-128.0)) :+ (),(Point2 (-34.28354) (-127.68091)) :+ (),(Point2 (-24.064842) (-127.68069)) :+ (),(Point2 (-24.0481) (-128.0)) :+ (),(Point2 (-24.064842) (-127.68069)) :+ (),(Point2 (-3.058686) (-127.68059)) :+ (),(Point2 (-3.04122) (-128.0)) :+ (),(Point2 (-3.058686) (-127.68059)) :+ (),(Point2 (28.01966) (-127.68091)) :+ (),(Point2 (27.8313) (-128.0)) :+ (),(Point2 (28.01966) (-127.68091)) :+ (),(Point2 (46.92328) (-127.680855)) :+ (),(Point2 (46.7476) (-128.0)) :+ (),(Point2 (46.92328) (-127.680855)) :+ (),(Point2 (48.04326) (-127.68085)) :+ (),(Point2 (48.0612) (-128.0)) :+ (),(Point2 (48.04326) (-127.68085)) :+ (),(Point2 (66.23009) (-127.68096)) :+ (),(Point2 (66.245804) (-128.0)) :+ (),(Point2 (66.23009) (-127.68096)) :+ (),(Point2 (77.55273) (-127.68085)) :+ (),(Point2 (77.5695) (-128.0)) :+ (),(Point2 (77.55273) (-127.68085)) :+ (),(Point2 (86.51362) (-127.680725)) :+ (),(Point2 (86.7673) (-128.0)) :+ (),(Point2 (86.51362) (-127.680725)) :+ (),(Point2 (128.31914) (-127.680855)) :+ (),(Point2 (128.31914) (128.31914)) :+ (),(Point2 (-127.680855) (128.31914)) :+ (),(Point2 (-127.68084) (55.849575)) :+ (),(Point2 (-128.0) (55.8699)) :+ (),(Point2 (-127.68084) (55.849575)) :+ (),(Point2 (-127.68091) (50.56034)) :+ (),(Point2 (-128.0) (50.7636)) :+ (),(Point2 (-127.68091) (50.56034)) :+ (),(Point2 (-127.68085) (30.775707)) :+ (),(Point2 (-128.0) (30.7439)) :+ (),(Point2 (-127.68085) (30.775707)) :+ (),(Point2 (-127.68091) (2.0314457)) :+ (),(Point2 (-128.0) (2.0499)) :+ (),(Point2 (-127.68091) (2.0314457)) :+ (),(Point2 (-127.68101) (-25.146555)) :+ (),(Point2 (-128.0) (-25.1921)) :+ (),(Point2 (-127.68101) (-25.146555)) :+ (),(Point2 (-127.6809) (-33.537674)) :+ (),(Point2 (-128.0) (-33.5002)) :+ (),(Point2 (-127.6809) (-33.537674)) :+ (),(Point2 (-127.680916) (-43.783386)) :+ (),(Point2 (-128.0) (-44.3406)) :+ (),(Point2 (-127.680916) (-43.783386)) :+ (),(Point2 (-127.68076) (-56.08)) :+ (),(Point2 (-128.0) (-56.0971)) :+ (),(Point2 (-127.68076) (-56.08)) :+ (),(Point2 (-127.680916) (-63.957325)) :+ (),(Point2 (-128.0) (-64.1767)) :+ (),(Point2 (-127.6809) (-64.19141)) :+ (),(Point2 (-127.680954) (-67.83064)) :+ (),(Point2 (-128.0) (-67.8207)) :+ (),(Point2 (-127.680954) (-67.83064)) :+ (),(Point2 (-127.68106) (-81.04908)) :+ (),(Point2 (-128.0) (-81.0419)) :+ (),(Point2 (-127.68106) (-81.04908)) :+ (),(Point2 (-127.680954) (-91.39443)) :+ (),(Point2 (-128.0) (-91.5736)) :+ (),(Point2 (-127.680954) (-91.39443)) :+ (),(Point2 (-127.68074) (-102.88112)) :+ (),(Point2 (-128.0) (-102.984)) :+ (),(Point2 (-127.68074) (-102.88112)) :+ (),(Point2 (-127.680756) (-118.58617)) :+ (),(Point2 (-128.0) (-119.02)) :+ ()]
+
