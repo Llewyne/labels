@@ -61,3 +61,11 @@ testIntersection (p1,p2) = do
     putStrLn ((show $ p1^.location) ++ (show $ p1^.side) ++ " intersection with " ++ (show $ p2^.location) ++ (show $ p2^.side))
     putStrLn (show ((cbFromPort p1) `intersects` (cbFromPort p2)))
     putStrLn "---------------------------------------------------------------------"
+
+
+-- test other kinds of intersections
+p1 = Port {_location = Point2 (-128.0) (-20.0), _direction = Vector2 (-0.8077909) (0.5894692), _side = True}
+p2 = Port {_location = Point2 (-128.0) (48.0), _direction = Vector2 (-0.9309732) (-0.36508766), _side = True}
+cb1 = cbFromPort p1
+cb2 = cbFromPort p2
+cbs = [cb1,cb2]
