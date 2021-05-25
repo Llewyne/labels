@@ -142,10 +142,7 @@ toOffset p (Line q v) = scalarMultiple (p .-. q) v
 --
 -- pre: the input point p lies on the line l.
 toOffset'             :: (Eq r, Fractional r, Arity d) => Point d r -> Line d r -> r
-toOffset' p = fromJust' . toOffset p
-  where
-    fromJust' (Just x) = x
-    fromJust' _        = error "toOffset: Nothing"
+toOffset' p (Line q v) = dot (p .-. q) v / quadrance v
 
 
 -- | The intersection of two lines is either: NoIntersection, a point or a line.
