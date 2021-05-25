@@ -16,6 +16,14 @@ import           Data.Either (partitionEithers)
 import           Data.Maybe (mapMaybe)
 import           Eva.Util
 
+import Debug.Trace
+
+debug_log = True
+
+
+debug x y | debug_log = flip trace x y
+        | otherwise = x
+
 --------------------------------------------------------------------------------
 -- Clue box type: rectangle that is not orthogonal
 type ClueBox = SimplePolygon () Float
@@ -50,11 +58,11 @@ instance ClueBox `IsIntersectableWith` ClueBox where
     cb `intersect` cb_ =  
      case first List.nub . partitionEithers . mapMaybe collect $ sides of
        ([],[])      -> coRec NoIntersection 
-       ([], [s])    -> coRec NoIntersection                 -- One line segment intersecting is OK
-       ([a,b],_)    -> coRec $ ClosedLineSegment (ext a) (ext b)
-       (_, (s:_))   -> coRec $ first (const ()) s
+       ((a:b:_),_)    -> coRec $ ClosedLineSegment (ext a) (ext b)
+       (_, (s:s2:ss))   -> coRec $ first (const ()) s
        ([a],[])     -> coRec NoIntersection                   -- One corner intersecting is OK
-       (_,_)        -> error "intersecting a line with a triangle. Triangle is degenerate"
+       ([],[s])      -> coRec NoIntersection                  -- One linesegment intersecting is OK
+       (a,b)        -> error ("intersecting a line with a triangle. Triangle is degenerate" ++ show a ++ show b)
      where
        sides = listEdges cb
 
@@ -67,7 +75,8 @@ instance ClueBox `IsIntersectableWith` ClueBox where
        cb `intersect_` ls =
         case first List.nub . partitionEithers . mapMaybe collect $ sides of
             ([],[])   -> coRec NoIntersection
-            (_, [s])  -> coRec $ first (const ()) s
+            ([], [s])    -> coRec NoIntersection                 -- One line segment intersecting is OK
+            (_, (s:_))  -> coRec $ first (const ()) s
             ([a],_)   -> coRec a
             ([a,b],_) -> coRec $ ClosedLineSegment (ext a) (ext b)
             (_,_)     -> error "intersecting a line with a box. Box is degenerate"

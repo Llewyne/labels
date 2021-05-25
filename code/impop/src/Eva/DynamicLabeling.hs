@@ -24,7 +24,7 @@ import Nonogram
 import Data.Geometry.Polygon
 
 import Eva.Util
-import Eva.ClueBox hiding (boxSize)
+import Eva.ClueBox hiding (boxSize,debug_log,debug)
 import Eva.Test
 import SAT.Mios (CNFDescription (..), solveSAT)
 
@@ -125,7 +125,7 @@ placeLabelsDynamicEdge
     -> [Label]                  -- The placed labels
 placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths `debug` (show edge ++ "\n" ++ show mv ++ "\n" ++ show edgeLabels ++ "\n" ++ show allLabels)
     where
-        lengths = getLengths placedLabels 0 ((length allLabels) - 1)
+        lengths = map (snd) (snd placedLabels)
         placedLabels = placeLabelsDynamicEdge_ allLabels 0 ((length allLabels) - 1) 100 100 `debug` ("length alllabels - 1: " ++ show ((length allLabels) -1))
         allLabels = dummy0 s : makeTopEdge edgeLabels m mv ++ [dummyNplus1 s] -- Rotated labels with added dummies
         s = transformBy m edge
@@ -140,18 +140,29 @@ placeLabel
     -> Label            -- The placed label
 placeLabel ul e = Label (snd ul) (fst ul) (fromIntegral e)
 
+-- placeLabelsDE 
+--     :: [FSUnplacedLabel] -- The unplaced labels
+--     -> [(Int, Int)]        -- List of label indexes and corresponding length
+-- placeLabelsDE ls = lengths
+--     where
+--         lengths = getLengths_ r!!(0,length ls - 1,100,100)
+--         r = array()
+
+
+-- getLengths _ = [(0,0)]
+
 -- placeLabelsDynamicEdge_ :: [Port] -> Int -> Int -> Int -> Int -> Array (Int, Int) (Int, (Int, Int))
-placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = 
-   let f i j a b 
-                | i == j - 1  = (a+b,(-1,0)) `debug` ("I AND J ADJACENT|| i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
-                | null m = (1000000,(0,0)) `debug` ("M NULL|| i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
+placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
+   where 
+       f i j a b 
+                | i == j - 1  = (a+b,[]) `debug` ("I AND J ADJACENT|| i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
+                | null m = (1000000,[]) `debug` ("M NULL|| i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
                 | j - 1 > i = minimum m `debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
-                        m = [(fst (f i k a c) + fst (f k j c b) - c,(k,c)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
+                        m = [(fst (f i k a c) + fst (f k j c b) - c,snd (f i k a c)++[(k,c)] ++ snd (f k j c b)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
                         set k = [minLength (fst (ls!!k)) + e | e <- [0..min a b], e `mod` boxSize == 0]
                         valid i a j b k c = fitLength (fst (ls!!i)) (a + boxLength (ls!!i))  (fst (ls!!j)) (b + boxLength (ls!!j)) (fst (ls!!k)) (c + boxLength (ls!!k))
                         boxLength l = boxSize * length (snd l)
-    in array((p1,p1),(p2,p2)) [((i,j),f i j e1 e2)|i<-[p1..p2],j<-[p1..p2]]
 
 -- Determines the minimum length for the label to clear the boundary
 minLength :: Port -> Int

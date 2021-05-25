@@ -12,6 +12,13 @@ import Data.Geometry.PlanarSubdivision hiding(location)
 import Data.Geometry.Transformation
 import Data.Geometry.Matrix
 
+
+-- debug_log = False
+
+
+-- debug x y | debug_log = flip trace x y
+--         | otherwise = x
+
 roundSegment :: LineSegment 2 () Float -> LineSegment 2 () Float
 roundSegment ls = ClosedLineSegment ((roundPoint $ ls^.start.core) :+ ()) ((roundPoint $ ls^.end.core) :+ ())
 
