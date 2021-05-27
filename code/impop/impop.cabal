@@ -54,6 +54,7 @@ library
     , Popular
     , Eva.DynamicLabeling
     , Eva.ClueBox
+    , Eva.Leader
     , Eva.Util
     , Eva.Test
   other-modules:

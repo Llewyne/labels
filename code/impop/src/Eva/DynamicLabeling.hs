@@ -25,6 +25,7 @@ import Data.Geometry.Polygon
 
 import Eva.Util
 import Eva.ClueBox hiding (boxSize,debug_log,debug)
+import Eva.Leader hiding (boxSize,debug_log,debug)
 import Eva.Test
 import SAT.Mios (CNFDescription (..), solveSAT)
 
@@ -33,7 +34,7 @@ type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 boxSize = 16
 unit = 3
 
-debug_log = False
+debug_log = True
 
 small_number = 0.0001
 
@@ -42,7 +43,7 @@ placeLabelsDynamic :: [UnplacedLabel] -> Frame -> IO [Label]
 placeLabelsDynamic ls f = do
     mapM_ (checkValid f) ls
     ls_ <- assignPorts ls
-    let edges = listEdges frameTest --`debug` show ls_
+    let edges = listEdges f --`debug` show ls_
     let roundedEdges = map roundSegment edges --`debug` show (length edges)
     let filteredEdges = removeZeroLength roundedEdges
     let simplified = simplify filteredEdges --`debug` show (simplify filteredEdges)
@@ -125,7 +126,7 @@ placeLabelsDynamicEdge
     :: [FSUnplacedLabel]        -- List of unplaced labels with fixed side assignment
     -> LineSegment 2 () Float   -- The edge on which labels are placed
     -> [Label]                  -- The placed labels
-placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths `debug` (show (edgeLabels,allLabels))--`debug` (show edge ++ "\n" ++ show s ++ "\n" ++ show mv ++ "\n" ++ show edgeLabels ++ "\n" ++ show allLabels)
+placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths `debug` (show (edge,edgeLabels,allLabels)) --`debug` (show edge ++ "\n" ++ show s ++ "\n" ++ show mv ++ "\n" ++ show edgeLabels ++ "\n" ++ show allLabels)
     where
         edgeLabels = getEdgeLabels labels edge                                             -- The labels on this edge
         lengths = map snd $ sort $ zip sorting (map (snd) (tail $ init (snd placedLabels))) `debug` (show (placedLabels))
@@ -215,7 +216,7 @@ fitBox ((_,(p1,i1)),(_,(p2,i2)))
     where
         l1 = (leader pos1 dir1 boxSize) --debug` ("i: " ++ show (leader pos1 dir1 boxSize))
         l = (leader pos dir boxSize) --`debug` ("k: " ++ show (leader pos dir boxSize))
-        b = clueBoxPolygon (l^.end.core) dir s
+        b = clueBoxPolygon (l^.end.core) dir s 1
         Port pos1 dir1 s1 = getPort (p1,i1)
         Port pos dir s = getPort (p2,i2)
 
@@ -231,9 +232,9 @@ fitLength
     -> Bool
 fitLength ls i len1 j len2 k len = not (lb1 `intersects` lb) && not (lb2 `intersects` lb)
     where
-        lb1 = leaderPolygon (ls!!i) len1
-        lb2 = leaderPolygon (ls!!j) len2
-        lb = leaderPolygon (ls!!k) len
+        lb1 = leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
+        lb2 = leaderFromLabelLength (ls!!j) len2 --`debug` ("j:" ++ show (leaderFromLabelLength (ls!!j) len2) ++ show len2)
+        lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
 
 --     | intersects l1 l = False  -- `debug` "false: i intersects k"
 --     | intersects l2 l = False  -- `debug` "false: j intersects k"
@@ -263,9 +264,9 @@ initLeaders l = (maxLength:leader1:take (l-2) (repeat 0))++ [leaderN,maxLength]
 
 -- Makes dummies, assumes line segment is horizontal
 dummy0 :: LineSegment 2 () Float -> FSUnplacedLabel
-dummy0 s = (Port (Point2 ((s^.start.core.xCoord) - unit) (s^.start.core.yCoord)) (Vector2 (unit) 0) True,[0])
+dummy0 s = (Port (Point2 ((s^.start.core.xCoord) - unit) (s^.start.core.yCoord)) (Vector2 (-unit) 0) False,[0])
 dummyNplus1 :: LineSegment 2 () Float -> FSUnplacedLabel
-dummyNplus1 s = (Port (Point2 ((s^.end.core.xCoord) - unit) (s^.end.core.yCoord)) (Vector2 (-unit) 0) False,[0])
+dummyNplus1 s = (Port (Point2 ((s^.end.core.xCoord) + unit) (s^.end.core.yCoord)) (Vector2 (unit) 0) True,[0])
 
 -- Sets start and end leader length
 leader1 = 1
@@ -308,36 +309,15 @@ intersectionLength p1 p2 = case ip of
     Nothing -> read "Infinity" :: Float
     where ip = asA (intersect (_line p1) (_line p2))
 
+leaderFromLabelLength :: FSUnplacedLabel -> Int -> Leader
+leaderFromLabelLength (Port p v s, c) i = (ls, clueBoxPolygon (ls^.end.core) v s (length c))
+    where ls = leader p v i
+
+--Cluebox on the boundary
+clueBoxFromLabel :: FSUnplacedLabel -> ClueBox
+clueBoxFromLabel (Port p v s,c) = clueBoxPolygon p v s (length c)
+
 ------------------
-
-
---------------------------------------------------------------------------------
--- Leader type: A full label, a linesegment and (one or more) clueboxes
-type Leader = ClueBox   -- The same intersection rules apply so it is basically a cluebox
---------------------------------------------------------------------------
-
--- Create a leader from an FSUnplacedLabel and a length
-leaderPolygon :: FSUnplacedLabel -> Int -> Leader
-leaderPolygon (Port p v False,c) len = fromPoints [p :+ (),p1 :+ (),p2 :+ (),p3 :+ (),p4 :+ ()] -- Lefty
-    where
-        ub = signorm v^*(fromIntegral boxSize)
-        iv = inverseVector ub
-        p1 = p .+^ ((signorm v)^*(fromIntegral (len + boxSize*length c)))
-        p2 = p1 .+^ (Vector2 (-iv^.xComponent) (iv^.yComponent))
-        p3 = p2 .+^ (negated ub)
-        p4 = p3 .+^ (negated (Vector2 (-iv^.xComponent) (iv^.yComponent)))
-
-
-leaderPolygon (Port p v True,c) len = fromPoints [p :+ (),p1 :+ (), p2 :+ (),p3 :+ (),p4 :+ ()] -- Righty
-    where
-        ub = signorm v^*(fromIntegral boxSize)
-        iv = inverseVector ub
-        p1 = p .+^ ((signorm v)^*(fromIntegral (len + boxSize*length c)))
-        p2 = p1 .+^ (Vector2 (iv^.xComponent) (-iv^.yComponent))
-        p3 = p2 .+^ (negated ub)
-        p4 = p3 .+^ (negated (Vector2 (iv^.xComponent) (-iv^.yComponent)))
-
-----------------------
 
 rotationFrame = fromPoints [(Point2 128 (-128)) :+ (),(Point2 (-128) (-128)) :+ (),(Point2 (-128) (128)) :+ (),(Point2 128 (128)) :+ ()] :: SimplePolygon () Float
 

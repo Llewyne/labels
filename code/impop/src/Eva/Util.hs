@@ -12,7 +12,6 @@ import Data.Geometry.PlanarSubdivision hiding(location)
 import Data.Geometry.Transformation
 import Data.Geometry.Matrix
 
-
 -- debug_log = False
 
 

@@ -18,7 +18,7 @@ import           Eva.Util
 
 import Debug.Trace
 
-debug_log = True
+debug_log = False
 
 
 debug x y | debug_log = flip trace x y
@@ -28,18 +28,16 @@ debug x y | debug_log = flip trace x y
 -- Clue box type: rectangle that is not orthogonal
 type ClueBox = SimplePolygon () Float
 
-type instance IntersectionOf (ClueBox) (LineSegment 2 () Float) = [ NoIntersection, Point 2 Float, LineSegment 2 () Float]
+type instance IntersectionOf (ClueBox) (LineSegment 2 () Float) = [ NoIntersection, [Point 2 Float], LineSegment 2 () Float]
 
 instance (ClueBox) `IsIntersectableWith` (LineSegment 2 () Float) where
     nonEmptyIntersection = defaultNonEmptyIntersection
 
     cb `intersect` ls =
      case first List.nub . partitionEithers . mapMaybe collect $ sides of
-       ([],[])   -> coRec NoIntersection
-       ([], [s])  -> coRec NoIntersection -- $ first (const ()) s    Technically intersects but one line segment is ok
-       ([a],_)   -> coRec a
-       ([a,b],_) -> coRec $ ClosedLineSegment (ext a) (ext b)
-       (_,_)     -> error "intersecting a line with a box. Box is degenerate"
+       ([],_)   -> coRec NoIntersection
+       (a,_)    -> coRec a
+       (a,b)     -> error $ "intersecting a line with a box. Box is degenerate" ++ show a ++ show b
      where
        sides = listEdges cb
 
@@ -50,38 +48,38 @@ instance (ClueBox) `IsIntersectableWith` (LineSegment 2 () Float) where
                      :& (H $ \(e :: LineSegment 2 () Float) -> Just $ Right e)
                      :& RNil
 
-type instance IntersectionOf (ClueBox) ClueBox = [ NoIntersection, Point 2 Float, LineSegment 2 () Float]
+type instance IntersectionOf (ClueBox) ClueBox = [ NoIntersection, [Point 2 Float], [LineSegment 2 () Float]]
 
 instance ClueBox `IsIntersectableWith` ClueBox where
     nonEmptyIntersection = defaultNonEmptyIntersection
 
     cb `intersect` cb_ =  
-     case first List.nub . partitionEithers . mapMaybe collect $ sides of
-       ([],[])      -> coRec NoIntersection 
-       ((a:b:_),_)    -> coRec $ ClosedLineSegment (ext a) (ext b)
-       (_, (s:s2:ss))   -> coRec $ first (const ()) s
-       ([a],[])     -> coRec NoIntersection                   -- One corner intersecting is OK
-       ([],[s])      -> coRec NoIntersection                  -- One linesegment intersecting is OK
-       (a,b)        -> error ("intersecting a line with a triangle. Triangle is degenerate" ++ show a ++ show b)
+     case first (List.nub . concat) . partitionEithers . mapMaybe collect $ sides  of
+       ([],[])      -> coRec NoIntersection
+       ([],[s1,s2]:_)  -> coRec [s1,s2]
+       ([],_)       -> coRec NoIntersection
+       ([a],[])     -> coRec NoIntersection
+       (a,_)        -> coRec a
+       (a,b)     -> error $ "intersecting a line with a box. Box is degenerate" ++ show a ++ show b
      where
        sides = listEdges cb
 
-       collect   :: LineSegment 2 () Float -> Maybe (Either (Point 2 Float) (LineSegment 2 () Float))
+       collect   :: LineSegment 2 () Float -> Maybe (Either [Point 2 Float] [LineSegment 2 () Float])
        collect s = match (cb_ `intersect_` s) $
                         (H $ \NoIntersection           -> Nothing)
-                     :& (H $ \(a :: Point 2 Float)         -> Just $ Left a)
-                     :& (H $ \(e :: LineSegment 2 () Float) -> Just $ Right e)
+                     :& (H $ \(a :: [Point 2 Float])        -> Just $ Left a)
+                     :& (H $ \(e :: [LineSegment 2 () Float]) -> Just $ Right e)
                      :& RNil
-       cb `intersect_` ls =
-        case first List.nub . partitionEithers . mapMaybe collect $ sides of
-            ([],[])   -> coRec NoIntersection
-            ([], [s])    -> coRec NoIntersection                 -- One line segment intersecting is OK
-            (_, (s:_))  -> coRec $ first (const ()) s
-            ([a],_)   -> coRec a
-            ([a,b],_) -> coRec $ ClosedLineSegment (ext a) (ext b)
-            (_,_)     -> error "intersecting a line with a box. Box is degenerate"
+       cb_ `intersect_` ls =
+        case first List.nub . partitionEithers . mapMaybe collect $ sides of --`debug` show (partitionEithers . mapMaybe collect $ sides) of
+            ([],[]) -> coRec NoIntersection
+            (a,[])  -> coRec a
+            (_,s)   -> coRec s
+
+            -- ([], [s1,s2,s3])  -> coRec NoIntersection -- $ first (const ()) s    Technically intersects but three line segment is ok
+            (a,b)     -> error $ "intersection not recognized" ++ show a ++ show b
             where
-                sides = listEdges cb
+                sides = listEdges cb_
 
                 collect   :: LineSegment 2 () Float -> Maybe (Either (Point 2 Float) (LineSegment 2 () Float))
                 collect s = match (s `intersect` ls) $
@@ -89,7 +87,6 @@ instance ClueBox `IsIntersectableWith` ClueBox where
                                 :& (H $ \(a :: Point 2 Float)         -> Just $ Left a)
                                 :& (H $ \(e :: LineSegment 2 () Float) -> Just $ Right e)
                                 :& RNil
-
 
 --------------------------------------------------------------------------
 
@@ -100,18 +97,20 @@ clueBoxPolygon
     :: Point 2 Float    -- Attachment point
     -> Vector 2 Float   -- Direction of l
     -> Bool             -- Side that must be labeled. True if on right of direction vector (left if going into puzzle)
+    -> Int              -- How many boxes
     -> ClueBox
-clueBoxPolygon p v False = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()]
+clueBoxPolygon p v False i = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()] --`debug` (show (p,p2,p3,p4))
     where
         ub = signorm v^*(fromIntegral boxSize)
         iv = inverseVector ub
-        p2 = p .+^ ub
+        p2 = p .+^ ub^*(fromIntegral i)
         p3 = p2 .+^ (Vector2 (-iv^.xComponent) (iv^.yComponent))
-        p4 = p3 .+^ (negated ub)
-clueBoxPolygon p v True = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()]
+        p4 = p3 .+^ (negated ub^*(fromIntegral i))
+clueBoxPolygon p v True i = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()] --`debug` (show (p,p2,p3,p4))
     where
         ub = signorm v^*(fromIntegral boxSize)
         iv = inverseVector ub
-        p2 = p .+^ ub
+        p2 =  p .+^ ub^*(fromIntegral i)
         p3 = p2 .+^ (Vector2 (iv^.xComponent) (-iv^.yComponent))
-        p4 = p3 .+^ (negated ub)
+        p4 = p3 .+^ (negated ub^*(fromIntegral i))
+

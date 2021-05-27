@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.18">
-<info created="D:20200619161352" modified="D:20210422162454"/>
+<info created="D:20210527174225" modified="D:20210527175112"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -180,6 +180,64 @@ h
 h
 </path>
 </symbol>
+<symbol name="arrow/mid-normal(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0.5 0 m
+-0.5 0.333 l
+-0.5 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/mid-fnormal(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0.5 0 m
+-0.5 0.333 l
+-0.5 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/mid-pointed(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+0.5 0 m
+-0.5 0.333 l
+-0.3 0 l
+-0.5 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/mid-fpointed(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+0.5 0 m
+-0.5 0.333 l
+-0.3 0 l
+-0.5 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/mid-double(spx)">
+<path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
+1 0 m
+0 0.333 l
+0 -0.333 l
+h
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
+<symbol name="arrow/mid-fdouble(spx)">
+<path stroke="sym-stroke" fill="white" pen="sym-pen">
+1 0 m
+0 0.333 l
+0 -0.333 l
+h
+0 0 m
+-1 0.333 l
+-1 -0.333 l
+h
+</path>
+</symbol>
 <pen name="heavier" value="0.8"/>
 <pen name="fat" value="1.2"/>
 <pen name="ultrafat" value="2"/>
@@ -220,13 +278,13 @@ h
 <dashstyle name="dash dotted" value="[4 2 1 2] 0"/>
 <dashstyle name="dash dot dotted" value="[4 2 1 2 1 2] 0"/>
 <textsize name="large" value="\large"/>
-<textsize name="small" value="\small"/>
-<textsize name="tiny" value="\tiny"/>
 <textsize name="Large" value="\Large"/>
 <textsize name="LARGE" value="\LARGE"/>
 <textsize name="huge" value="\huge"/>
 <textsize name="Huge" value="\Huge"/>
+<textsize name="small" value="\small"/>
 <textsize name="footnote" value="\footnotesize"/>
+<textsize name="tiny" value="\tiny"/>
 <textstyle name="center" begin="\begin{center}" end="\end{center}"/>
 <textstyle name="itemize" begin="\begin{itemize}" end="\end{itemize}"/>
 <textstyle name="item" begin="\begin{itemize}\item{}" end="\end{itemize}"/>
@@ -244,88 +302,82 @@ h
 <anglesize name="45 deg" value="45"/>
 <anglesize name="30 deg" value="30"/>
 <anglesize name="22.5 deg" value="22.5"/>
+<opacity name="10%" value="0.1"/>
+<opacity name="30%" value="0.3"/>
+<opacity name="50%" value="0.5"/>
+<opacity name="75%" value="0.75"/>
 <tiling name="falling" angle="-60" step="4" width="1"/>
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
 <page>
 <layer name="alpha"/>
 <view layers="alpha" active="alpha"/>
-<path layer="alpha" stroke="blue" pen="fat">
--128 128 m
--128 -128 l
-128 -128 l
-128 128 l
+<path layer="alpha" stroke="red">
+168 484.974 m
+216 568.113 l
+264 484.974 l
 h
 </path>
 <path stroke="red">
--16 80 m
-32 64 l
+208 609.682 m
+272 498.831 l
+336 609.682 l
+h
 </path>
-<path stroke="red">
-32 64 m
-32 112 l
-</path>
-<path stroke="red">
-32 112 m
--16 80 l
-</path>
-<path stroke="black">
-32 112 m
-56 128 l
-</path>
-<path stroke="black">
-32 112 m
-32 128 l
-</path>
-<path stroke="black">
-32 64 m
-128 32 l
-</path>
-<path stroke="black">
-32 64 m
-32 -128 l
-</path>
-<path stroke="black">
--16 80 m
--128 8 l
-</path>
-<path stroke="black">
--16 80 m
--128 120 l
-</path>
-<path stroke="red">
--15.8351 -68.5173 m
-20.4079 20.6963 l
--77.2041 -11.3326 l
+<path stroke="blue">
+128 637.395 m
+128 457.261 l
+344 457.261 l
+344 637.395 l
 h
 </path>
 <path stroke="black">
--77.2041 -11.3326 m
--128 36 l
+168 484.974 m
+152 457.261 l
 </path>
 <path stroke="black">
--77.2041 -11.3326 m
--128 -28 l
+168 484.974 m
+128 484.974 l
 </path>
 <path stroke="black">
--15.8351 -68.5173 m
--40 -128 l
+264 484.974 m
+280 457.261 l
 </path>
 <path stroke="black">
--15.8351 -68.5173 m
-48 -128 l
+264 484.974 m
+344 484.974 l
 </path>
 <path stroke="black">
-20.4079 20.6963 m
-128 56 l
+272 498.831 m
+296 457.261 l
 </path>
 <path stroke="black">
-20.4079 20.6963 m
-64 128 l
+272 498.831 m
+248 457.261 l
 </path>
 <path stroke="black">
-12.4746 128 m
--49.1197 -128 l
+336 609.682 m
+344 623.538 l
+</path>
+<path stroke="black">
+336 609.682 m
+344 609.682 l
+</path>
+<path stroke="black">
+208 609.682 m
+192 637.395 l
+</path>
+<path stroke="black">
+208 609.682 m
+128 609.682 l
+</path>
+<path stroke="black">
+216 568.113 m
+176 637.395 l
+</path>
+<path stroke="black">
+216 568.113 m
+256 637.395 l
 </path>
 </page>
 </ipe>

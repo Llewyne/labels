@@ -13,7 +13,7 @@ import           Data.Geometry.Polygon
 import qualified Data.List as List
 import           Data.Bifunctor
 import           Data.Either (partitionEithers)
-import           Data.Maybe (mapMaybe)
+import           Data.Maybe (catMaybes)
 import           Eva.Util
 import           Eva.ClueBox hiding (boxSize,debug_log,debug_log)
 
@@ -27,29 +27,46 @@ debug x y | debug_log = flip trace x y
 
 --------------------------------------------------------------------------------
 -- Leader type: A full label, a linesegment and (one or more) clueboxes
-type Leader = ClueBox   -- The same intersection rules apply so it is basically a cluebox
+type Leader = (LineSegment 2 () Float, ClueBox) 
+
+
+type instance IntersectionOf Leader Leader = [ NoIntersection, [Point 2 Float], [LineSegment 2 () Float]]
+
+instance Leader `IsIntersectableWith` Leader where
+    nonEmptyIntersection = defaultNonEmptyIntersection
+
+    (ls,cb) `intersect` (ls_,cb_) =
+      case second concat . first concat $ partitionEithers $ catMaybes [collect1 ls ls_,collect2 ls cb_, collect2 ls_ cb,collect3 cb cb_]  of
+       ([],[])   -> coRec NoIntersection
+       ([a],[]) -> coRec NoIntersection
+       ([],[b]) -> coRec NoIntersection
+       (a,_)    -> coRec a
+       ([],b)   -> coRec b
+       (a,b)     -> error $ "intersecting a line with a box. Box is degenerate" ++ show a ++ show b
+
+      where
+        collect1   :: LineSegment 2 () Float -> LineSegment 2 () Float -> Maybe (Either [Point 2 Float] [LineSegment 2 () Float])
+        collect1 s1 s2 = match (s1 `intersect` s2) $
+                        (H $ \NoIntersection           -> Nothing)
+                     :& (H $ \(a :: Point 2 Float)         -> Just $ Left [a])
+                     :& (H $ \(e :: LineSegment 2 () Float) -> Nothing)
+                     :& RNil
+        
+        collect2   :: LineSegment 2 () Float -> ClueBox -> Maybe (Either [Point 2 Float] [LineSegment 2 () Float])
+        collect2 s1 cb1 = match (cb1 `intersect` s1) $
+                        (H $ \NoIntersection           -> Nothing)
+                     :& (H $ \(a :: [Point 2 Float])         -> Just $ Left a)
+                     :& (H $ \(e :: LineSegment 2 () Float) -> Nothing)
+                     :& RNil
+
+        collect3 :: ClueBox -> ClueBox -> Maybe (Either [Point 2 Float] [LineSegment 2 () Float])
+        collect3 cb1 cb2 = match (cb1 `intersect` cb2) $
+                        (H $ \NoIntersection           -> Nothing)
+                     :& (H $ \(a :: [Point 2 Float])         -> Just $ Left a)
+                     :& (H $ \(e :: [LineSegment 2 () Float]) -> Just $ Right e)
+                     :& RNil
 
 
 --------------------------------------------------------------------------
 
 boxSize = 16
-
--- Create a leader from an FSUnplacedLabel and a length
-leaderPolygon :: FSUnplacedLabel -> Int -> Leader
-leaderPolygon (Port p v False,c) len = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ (),p5 :+ ()] -- Lefty
-    where
-        ub = signorm v^*(fromIntegral boxSize)
-        iv = inverseVector ub
-        p1 = p .+^ ((signorm v)^*(fromIntegral len)+ boxSize*length c)
-        p2 = p1 .+^ ub
-        p3 = p2 .+^ (Vector2 (-iv^.xComponent) (iv^.yComponent))
-        p4 = p3 .+^ (negated ub)
-
-leaderPolygon (Port p v True,c) len = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ (),p5 :+ ()] -- Lefty
-    where
-        ub = signorm v^*(fromIntegral boxSize)
-        iv = inverseVector ub
-        p1 = p .+^ ((signorm v)^*(fromIntegral len)+ boxSize*length c)
-        p2 = p1 .+^ ub
-        p3 = p2 .+^ (Vector2 (iv^.xComponent) (-iv^.yComponent))
-        p4 = p3 .+^ (negated ub)
