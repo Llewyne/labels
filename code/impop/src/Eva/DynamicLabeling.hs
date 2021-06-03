@@ -34,7 +34,7 @@ type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 boxSize = 16
 unit = 3
 
-debug_log = True
+debug_log = False
 
 small_number = 0.0001
 
@@ -129,7 +129,7 @@ placeLabelsDynamicEdge
 placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths `debug` (show (edge,edgeLabels,allLabels)) --`debug` (show edge ++ "\n" ++ show s ++ "\n" ++ show mv ++ "\n" ++ show edgeLabels ++ "\n" ++ show allLabels)
     where
         edgeLabels = getEdgeLabels labels edge                                             -- The labels on this edge
-        lengths = map snd $ sort $ zip sorting (map (snd) (tail $ init (snd placedLabels))) `debug` (show (placedLabels))
+        lengths = traceShowId $ map snd $ sort $ zip sorting (map (snd) (tail $ init (snd placedLabels))) `debug` (show (placedLabels) ++ show sorting ++ show allLabels)
         placedLabels = placeLabelsDynamicEdge_ allLabels 0 ((length allLabels) - 1) 100 100 `debug` ("length alllabels - 1: " ++ show ((length allLabels) -1))
         (sorting,allLabels) = prepareEdgeLabels edgeLabels edge
 
@@ -180,12 +180,13 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
    where 
        f i j a b 
                 | i == j - 1  = (a+b,[(i,a),(j,b)]) -- `debug` ("I AND J ADJACENT|| i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
-                | null m = (1000000,[(i,a)] ++ [(k,-boxSize)|k<-[i+1..j-1]] ++[(j,b)]) `debug` ("M NULL|| i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
+                | null m = (1000000,[(i,a)] ++ [(k,-boxSize)|k<-[i+1..j-1]] ++[(j,b)]) --`debug` ("M NULL|| i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                 | j - 1 > i = minimum m --`debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
                         m = [(fst (f i k a c) + fst (f k j c b) - c,init (snd (f i k a c)) ++ snd (f k j c b)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
-                        set k = [minLength (fst (ls!!k)) + e | e <- [0..(max a b)+boxSize], e == 0 || e `mod` boxSize == 0] 
+                        set k = [minLength (fst (ls!!k)) + e | e <- [0..(max a b)+boxSize*2], e == 0 || e `mod` boxSize == 0] 
                         valid i a j b k c = fitLength ls i a j b k c
+
 -- Determines the minimum length for the label to clear the boundary
 minLength :: Port -> Int
 minLength (Port p d s) | ((x > 0 && s) || (x < 0 && not s))= minlength --`debug` (show minlength ++ ", " ++ show p ++ show d ++ show s)  -- direction is tot the top right and label is on right side

@@ -109,8 +109,8 @@ transformOriginV v = Transformation . Matrix $ Vector3 (Vector3 (v^.xComponent) 
                                                         (Vector3 0          0           1)
 
 toVectorBase :: LineSegment 2 () Float -> Vector 2 Float
-toVectorBase ls = signorm (ls^.end.core .-. ls^.start.core)
+toVectorBase ls = signorm (ls^.start.core .-. ls^.end.core)
 
 -- Transformation for translation to the origin
 toBaseTransformation :: LineSegment 2 () Float -> Transformation 2 Float
-toBaseTransformation ls = transformOrigin (ls^.start.core) (toVectorBase ls)
+toBaseTransformation ls = transformOrigin (ls^.end.core) (toVectorBase ls)
