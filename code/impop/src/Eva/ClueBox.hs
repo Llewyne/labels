@@ -10,11 +10,13 @@ import           Data.Ext
 import           Data.Geometry hiding (head,direction,init,replicate,unit)
 import           Data.Geometry.PlanarSubdivision hiding(location)
 import           Data.Geometry.Polygon
+import           Data.Geometry.Box
 import qualified Data.List as List
 import           Data.Bifunctor
 import           Data.Either (partitionEithers)
 import           Data.Maybe (mapMaybe)
 import           Eva.Util
+import qualified Data.Foldable as F
 
 import Debug.Trace
 
@@ -32,6 +34,8 @@ type instance IntersectionOf (ClueBox) (LineSegment 2 () Float) = [ NoIntersecti
 
 instance (ClueBox) `IsIntersectableWith` (LineSegment 2 () Float) where
     nonEmptyIntersection = defaultNonEmptyIntersection
+
+    -- cb `intersects` ls = insidePolygon (ls^.start.core) cb || insidePolygon (ls^.end.core) cb
 
     cb `intersect` ls =
      case first List.nub . partitionEithers . mapMaybe collect $ sides of
@@ -52,6 +56,8 @@ type instance IntersectionOf (ClueBox) ClueBox = [ NoIntersection, [Point 2 Floa
 
 instance ClueBox `IsIntersectableWith` ClueBox where
     nonEmptyIntersection = defaultNonEmptyIntersection
+
+    -- cb `intersects` cb_ = getDistanceBetween cb cb_ < 24
 
     cb `intersect` cb_ =  
      case first (List.nub . concat) . partitionEithers . mapMaybe collect $ sides  of
@@ -90,6 +96,36 @@ instance ClueBox `IsIntersectableWith` ClueBox where
 
 --------------------------------------------------------------------------
 
+
+--from BezierSpline
+intersectsP :: ClueBox -> ClueBox -> Bool
+intersectsP p q | not $ boundingBox p `intersects` boundingBox q = False
+                | otherwise = or [a `intersects` b | a <- p & listEdges, b <- q & listEdges]
+                           || (any (flip insidePolygon p) $ map _core $ F.toList $ polygonVertices q)
+                           || (any (flip insidePolygon q) $ map _core $ F.toList $ polygonVertices p)
+
+--Fast way to see if two line segments intersect
+lsIntersects :: LineSegment 2 () Float -> LineSegment 2 () Float -> Bool
+lsIntersects ls1 ls2
+  | partOne > 0 && partTwo < 0 = True
+  | partOne < 0 && partTwo > 0 = True
+  | otherwise = False
+  where
+    partOne = ((bx - ax)*(cy - by)) - ((by - ay)*(cx - bx)) :: Float
+    partTwo = ((bx - ax)*(dy - by)) - ((by - ay)*(dx - bx)) :: Float
+    a = ls1^.start
+    b = ls1^.end
+    c = ls2^.start
+    d = ls2^.end
+    ax = a^.core.xCoord :: Float
+    bx = b^.core.xCoord :: Float
+    cx = c^.core.xCoord :: Float
+    dx = d^.core.xCoord :: Float
+    ay = a^.core.yCoord :: Float
+    by = b^.core.yCoord :: Float
+    cy = c^.core.yCoord :: Float
+    dy = d^.core.yCoord :: Float
+
 boxSize = 16
 
 -- Create a clue box for line l
@@ -114,3 +150,5 @@ clueBoxPolygon p v True i = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()] --`d
         p3 = p2 .+^ (Vector2 (iv^.xComponent) (-iv^.yComponent))
         p4 = p3 .+^ (negated ub^*(fromIntegral i))
 
+getDistanceBetween :: ClueBox -> ClueBox -> Float
+getDistanceBetween cb cb_ = euclideanDist (centroid cb) (centroid cb_) 

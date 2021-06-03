@@ -12,6 +12,7 @@ import Data.Vinyl.CoRec
 import Data.Ext
 
 import Data.Array((!),array)
+import Data.Maybe(fromJust)
 
 import Control.Lens
 import Control.Monad.Zip
@@ -34,7 +35,7 @@ type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 boxSize = 16
 unit = 3
 
-debug_log = True
+debug_log = False
 
 small_number = 0.0001
 
@@ -126,7 +127,7 @@ placeLabelsDynamicEdge
     :: [FSUnplacedLabel]        -- List of unplaced labels with fixed side assignment
     -> LineSegment 2 () Float   -- The edge on which labels are placed
     -> [Label]                  -- The placed labels
-placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths `debug` (show (edge,edgeLabels,allLabels)) --`debug` (show edge ++ "\n" ++ show s ++ "\n" ++ show mv ++ "\n" ++ show edgeLabels ++ "\n" ++ show allLabels)
+placeLabelsDynamicEdge labels edge = traceShowId $ zipWith placeLabel edgeLabels lengths `debug` (show (edge,edgeLabels,allLabels)) --`debug` (show edge ++ "\n" ++ show s ++ "\n" ++ show mv ++ "\n" ++ show edgeLabels ++ "\n" ++ show allLabels)
     where
         edgeLabels = getEdgeLabels labels edge                                             -- The labels on this edge
         lengths = map snd $ sort $ zip sorting (map (snd) (tail $ init (snd placedLabels))) `debug` (show (placedLabels))
@@ -183,9 +184,18 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                 | null m = (1000000,[(i,a)] ++ [(k,-boxSize)|k<-[i+1..j-1]] ++[(j,b)]) `debug` ("M NULL|| i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                 | j - 1 > i = minimum m --`debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
-                        m = [(fst (f i k a c) + fst (f k j c b) - c,init (snd (f i k a c)) ++ snd (f k j c b)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
-                        set k = [minLength (fst (ls!!k)) + e | e <- [0..(max a b)+boxSize], e == 0 || e `mod` boxSize == 0] 
-                        valid i a j b k c = fitLength ls i a j b k c
+                        m = [smart i k j a b c | k<-[i+1..j-1], c<-set k , valid i a j b k c ] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
+                        set k = [e*boxSize | e <- [0..10], e*boxSize >= minLength (fst (ls!!k))] 
+                        valid i a j b k c =  not (elem c (doesNotFitLength ls i a k)) && not (elem c (doesNotFitLength ls j b k))-- fitLength ls i a j b k c
+                        smart i k j a b c 
+                            | fst f1 == 1000000 = (1000000,[])
+                            | fst f2 == 1000000 = (1000000,[])
+                            | otherwise = ((fst f1) + (fst f2) - c, init (snd (f i k a c)) ++ snd (f k j c b))
+                                where
+                                    f1 = f i k a c
+                                    f2 = f k j c b
+                        
+
 -- Determines the minimum length for the label to clear the boundary
 minLength :: Port -> Int
 minLength (Port p d s) | ((x > 0 && s) || (x < 0 && not s))= minlength --`debug` (show minlength ++ ", " ++ show p ++ show d ++ show s)  -- direction is tot the top right and label is on right side
@@ -220,22 +230,99 @@ fitBox ((_,(p1,i1)),(_,(p2,i2)))
         Port pos1 dir1 s1 = getPort (p1,i1)
         Port pos dir s = getPort (p2,i2)
 
--- Determines if l' fits in between l1 and l2
-fitLength 
-    :: [FSUnplacedLabel] -- labels
-    -> Int     -- index of l1
-    -> Int      -- Extension length of l1
-    -> Int     -- index of l2
-    -> Int      -- Extension length of l2
-    -> Int     -- index of l'
-    -> Int      -- Extension length of l'
-    -> Bool
-fitLength ls i len1 j len2 k len = not (lb1 `intersects` lb) && not (lb2 `intersects` lb)
-    where
-        lb1 = leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
-        lb2 = leaderFromLabelLength (ls!!j) len2 --`debug` ("j:" ++ show (leaderFromLabelLength (ls!!j) len2) ++ show len2)
-        lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
 
+-- Gives a range of lengths for k where it will not fit with l
+doesNotFitLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> [Int]
+doesNotFitLength ls l len k = filter (fitLength_ l len k) lengths
+    where lengths = [e*boxSize|e<-[0..10]]
+
+
+doesFitLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> [(Float -> Bool)]
+doesFitLength ls l len k
+    | l < k = doesFitLengthik ls l len k
+    | otherwise = doesFitLengthkj ls l len k
+
+
+-- creates a set of rules that determine if a length of k will fit with a set length of i, k > i
+doesFitLengthik
+    :: [FSUnplacedLabel] -- labels
+    -> Int     -- index of i
+    -> Int      -- Extension length of i INCLUDING box length
+    -> Int     -- index of k
+    -> [(Float -> Bool)]
+doesFitLengthik ls i len k
+    | anglePos && not s && sk                           = [(0 <)] -- Labels are facing outward and positive angle so they will never intersect
+    | anglePos                                          = [(0 <)] -- NAIVE
+    | not s && sk     && (fromIntegral len) < d                        = [(0 <)]
+    | not s && sk                                       = [(dk >)]
+    | not s && not sk && (fromIntegral len) < d_                       = [(0 <)]
+    | not s && not sk && (fromIntegral len) > d_ && (fromIntegral len) < d            = [(dk >), (dk + 24 <)]
+    | s     && not sk && (fromIntegral len) > d + 16                   = [(dk + 18 >)]
+    | s     && not sk && (fromIntegral len) < d - 16                   = [(0 <)]
+    | s     && not sk && (fromIntegral len) < d + 16 && (fromIntegral len) > d - 16   = [(dk - 24 >), (dk + 24 <)]
+    | otherwise = [(0<)]
+
+    where
+        anglePos = angleBetweenVectors v vk > 0
+        (Port p v s,_) = ls!!i
+        (Port pk vk sk,_) = ls!!k
+        ip = fromJust $ asA @(Point 2 Float) $ line `intersect` linek -- Intersection point of the lines defined by v,p and vk,pk
+        d = euclideanDist p ip
+        dk = euclideanDist pk ip
+        ip_ = fromJust $ asA @(Point 2 Float) $ line `intersect` linek_ 
+        d_ = euclideanDist p ip_
+        line = (lineFromVectorPoint v p)
+        linek = (lineFromVectorPoint vk pk)
+        linek_ = (lineFromVectorPoint vk (pk .+^ v_))
+        v_ = (signorm (Vector2 (vk^.yComponent) (-(vk^.xComponent)))) ^* (fromIntegral boxSize)
+
+-- creates a set of rules that determine if a length of k will fit with a set length of j, k < j
+doesFitLengthkj
+    :: [FSUnplacedLabel] -- labels
+    -> Int     -- index of l
+    -> Int      -- Extension length of l INCLUDING box length
+    -> Int     -- index of k
+    -> [(Float -> Bool)]
+doesFitLengthkj ls j len k
+    | anglePos && s && not sk                           = [(0 <)] 
+    | anglePos                                          = [(0 <)] -- NAIVE
+    | s     && not sk && (fromIntegral len) < d                        = [(0 <)]
+    | s     && not sk                                   = [(dk >)]
+    | s     &&     sk && (fromIntegral len) < d_                       = [(0 <)]
+    | s     &&     sk && (fromIntegral len) > d_ && (fromIntegral len) < d            = [(dk >), (dk + 24 <)]
+    | not s &&     sk && (fromIntegral len) > d + 16                   = [(dk + 18 >)]
+    | not s &&     sk && (fromIntegral len) < d - 16                   = [(0 <)]
+    | not s &&     sk && (fromIntegral len) < d + 16 && (fromIntegral len) > d - 16   = [(dk - 24 >), (dk + 24 <)]
+    | otherwise = [(0<)]
+    where
+        anglePos = angleBetweenVectors v vk > 0
+        (Port p v s,_) = ls!!j
+        (Port pk vk sk,_) = ls!!k
+        ip = fromJust $ asA @(Point 2 Float) $ line `intersect` linek -- Intersection point of the lines defined by v,p and vk,pk
+        d = euclideanDist p ip
+        dk = euclideanDist pk ip
+        ip_ = fromJust $ asA @(Point 2 Float) $ line `intersect` linek_ 
+        d_ = euclideanDist p ip_
+        line = (lineFromVectorPoint v p)
+        linek = (lineFromVectorPoint vk pk)
+        linek_ = (lineFromVectorPoint vk (pk .+^ v_))
+        v_ = (signorm (Vector2 (vk^.yComponent) (-(vk^.xComponent)))) ^* (fromIntegral boxSize)
+
+
+
+
+-- Determines if l' fits in between l1 and l2
+notFitLength
+    :: [FSUnplacedLabel] -- labels
+    -> Int     -- index of l
+    -> Int      -- Extension length of l
+    -> Int     -- index of k
+    -> Int      -- Extension length of k
+    -> Bool
+notFitLength ls l len k lenk = lb1 `intersects` lb2
+    where
+        lb1 = leaderFromLabelLength (ls!!l) len --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
+        lb2 = leaderFromLabelLength (ls!!k) lenk --`debug` ("j:" ++ show (leaderFromLabelLength (ls!!j) len2) ++ show len2)
 --     | intersects l1 l = False  -- `debug` "false: i intersects k"
 --     | intersects l2 l = False  -- `debug` "false: j intersects k"
 --     | intersects b l1 = False  -- `debug` "false: box k intersects i"
@@ -255,6 +342,46 @@ fitLength ls i len1 j len2 k len = not (lb1 `intersects` lb) && not (lb2 `inters
 --         (Port pos1 dir1 s1) = fst $ ls!!i
 --         (Port pos2 dir2 s2) = fst $ ls!!j
 --         (Port pos dir s) = fst $ ls!!k
+
+-- Determines if l' fits in between l1 and l2
+fitLength 
+    :: [FSUnplacedLabel] -- labels
+    -> Int     -- index of l1
+    -> Int      -- Extension length of l1
+    -> Int     -- index of l2
+    -> Int      -- Extension length of l2
+    -> Int     -- index of l'
+    -> Int      -- Extension length of l'
+    -> Bool
+fitLength ls i len1 j len2 k len = not (intersectLabels (ls!!i) len1 (ls!!k) len) && not (intersectLabels (ls!!k) len (ls!!j) len2)
+
+
+-- Assumes l1 comes before l2
+intersectLabels :: FSUnplacedLabel -> Int -> FSUnplacedLabel -> Int -> Bool
+intersectLabels l1@((Port _ v1 s1),_) len1 l2@((Port _ v2 s2),_) len2
+    | anglePos && not s1 && s2              = False
+    | anglePos && s1                        = cb1 `intersects` ls2
+    | anglePos && not s2                    = cb2 `intersects` ls1
+    | anglePos                              = cb1 `intersects` cb2
+    | otherwise                             = lb1 `intersects` lb2
+    where
+        anglePos = angleBetweenVectors v1 v2 > 0
+        lb1@(ls1,cb1) = leaderFromLabelLength l1 len1
+        lb2@(ls2,cb2) = leaderFromLabelLength l2 len2
+
+-- Assumes l2 comes before l1
+intersectLabels_ :: FSUnplacedLabel -> Int -> FSUnplacedLabel -> Int -> Bool
+intersectLabels_ l1@((Port _ v1 s1),_) len1 l2@((Port _ v2 s2),_) len2
+    | anglePos && s1 && not s2              = False
+    | anglePos && not s1                    = cb1 `intersects` ls2
+    | anglePos && s2                        = cb2 `intersects` ls1
+    | anglePos                              = cb1 `intersects` cb2
+    | otherwise                             = lb1 `intersects` lb2
+    where
+        anglePos = angleBetweenVectors v1 v2 > 0
+        lb1@(ls1,cb1) = leaderFromLabelLength l1 len1
+        lb2@(ls2,cb2) = leaderFromLabelLength l2 len2
+
 
 intersectsTrace a b  = trace ((show a)++(show b)) (intersects a b)
 
