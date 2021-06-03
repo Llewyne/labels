@@ -75,6 +75,8 @@ lineIntersection m1 b1 m2 b2 = (x,m1*x + b1)
     where
         x = (b2-b1)/(m1-m2)
 
+lineFromVectorPoint :: Vector 2 Float -> Point 2 Float -> Line 2 Float
+lineFromVectorPoint v p = lineThrough p (p .+^v)
 
 --interpolate the y coordinates of a line segment
 inty ls = OpenLineSegment (Point2 x1 y :+ ()) (Point2 x2 y :+ ())
@@ -114,3 +116,12 @@ toVectorBase ls = signorm (ls^.start.core .-. ls^.end.core)
 -- Transformation for translation to the origin
 toBaseTransformation :: LineSegment 2 () Float -> Transformation 2 Float
 toBaseTransformation ls = transformOrigin (ls^.end.core) (toVectorBase ls)
+
+angleBetweenVectors :: Vector 2 Float -> Vector 2 Float -> Float
+angleBetweenVectors v1 v2 = (angleVector v1) - (angleVector v2)
+
+angleVector :: Vector 2 Float -> Float
+angleVector v = atan (((v^.yComponent)::Float) / ((v^.xComponent)::Float))
+
+magnitude :: Vector 2 Float -> Float
+magnitude v = sqrt (v^.xComponent*v^.xComponent + v^.yComponent*v^.yComponent)

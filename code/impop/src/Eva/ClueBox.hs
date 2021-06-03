@@ -148,3 +148,14 @@ clueBoxPolygon p v True i = fromPoints [p :+ (),p2 :+ (),p3 :+ (),p4 :+ ()] --`d
 
 getDistanceBetween :: ClueBox -> ClueBox -> Float
 getDistanceBetween cb cb_ = euclideanDist (centroid cb) (centroid cb_) 
+
+
+getHighestPoint :: ClueBox -> Point 2 Float
+getHighestPoint cb = getHighestPoint_ vs (vs!!0)
+  where vs = (map _core $ F.toList $ polygonVertices cb)
+
+getHighestPoint_ :: [Point 2 Float] -> Point 2 Float -> Point 2 Float
+getHighestPoint_ [p] m = m
+getHighestPoint_ (p:ps) m
+  | p^.yCoord > m^.yCoord = getHighestPoint_ ps p
+  | otherwise = getHighestPoint_ ps m

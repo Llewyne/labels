@@ -11,6 +11,7 @@ import Data.Ord
 import Data.Vinyl hiding (Label)
 import Data.Vinyl.CoRec
 import Data.Ext
+import Data.Maybe
 
 import Data.Array((!),array)
 
@@ -35,7 +36,7 @@ type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 boxSize = 16
 unit = 3
 
-debug_log = False
+debug_log = True
 
 small_number = 0.0001
 
@@ -184,9 +185,27 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                 | null m = (1000000,[(i,a)] ++ [(k,-boxSize)|k<-[i+1..j-1]] ++[(j,b)]) --`debug` ("M NULL|| i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                 | j - 1 > i = minimum m --`debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
-                        m = [(fst (f i k a c) + fst (f k j c b) - c,init (snd (f i k a c)) ++ snd (f k j c b)) | k<-[i+1..j-1], c<-set k i j a b] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
-                        set k i j a b= Data.List.intersect (doesFitLength ls i a k) (doesFitLength ls j b k)
+                        m = [smart i k j a b c | k<-[i+1..j-1],c <- set k i j a b] --`debug` (show ls ++ show i ++ show j ++ show (set 1)) 
+                        set k i j a b = traceShowId $  (filter (minBoundary_ minBoundary) $ catMaybes $ [minBoundary]++[minBlockingLength ls i a k]++[minBlockingLength ls j b k])
+                            where 
+                                minBoundary = minBoundaryBlockingLength ls i j k a b
+                                minBoundary_ (Just m) x = x >= m
+                                minBoundary_ Nothing _ = True
 
+                        smart i k j a b c 
+                            | fst f1 == 1000000 = (1000000,[])
+                            | fst f2 == 1000000 = (1000000,[])
+                            | otherwise = ((fst f1) + (fst f2) - c, init (snd f1) ++ snd f2)
+                                where
+                                    f1 = f i k a c
+                                    f2 = f k j c b
+
+minBoundaryBlockingLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> Int ->  Maybe Int
+minBoundaryBlockingLength ls i j k a b
+    | fitLength_ ls i a k m && fitLength_ ls j b k m = traceShowId $ Just m `debug` show (ls!!k)
+    | otherwise = Nothing
+    where
+        m = minLength (fst (ls!!k))
 
 
 -- Determines the minimum length for the label to clear the boundary
@@ -197,6 +216,46 @@ minLength (Port p d s) | ((x > 0 && s) || (x < 0 && not s))= minlength --`debug`
                                 x = d^.xComponent
                                 y = d^.yComponent 
                                 minlength = ceiling (fromIntegral boxSize / ((abs y) / (abs x)))
+
+
+-- i blocks k:
+-- only if label of k is flipped towards i
+-- otherwise length of k at intersection (maybe + boxSize)
+minBlockingLength 
+    :: [FSUnplacedLabel]    -- the labels
+    -> Int                  -- index of label i
+    -> Int                  -- The length of label i
+    -> Int                  -- index of label k
+    -> Maybe Int
+minBlockingLength ls i a k 
+    | (k < i && not sk) || (k > i && sk)        = Nothing -- Label faces outward, cant be blocked
+    | angleBetweenVectors vi vk < small_number  = Just (a + ((length c)*boxSize))        -- parallel
+    | (k < i && not si) || (k > i && si)        = lengthFromIntersection pk (pk .+^ vvk) ip ip_ boxSize
+    | otherwise                                 = lengthFromIntersection pk (pk .+^ vvk) ip ip_ 0 
+
+    where
+        li@(Port pi vi si,c) = ls!!i
+        lk@(Port pk vk sk,_) = ls!!k
+        line_i =  lineFromVectorPoint vi pi
+        line_k =  lineFromVectorPoint vk pk
+        ip =  asA @(Point 2 Float) $ line_i `intersect` line_k
+        i_ =  lineFromVectorPoint vi (traceShowId (pi .+^ vvi))
+        k_ =  lineFromVectorPoint vk (traceShowId (pk .+^ vvk))
+        vvi 
+            | si = Vector2 (vi^.yComponent) (-(vi^.xComponent))
+            | otherwise = Vector2 (-(vi^.yComponent)) (vi^.xComponent)
+        vvk 
+            | sk = Vector2 (vk^.yComponent) (-(vk^.xComponent))
+            | otherwise = Vector2 (-(vk^.yComponent)) (vk^.xComponent)
+        ip_ = asA @(Point 2 Float) $ k_ `intersect` i_ `debug` show pk
+
+
+lengthFromIntersection :: Point 2 Float -> Point 2 Float -> Maybe (Point 2 Float) -> Maybe (Point 2 Float) -> Int -> Maybe Int
+lengthFromIntersection _ _ Nothing _ _    = Nothing
+lengthFromIntersection p q (Just ip) (Just ip_) c    
+    | ip^.yCoord > 0 =  Just (ceiling (euclideanDist p ip) + c)
+    | ip_^.yCoord > 0 = Just (ceiling (euclideanDist q ip_))
+    | otherwise = Nothing
 
 -- Gives a range of lengths for k where it will fit with l
 doesFitLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> [Int]
