@@ -4,6 +4,7 @@
 module Eva.DynamicLabeling where
 
 import Data.List hiding (intersect)
+import qualified Data.List (intersect)
 import Data.List.Split
 import Debug.Trace
 import Data.Ord
@@ -183,9 +184,10 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                 | null m = (1000000,[(i,a)] ++ [(k,-boxSize)|k<-[i+1..j-1]] ++[(j,b)]) --`debug` ("M NULL|| i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                 | j - 1 > i = minimum m --`debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
-                        m = [(fst (f i k a c) + fst (f k j c b) - c,init (snd (f i k a c)) ++ snd (f k j c b)) | k<-[i+1..j-1], c<-set k , valid i a j b k c ] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
-                        set k = [minLength (fst (ls!!k)) + e | e <- [0..(max a b)+boxSize*2], e == 0 || e `mod` boxSize == 0] 
-                        valid i a j b k c = fitLength ls i a j b k c
+                        m = [(fst (f i k a c) + fst (f k j c b) - c,init (snd (f i k a c)) ++ snd (f k j c b)) | k<-[i+1..j-1], c<-set k i j a b] --`debug` (show ls ++ show i ++ show j ++ show (set 1))
+                        set k i j a b= Data.List.intersect (doesFitLength ls i a k) (doesFitLength ls j b k)
+
+
 
 -- Determines the minimum length for the label to clear the boundary
 minLength :: Port -> Int
@@ -195,8 +197,12 @@ minLength (Port p d s) | ((x > 0 && s) || (x < 0 && not s))= minlength --`debug`
                                 x = d^.xComponent
                                 y = d^.yComponent 
                                 minlength = ceiling (fromIntegral boxSize / ((abs y) / (abs x)))
-                       
 
+-- Gives a range of lengths for k where it will fit with l
+doesFitLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> [Int]
+doesFitLength ls l len k = filter (fitLength_ ls l len k) lengths
+    where lengths = [minLength (fst (ls!!k)) + e | e <- [0..64], e == 0 || e `mod` boxSize == 0] 
+    
 -- getLengths :: (Ix t, Eq a1, Num t, Num a1) => Array (t, t) (a2, (t, a1)) -> t -> t -> [a1]
 getLengths r p1 p2
     | port == -1 = replicate (p2-p1 + 1) (-1)
@@ -235,6 +241,11 @@ fitLength ls i len1 j len2 k len = not (lb1 `intersects` lb) && not (lb2 `inters
     where
         lb1 = leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
         lb2 = leaderFromLabelLength (ls!!j) len2 --`debug` ("j:" ++ show (leaderFromLabelLength (ls!!j) len2) ++ show len2)
+        lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
+
+fitLength_ ls i len1 k len = not (lb1 `intersects` lb)
+    where
+        lb1 = leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
         lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
 
 --     | intersects l1 l = False  -- `debug` "false: i intersects k"
