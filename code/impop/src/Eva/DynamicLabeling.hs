@@ -36,7 +36,7 @@ type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 boxSize = 16
 unit = 3
 
-debug_log = True
+debug_log = False
 
 small_number = 0.0001
 
@@ -131,7 +131,7 @@ placeLabelsDynamicEdge
 placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths `debug` (show (edge,edgeLabels,allLabels)) --`debug` (show edge ++ "\n" ++ show s ++ "\n" ++ show mv ++ "\n" ++ show edgeLabels ++ "\n" ++ show allLabels)
     where
         edgeLabels = getEdgeLabels labels edge                                             -- The labels on this edge
-        lengths = traceShowId $ map snd $ sort $ zip sorting (map (snd) (tail $ init (snd placedLabels))) `debug` (show (placedLabels) ++ show sorting ++ show allLabels)
+        lengths = map snd $ sort $ zip sorting (map (snd) (tail $ init (snd placedLabels))) `debug` (show (placedLabels) ++ show sorting ++ show allLabels)
         placedLabels = placeLabelsDynamicEdge_ allLabels 0 ((length allLabels) - 1) 100 100 `debug` ("length alllabels - 1: " ++ show ((length allLabels) -1))
         (sorting,allLabels) = prepareEdgeLabels edgeLabels edge
 
@@ -186,11 +186,11 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                 | j - 1 > i = minimum m --`debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
                         m = [smart i k j a b c | k<-[i+1..j-1],c <- set k i j a b] --`debug` (show ls ++ show i ++ show j ++ show (set 1)) 
-                        set k i j a b = traceShowId $  (filter (minBoundary_ minBoundary) $ catMaybes $ [minBoundary]++[minBlockingLength ls i a k]++[minBlockingLength ls j b k])
+                        set k i j a b = chs blocking
                             where 
-                                minBoundary = minBoundaryBlockingLength ls i j k a b
-                                minBoundary_ (Just m) x = x >= m
-                                minBoundary_ Nothing _ = True
+                                chs [] = [minLength (fst(ls!!k))]
+                                chs a = a
+                                blocking = catMaybes $ [minBlockingLength ls i a k]++[minBlockingLength ls j b k]
 
                         smart i k j a b c 
                             | fst f1 == 1000000 = (1000000,[])
@@ -202,7 +202,7 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
 
 minBoundaryBlockingLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> Int ->  Maybe Int
 minBoundaryBlockingLength ls i j k a b
-    | fitLength_ ls i a k m && fitLength_ ls j b k m = traceShowId $ Just m `debug` show (ls!!k)
+    | fitLength_ ls i a k m && fitLength_ ls j b k m =  Just m `debug` show (ls!!k)
     | otherwise = Nothing
     where
         m = minLength (fst (ls!!k))
@@ -239,8 +239,8 @@ minBlockingLength ls i a k
         line_i =  lineFromVectorPoint vi pi
         line_k =  lineFromVectorPoint vk pk
         ip =  asA @(Point 2 Float) $ line_i `intersect` line_k
-        i_ =  lineFromVectorPoint vi (traceShowId (pi .+^ vvi))
-        k_ =  lineFromVectorPoint vk (traceShowId (pk .+^ vvk))
+        i_ =  lineFromVectorPoint vi ((pi .+^ vvi))
+        k_ =  lineFromVectorPoint vk ((pk .+^ vvk))
         vvi 
             | si = Vector2 (vi^.yComponent) (-(vi^.xComponent))
             | otherwise = Vector2 (-(vi^.yComponent)) (vi^.xComponent)
