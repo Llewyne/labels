@@ -132,7 +132,7 @@ placeLabelsDynamicEdge labels edge = zipWith placeLabel edgeLabels lengths `debu
     where
         edgeLabels = getEdgeLabels labels edge                                             -- The labels on this edge
         lengths = map snd $ sort $ zip sorting (map (snd) (tail $ init (snd placedLabels))) `debug` (show (placedLabels) ++ show sorting ++ show allLabels)
-        placedLabels = placeLabelsDynamicEdge_ allLabels 0 ((length allLabels) - 1) 100 100 `debug` ("length alllabels - 1: " ++ show ((length allLabels) -1))
+        placedLabels = placeLabelsDynamicEdge_ allLabels 0 ((length allLabels) - 1) 0 0 `debug` ("length alllabels - 1: " ++ show ((length allLabels) -1))
         (sorting,allLabels) = prepareEdgeLabels edgeLabels edge
 
 -- place the label
@@ -185,12 +185,12 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                 | null m = (1000000,[(i,a)] ++ [(k,-boxSize)|k<-[i+1..j-1]] ++[(j,b)]) --`debug` ("M NULL|| i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                 | j - 1 > i = minimum m --`debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
-                        m = [smart i k j a b c | k<-[i+1..j-1],c <- set k i j a b] --`debug` (show ls ++ show i ++ show j ++ show (set 1)) 
-                        set k i j a b = chs blocking
+                        m = [smart i k j a b c | k<-[i+1..j-1],c <- [set k i j a b]] --`debug` (show ls ++ show i ++ show j ++ show (set 1)) 
+                        set k i j a b = chs blocking `debug` ("result:" ++ show (chs blocking) ++ "k:" ++ show k ++ show (ls!!k) ++ " i:" ++ show i ++ show (ls!!i) ++ " j:" ++ show j ++ show (ls!!j))
                             where 
-                                chs [] = [minLength (fst(ls!!k))]
-                                chs a = a
-                                blocking = catMaybes $ [minBlockingLength ls i a k]++[minBlockingLength ls j b k]
+                                chs [] = minLength (fst(ls!!k))
+                                chs a = maximum a
+                                blocking = traceShowId $ catMaybes $ traceShowId ([minBlockingLength ls i a k]++[minBlockingLength ls j b k]) 
 
                         smart i k j a b c 
                             | fst f1 == 1000000 = (1000000,[])
@@ -228,34 +228,34 @@ minBlockingLength
     -> Int                  -- index of label k
     -> Maybe Int
 minBlockingLength ls i a k 
-    | (k < i && not sk) || (k > i && sk)        = Nothing -- Label faces outward, cant be blocked
-    | angleBetweenVectors vi vk < small_number  = Just (a + ((length c)*boxSize))        -- parallel
-    | (k < i && not si) || (k > i && si)        = lengthFromIntersection pk (pk .+^ vvk) ip ip_ boxSize
-    | otherwise                                 = lengthFromIntersection pk (pk .+^ vvk) ip ip_ 0 
+    | (k < i && not sk) || (k > i && sk)                = Nothing `debug` "Label faces outward, cant be blocked"
+    | abs (angleBetweenVectors vi vk) < small_number && abs(pk^.xCoord - pi^.xCoord) < fromIntegral boxSize   = Just (a + ((length c)*boxSize)) `debug` ("kleine hoek" ++ show (abs (angleBetweenVectors vi vk)))    -- parallel
+    | (k < i && not si) || (k > i && si)                = lengthFromIntersection pk (pk .+^ ((signorm vvk)^*(fromIntegral boxSize))) ip ip_ boxSize
+    | otherwise                                         = lengthFromIntersection pk (pk .+^ ((signorm vvk)^*(fromIntegral boxSize))) ip ip_ 0 
 
     where
         li@(Port pi vi si,c) = ls!!i
         lk@(Port pk vk sk,_) = ls!!k
         line_i =  lineFromVectorPoint vi pi
         line_k =  lineFromVectorPoint vk pk
-        ip =  asA @(Point 2 Float) $ line_i `intersect` line_k
-        i_ =  lineFromVectorPoint vi ((pi .+^ vvi))
-        k_ =  lineFromVectorPoint vk ((pk .+^ vvk))
+        ip =  traceShowId $ asA @(Point 2 Float) $ line_i `intersect` line_k
+        i_ =  lineFromVectorPoint vi (pi .+^ ((signorm vvi)^*(fromIntegral boxSize)))
+        k_ =  lineFromVectorPoint vk (pk .+^ ((signorm vvk)^*(fromIntegral boxSize)))
         vvi 
             | si = Vector2 (vi^.yComponent) (-(vi^.xComponent))
             | otherwise = Vector2 (-(vi^.yComponent)) (vi^.xComponent)
         vvk 
             | sk = Vector2 (vk^.yComponent) (-(vk^.xComponent))
             | otherwise = Vector2 (-(vk^.yComponent)) (vk^.xComponent)
-        ip_ = asA @(Point 2 Float) $ k_ `intersect` i_ `debug` show pk
+        ip_ = traceShowId $ asA @(Point 2 Float) $ k_ `intersect` i_ `debug` show pk
 
 
 lengthFromIntersection :: Point 2 Float -> Point 2 Float -> Maybe (Point 2 Float) -> Maybe (Point 2 Float) -> Int -> Maybe Int
-lengthFromIntersection _ _ Nothing _ _    = Nothing
+lengthFromIntersection _ _ Nothing _ _    = Nothing `debug` "no intersection"
 lengthFromIntersection p q (Just ip) (Just ip_) c    
-    | ip^.yCoord > 0 =  Just (ceiling (euclideanDist p ip) + c)
-    | ip_^.yCoord > 0 = Just (ceiling (euclideanDist q ip_))
-    | otherwise = Nothing
+    | ip^.yCoord > 0 =  Just (ceiling (euclideanDist p ip) + c) `debug` ("ip:" ++ show ip)
+    | ip_^.yCoord > 0 = Just (ceiling (euclideanDist q ip_)) `debug` ("ip_" ++ show ip_)
+    | otherwise = Nothing `debug` "something went wrong"
 
 -- Gives a range of lengths for k where it will fit with l
 doesFitLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> [Int]
@@ -335,9 +335,9 @@ initLeaders l = (maxLength:leader1:take (l-2) (repeat 0))++ [leaderN,maxLength]
 
 -- Makes dummies, assumes line segment is horizontal
 dummy0 :: LineSegment 2 () Float -> FSUnplacedLabel
-dummy0 s = (Port (Point2 ((s^.start.core.xCoord) - unit) (s^.start.core.yCoord)) (Vector2 (-unit) 0) False,[0])
+dummy0 s = (Port (Point2 ((s^.end.core.xCoord) - unit) (s^.end.core.yCoord)) (Vector2 (-unit) 0) False,[0])
 dummyNplus1 :: LineSegment 2 () Float -> FSUnplacedLabel
-dummyNplus1 s = (Port (Point2 ((s^.end.core.xCoord) + unit) (s^.end.core.yCoord)) (Vector2 (unit) 0) True,[0])
+dummyNplus1 s = (Port (Point2 ((s^.start.core.xCoord) + unit) (s^.start.core.yCoord)) (Vector2 (unit) 0) True,[0])
 
 -- Sets start and end leader length
 leader1 = 1
