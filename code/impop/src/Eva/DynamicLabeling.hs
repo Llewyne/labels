@@ -49,7 +49,7 @@ placeLabelsDynamic ls f = do
     let roundedEdges = map roundSegment edges --`debug` show (length edges)
     let filteredEdges = removeZeroLength roundedEdges
     let simplified = simplify filteredEdges --`debug` show (simplify filteredEdges)
-    return $ concatMap (placeLabelsDynamicEdge ls_) (simplify simplified)
+    return $ concatMap (placeLabelsDynamicEdge ls_) ( simplify simplified)
     
 -- Check if an unplaced label is valid
 checkValid :: Frame -> UnplacedLabel -> IO ()
@@ -190,7 +190,7 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                             where 
                                 chs [] = minLength (fst(ls!!k))
                                 chs a = maximum a
-                                blocking = traceShowId $ catMaybes $ traceShowId ([minBlockingLength ls i a k]++[minBlockingLength ls j b k]) 
+                                blocking = traceShowId $ catMaybes $ ( [minBlockingLength2 ls i a k]++[minBlockingLength2 ls j b k])
 
                         smart i k j a b c 
                             | fst f1 == 1000000 = (1000000,[])
@@ -218,6 +218,68 @@ minLength (Port p d s) | ((x > 0 && s) || (x < 0 && not s))= minlength --`debug`
                                 minlength = ceiling (fromIntegral boxSize / ((abs y) / (abs x)))
 
 
+minBlockingLength2 
+  :: [FSUnplacedLabel]    -- the labels
+    -> Int                  -- index of label i
+    -> Int                  -- The length of label i
+    -> Int                  -- index of label k
+    -> Maybe Int
+minBlockingLength2 ls i a k 
+    |  (k < i && not sk) || (k > i && sk) = Nothing
+    | otherwise = lengthFromIntersection2 vk pk vvk ip
+    where
+        ip = findIntersection line_k line_k_ (traceShowId $ (catMaybes [ip_ik_,ip_itop_k_,ip_opp_k_])++[pi_opp,pi_top])
+
+        li@(Port pi vi si,c) = ls!!i
+        lk@(Port pk vk sk,_) = ls!!k
+
+        line_k = lineFromVectorPoint vk pk
+        line_k_ =  lineFromVectorPoint vk pk_                                   -- line defined by side of cluebox opposite of extension=
+        line_i =  lineFromVectorPoint vi pi     
+        line_i_ = Line pi_bot vi
+        line_i_top =  lineThrough pi_top pi_opp                                    -- line defined by extension
+
+        --The blocking intersection point is either on one of the top corners of the i clue box
+        --or is the (highest) intersection of line k' with one of the line segments making up the  i clue box
+
+        ip_ik_ = asA @(Point 2 Float) $ line_i_ `intersect` line_k_
+        ip_itop_k_ = asA @(Point 2 Float) $ ls_i_top `intersect` line_k_
+        ip_opp_k_ = asA @(Point 2 Float) $ ls_i_opp `intersect` line_k_
+
+        ls_i = ClosedLineSegment (ext pi) (ext pi_top)                             -- Line segment from port to end of label (including extension)
+        ls_i_top = ClosedLineSegment (ext pi_top) (ext pi_opp)                       -- Line segment on top of box
+        ls_i_opp = ClosedLineSegment (ext pi_opp) (ext pi_bot)                       -- Line segment on opposite of box
+
+        pk_ = pk .+^ ((signorm vvk)^*(fromIntegral boxSize))
+        pi_top = pi .+^ ((signorm vi)^* (fromIntegral(a + ((length c)* boxSize))))   -- Point on end of extension (including box)
+        pi_opp = pi_top .+^ ((signorm vvi)^*(fromIntegral boxSize))                  -- Point on top of label opposite extension
+        pi_bot= pi_opp .+^ ((signorm $ negated vi)^*(fromIntegral ((length c)* boxSize))) 
+
+        vvi 
+            | si = Vector2 (vi^.yComponent) (-(vi^.xComponent))
+            | otherwise = Vector2 (-(vi^.yComponent)) (vi^.xComponent)
+        vvk 
+            | sk = Vector2 (vk^.yComponent) (-(vk^.xComponent))
+            | otherwise = Vector2 (-(vk^.yComponent)) (vk^.xComponent)
+
+lengthFromIntersection2 :: Vector 2 Float -> Point 2 Float -> Vector 2 Float -> Maybe (Point 2 Float) -> Maybe Int
+lengthFromIntersection2 _ _ _ Nothing = Nothing
+lengthFromIntersection2 vk pk vvk (Just ip) = traceShowId $ lengthFromIntersection2_ corner
+    where 
+        corner = asA @(Point 2 Float) $ (lineFromVectorPoint vvk ip) `intersect` Line pk vk
+        lengthFromIntersection2_ (Just c) = Just (ceiling $ euclideanDist pk c)
+        lengthFromIntersection2_ Nothing = Nothing
+
+--highest intersection between k and k'
+findIntersection :: Line 2 Float -> Line 2 Float -> [Point 2 Float] -> Maybe (Point 2 Float)
+findIntersection line_k line_k_ is
+    | length inBetweens > 0 = Just (traceShowId $ getHighestPoint_ inBetweens (head inBetweens))
+    | otherwise = Nothing
+    where --there is a bug in onSide and onLine, so onLine2 is neccesary
+        inBetweens = filter (\x-> x^.yCoord >= 0 && (x `onLine2` line_k || x `onLine2` line_k_ || x `onSide` traceShowId(line_k) /= x `onSide` traceShowId(line_k_))) is
+
+
+
 -- i blocks k:
 -- only if label of k is flipped towards i
 -- otherwise length of k at intersection (maybe + boxSize)
@@ -229,33 +291,63 @@ minBlockingLength
     -> Maybe Int
 minBlockingLength ls i a k 
     | (k < i && not sk) || (k > i && sk)                = Nothing `debug` "Label faces outward, cant be blocked"
-    | abs (angleBetweenVectors vi vk) < small_number && abs(pk^.xCoord - pi^.xCoord) < fromIntegral boxSize   = Just (a + ((length c)*boxSize)) `debug` ("kleine hoek" ++ show (abs (angleBetweenVectors vi vk)))    -- parallel
-    | (k < i && not si) || (k > i && si)                = lengthFromIntersection pk (pk .+^ ((signorm vvk)^*(fromIntegral boxSize))) ip ip_ boxSize
-    | otherwise                                         = lengthFromIntersection pk (pk .+^ ((signorm vvk)^*(fromIntegral boxSize))) ip ip_ 0 
-
+    | si == sk && dontIntersect ip1                     = Nothing `debug` "labels on same side and intersection below B"
+    | si /= sk && dontIntersect ip5                     = Nothing `debug` "labels facing inwards and intersection below B"
+    | ls_i_top `intersects` line_k_                    = lengthFromIntersection pk_ ip2 `debug` "k' intersects top i"
+    | si == sk && ((i < k && (angleBetweenVectors vi vk) > 0) || (k > i && (angleBetweenVectors vk vi) > 0))       = lengthFromIntersection pi_ ip3 `debug` "labels on same side and angle > 0"
+    | si == sk && ((i < k && (angleBetweenVectors vi vk) < 0) || (k > i && (angleBetweenVectors vk vi) < 0))       = lengthFromIntersection pi__ ip4 `debug` "labels on the same side and angle < 0"
+    | si == sk && line_i `intersects` line_k_            = lengthFromIntersection pk_ ip1 `debug` "labels on same side and k' intersects lsi"
+    | si /= sk && ls_i `intersects` line_k_ && (angleBetweenVectors vi vk) >= 90 = lengthFromIntersection pk_ ip1 `debug` "labels facing inwards and lsi intersects k' and angle >= 90"
+    | si /= sk && ls_i `intersects` line_k_            = lengthFromIntersection pi_ ip3 `debug` "labels facing inwards and lsi intersects k' and angle <90"
+    | si /= sk && line_i_ `intersects` line_k_         = lengthFromIntersection pk_ ip5 `debug` "labels facing inwards and i' intersects k'"
+    | otherwise = error ("missed some case" ++ show i ++ "|" ++ show a ++ "|" ++ show k ++ "|" ++ show line_i_ ++ show line_k_ ++ show ip1 ++ show ls_i ++ (show (ls_i `intersect` line_k_)))
     where
         li@(Port pi vi si,c) = ls!!i
         lk@(Port pk vk sk,_) = ls!!k
-        line_i =  lineFromVectorPoint vi pi
-        line_k =  lineFromVectorPoint vk pk
-        ip =  traceShowId $ asA @(Point 2 Float) $ line_i `intersect` line_k
-        i_ =  lineFromVectorPoint vi (pi .+^ ((signorm vvi)^*(fromIntegral boxSize)))
-        k_ =  lineFromVectorPoint vk (pk .+^ ((signorm vvk)^*(fromIntegral boxSize)))
+        line_k_ =  lineFromVectorPoint vk pk_                                   -- line defined by side of cluebox opposite of extension=
+        line_i =  lineFromVectorPoint vi pi     
+        line_i_ = lineFromVectorPoint vi pi___           
+        line_i_top =  lineThrough pi_ pi__                                    -- line defined by extension
+                     -- line defined by extension
+        line_pi_ = lineFromVectorPoint vk pi_ 
+        line_pi__ = lineFromVectorPoint vk pi__
+        line_pi___ = lineFromVectorPoint vk pi___
+
+
+        pi_ = pi .+^ ((signorm vi)^* (fromIntegral(a + ((length c)* boxSize))))   -- Point on end of extension (including box)
+        pi__ = pi_ .+^ ((signorm vvi)^*(fromIntegral boxSize))                  -- Point on top of label opposite extension
+        pi___= pi__ .+^ ((signorm $ negated vi)^*(fromIntegral ((length c)* boxSize)))        -- Point on bottom of label
+
+        ls_i = OpenLineSegment (ext pi) (ext pi_)                             -- Line segment from port to end of label (including extension)
+        ls_i_top = OpenLineSegment (ext pi_) (ext pi__)                       -- Line segment on top of box
+        ls_i_opp = OpenLineSegment (ext pi__) (ext pi___)                       -- Line segment on opposite of box
+
+        ip1 = traceShowId $ asA @(Point 2 Float) $ line_k_ `intersect` line_i
+        ip2 = asA @(Point 2 Float) $ line_k_ `intersect` line_i_top
+        ip3 = asA @(Point 2 Float) $ line_pi_ `intersect` ((horizontalLine 0)::Line 2 Float)
+        ip4 = asA @(Point 2 Float) $ line_pi__ `intersect` ((horizontalLine 0)::Line 2 Float)
+        ip5 = asA @(Point 2 Float) $ line_k_ `intersect` line_i_
+
+        pk_ = traceShowId $ pk .+^ ((signorm vvk)^*(fromIntegral boxSize))
+
         vvi 
             | si = Vector2 (vi^.yComponent) (-(vi^.xComponent))
             | otherwise = Vector2 (-(vi^.yComponent)) (vi^.xComponent)
         vvk 
             | sk = Vector2 (vk^.yComponent) (-(vk^.xComponent))
             | otherwise = Vector2 (-(vk^.yComponent)) (vk^.xComponent)
-        ip_ = traceShowId $ asA @(Point 2 Float) $ k_ `intersect` i_ `debug` show pk
+
+        dontIntersect Nothing = True --if l and k' do not intersect above the boundary then l does not block k
+        dontIntersect (Just ip)
+            | ip^.yCoord > 0 = False
+            | otherwise = True
 
 
-lengthFromIntersection :: Point 2 Float -> Point 2 Float -> Maybe (Point 2 Float) -> Maybe (Point 2 Float) -> Int -> Maybe Int
-lengthFromIntersection _ _ Nothing _ _    = Nothing `debug` "no intersection"
-lengthFromIntersection p q (Just ip) (Just ip_) c    
-    | ip^.yCoord > 0 =  Just (ceiling (euclideanDist p ip) + c) `debug` ("ip:" ++ show ip)
-    | ip_^.yCoord > 0 = Just (ceiling (euclideanDist q ip_)) `debug` ("ip_" ++ show ip_)
-    | otherwise = Nothing `debug` "something went wrong"
+lengthFromIntersection :: Point 2 Float -> Maybe (Point 2 Float) -> Maybe Int
+lengthFromIntersection _ Nothing     = Nothing `debug` "no intersection"
+lengthFromIntersection p (Just ip)
+    | ip^.yCoord >= 0 = Just (ceiling (euclideanDist p ip)) --`debug` show ip
+    | otherwise = Nothing `debug` show ip
 
 -- Gives a range of lengths for k where it will fit with l
 doesFitLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> [Int]

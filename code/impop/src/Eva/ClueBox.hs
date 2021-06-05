@@ -155,7 +155,7 @@ getHighestPoint cb = getHighestPoint_ vs (vs!!0)
   where vs = (map _core $ F.toList $ polygonVertices cb)
 
 getHighestPoint_ :: [Point 2 Float] -> Point 2 Float -> Point 2 Float
-getHighestPoint_ [p] m = m
+getHighestPoint_ [] m = m
 getHighestPoint_ (p:ps) m
   | p^.yCoord > m^.yCoord = getHighestPoint_ ps p
   | otherwise = getHighestPoint_ ps m

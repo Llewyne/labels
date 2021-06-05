@@ -118,7 +118,7 @@ toBaseTransformation :: LineSegment 2 () Float -> Transformation 2 Float
 toBaseTransformation ls = transformOrigin (ls^.end.core) (toVectorBase ls)
 
 angleBetweenVectors :: Vector 2 Float -> Vector 2 Float -> Float
-angleBetweenVectors v1 v2 = (angleVector v1) - (angleVector v2)
+angleBetweenVectors v1 v2 = (angleVector v2) - (angleVector v1)
 
 angleVector :: Vector 2 Float -> Float
 angleVector v = atan (((v^.yComponent)::Float) / ((v^.xComponent)::Float))
