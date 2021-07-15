@@ -24,7 +24,7 @@ import Data.Geometry.PlanarSubdivision.More
 import Data.Geometry hiding (endPoints, head, init, _direction)
 import qualified Data.CircularSeq as C
 
-import Convert
+--import Glossify
 
 import Algorithms.Geometry.EuclideanMST.EuclideanMST
 import Algorithms.Geometry.Diameter.Naive

@@ -106,7 +106,7 @@ dilateFloating s r =
       v = r *^ signorm (q .-. p)
       a = map (\t -> p .+^ rotate (t * pi / 180) v) $ map realToFrac [90, 120 .. 270]
       b = map (\t -> q .+^ rotate (t * pi / 180) v) $ map realToFrac [270, 300 .. 450]
-  in SimplePolygon $ C.fromList $ map (\p -> p :+ ()) $ a ++ b
+  in simpleFromPoints $ map (\p -> p :+ ()) $ a ++ b
 
 rotate :: Floating r => r -> Vector 2 r -> Vector 2 r 
 rotate a (Vector2 x y) = Vector2 (cos a * x - sin a * y) (sin a * x + cos a * y)

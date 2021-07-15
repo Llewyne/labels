@@ -38,15 +38,33 @@ import Nonogram.PathType
 
 import Misc.SpanningTree
 
-import Eva.DynamicLabeling
+import Eva.SATLabeling (placeLabelsSAT)
+import Eva.DynamicLabeling (placeLabelsDynamic)
+import Eva.SATLabelingExtensible (placeLabelsSATExtensible)
+import Data.Geometry.Vector
+import Eva.Util
 
 import Data.List
+
+import Debug.Trace
+
+debug_log = False
 
 main :: IO ()
 main = do
   putStrLn "enter file name (without extension)"
   name <- getLine
   labelTest name
+
+debug x y | debug_log = flip trace x y
+        | otherwise = x
+-- If two ports of the same label have the same position, or if the directions don't match then the label is not valid
+validateLabel :: UnplacedLabel -> Bool
+validateLabel (ps,_) = length(nub points) == length points && vectorsInverse ps
+  where 
+    points = map _location ps
+    vectorsInverse ((Port _ v1 _):(Port _ v2 _):_) = (a < 0.5 || isNaN a) `debug` ((show (negated v1)++(show v2)++ "::" ++ (show a) ++ (show $ a < 0.02)))
+      where a = abs((angleBetweenVectors (negated v1) v2))
 
 labelTest :: String -> IO ()
 labelTest name = do
@@ -80,9 +98,17 @@ labelTest name = do
   since start
 
   -- collect clues in unplaced labels
-  let upl = nub $ determineClues caf sol
+  let upl = determineClues caf sol
   putStrLn $ "unplaced labels: " ++ show (length upl)  
-  writeFile "log/unlabels.txt" $ unlines $ map show upl
+  --writeFile "log/unlabels.txt" $ unlines $ map show upl
+  since start
+
+ 
+
+    -- filter out invalid labels
+  let fupl =   nub $ filter validateLabel upl
+  putStrLn $ "filtered unplaced labels: " ++ show (length fupl)  
+  writeFile "log/funlabels.txt" $ unlines $ map show fupl
   since start
 
   -- build the frame
@@ -92,7 +118,7 @@ labelTest name = do
   since start
 
   -- place the labels
-  pl  <- placeLabelsDynamic upl frame
+  pl  <- placeLabelsSATExtensible fupl -- frame
   putStrLn $ "labels: " ++ show (length pl)
   writeFile "log/labels.txt" $ unlines $ map show pl
   since start

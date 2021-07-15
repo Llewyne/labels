@@ -17,7 +17,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-14.16
+resolver: lts-17.1
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -30,9 +30,10 @@ resolver: lts-14.16
 #   - wai
 packages:
 - .
-- '../hgeometry/hgeometry'
-- '../hgeometry/hgeometry-combinatorial'
-- '../hgeometry/hgeometry-ipe'
+- '../hgeometryMaarten/hgeometry'
+- '../hgeometryMaarten/hgeometry-combinatorial'
+- '../hgeometryMaarten/hgeometry-ipe'
+- '../mios'
 # Dependency packages to be pulled from upstream that are not in the resolver.
 # These entries can reference officially published versions as well as
 # forks / in-progress versions pinned to a git hash. For example:
@@ -48,9 +49,10 @@ extra-deps:
 #- hgeometry-combinatorial-0.10.0.0@sha256:b3c306bc3f3444ba21850a2af279d3461b27c0d19b7ce62940aeb6fcca5d8dcf,7425
 #- hgeometry-ipe-0.10.0.0@sha256:d9677652da773ae7f2ae9482b53cb322b2ec96682ca3e060f80a728f9ed2f69b,6534
 - hlist-0.0.0.0@sha256:5ee588580550018c03882b27d6a243df8b5f503bba98f86ddb44b85ed8bc4e52,775
-- mios-1.6.2@sha256:18cfd492792cf4f0fbd8664aee8717fe75771355921d47d69f23b67eed1280a4
+# - mios-1.6.2@sha256:18cfd492792cf4f0fbd8664aee8717fe75771355921d47d69f23b67eed1280a4#- nonempty-vector-0.2.1.0@sha256:af9d2f7fa2eaa8e9f66e42b6dc056f24da1ca0d95d5cd4fc8fc8d2991ee3cada
+- vector-circular-0.1.3@sha256:49d1740e8ac8df0d2e5ed761f1fb9563dea3d75b329bffa277458138e02915ec
+
 - hexpat-0.20.13
-- ersatz-0.4.9
 
 # Override default flag values for local packages and extra-deps
 flags: 

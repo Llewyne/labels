@@ -15,7 +15,7 @@ import Data.PlanarGraph.Dart
 
 import Algorithms.Geometry.Misc
 
-import Convert
+import Glossify
 import Draw
 
 import PSDGlossApp.Common

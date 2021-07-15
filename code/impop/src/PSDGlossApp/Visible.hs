@@ -14,7 +14,7 @@ import Data.PlanarGraph.Dart
 
 import Algorithms.Geometry.Misc
 
-import Convert
+import Glossify
 import Draw
 
 import PSDGlossApp.Common
@@ -77,7 +77,7 @@ annotDrawEdge :: EdgeDrawer s v e f r
 annotDrawEdge _ = drawAnnotation red
 
 annotDrawFace :: FaceDrawer s v e f r
-annotDrawFace _ i e f = drawAnnotation green i e $ either id asSimplePolygon f
+annotDrawFace _ i e f = drawAnnotation green i e $ either id (view outerBoundary) f
 
 annotVisible :: RealFrac r => Behaviour s v e f r
 annotVisible = drawVertsWith annotDrawVert . drawEdgesWith annotDrawEdge . drawFacesWith annotDrawFace

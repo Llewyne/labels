@@ -46,7 +46,6 @@ import Nonogram.PathType
 
 import Popular
 
-import Convert
 
 import PP.Puz
 

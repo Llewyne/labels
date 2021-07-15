@@ -11,7 +11,9 @@ import Data.Geometry hiding (head,direction,init,replicate,unit)
 import Data.Geometry.PlanarSubdivision hiding(location)
 import Data.Geometry.Transformation
 import Data.Geometry.Matrix
-
+import System.Random
+import Data.Array.IO
+import Control.Monad
 -- debug_log = False
 
 
@@ -118,11 +120,30 @@ toVectorBase ls = signorm (ls^.start.core .-. ls^.end.core)
 toBaseTransformation :: LineSegment 2 () Float -> Transformation 2 Float
 toBaseTransformation ls = transformOrigin (ls^.end.core) (toVectorBase ls)
 
+dotProduct :: Vector 2 Float -> Vector 2 Float -> Float
+dotProduct v1 v2 = v1^.xComponent * v2^.xComponent + v1^.yComponent * v2^.yComponent
+
 angleBetweenVectors :: Vector 2 Float -> Vector 2 Float -> Float
-angleBetweenVectors v1 v2 = (angleVector v2) - (angleVector v1)
+angleBetweenVectors v1 v2 = acos ((dot v1 v2)/((magnitude v1)*(magnitude v2)))
 
 angleVector :: Vector 2 Float -> Float
 angleVector v = atan (((v^.yComponent)::Float) / ((v^.xComponent)::Float))
 
 magnitude :: Vector 2 Float -> Float
 magnitude v = sqrt (v^.xComponent*v^.xComponent + v^.yComponent*v^.yComponent)
+
+-- | Randomly shuffle a list
+--   /O(N)/
+shuffle :: [a] -> IO [a]
+shuffle xs = do
+        ar <- newArray n xs
+        forM [1..n] $ \i -> do
+            j <- randomRIO (i,n)
+            vi <- readArray ar i
+            vj <- readArray ar j
+            writeArray ar j vi
+            return vj
+  where
+    n = length xs
+    newArray :: Int -> [a] -> IO (IOArray Int a)
+    newArray n xs =  newListArray (1,n) xs

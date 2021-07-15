@@ -1,4 +1,4 @@
-module Convert where
+module Glossify where
 
 import Control.Lens
 
@@ -53,8 +53,9 @@ glossifyPolygon p =
   in G.Pictures $ map glossifyConvexPolygon ts
 
 glossifyConvexPolygon :: RealFrac r => Polygon t p r -> G.Picture
-glossifyConvexPolygon (SimplePolygon s) = G.Polygon $ glossifyCSeq s
-glossifyConvexPolygon (MultiPolygon s ps) = G.Pictures $ (G.Polygon $ glossifyCSeq s) : map (G.Color G.white . glossify) ps
+glossifyConvexPolygon p | isSimple p = G.Polygon $ map (glossify . view core) $ toPoints p
+                        | otherwise  = G.Pictures $ glossify (view outerBoundary p)
+                                                  : map (G.Color G.white . glossify) (holeList p)
 
 glossifyCSeq :: Real r => C.CSeq (Point 2 r :+ p) -> [G.Point]
 glossifyCSeq = map glossifyPoint . map _core . toList

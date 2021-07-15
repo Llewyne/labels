@@ -9,11 +9,14 @@ import Nonogram
 import Data.Foldable (toList)
 
 import Data.Geometry hiding (head,direction,init)
-import Data.Geometry.Polygon
+import Data.Geometry.Polygon hiding (minimumBy)
 import Data.Geometry.Boundary
 import Data.Ext
 import Data.List hiding (intersect)
+import Data.Function (on)
+import System.Process
 
+import Debug.Trace
 import Eva.ClueBox
 
 type UnplacedLabelExt = ([(Port,Float)], Clue)
@@ -29,10 +32,13 @@ placeLabelsSATExtensible ul = do
     -- mapM_ (putStrLn . show) ml
     let clauses = setClauses ml
     -- putStrLn $ show clauses
-    let desc = CNFDescription (length $ concat ml) (length clauses) ""
-    asg <- solveSAT desc clauses
+    -- let desc = CNFDescription (length $ concat ml) (length clauses) ""
+    printClauses ul
+    asg <- runMaxHS
     -- putStrLn $ show asg
-    return (map (makeLabelExt (concat ml)) $ filter (0<) asg)
+    let allLabels = map (makeLabelExt (concat ml)) $ filter (0<) asg
+    let bestLabels = map (minimumBy (compare `on` _offset)) (groupBy (\x y -> _port x == _port y) allLabels)
+    return bestLabels
 
 printClauses :: [UnplacedLabel] -> IO ()
 printClauses ul = do
@@ -40,11 +46,20 @@ printClauses ul = do
     let clauses = setClauses ml
     let allClause = (map makeHardClause clauses) ++ map setSoftClauses (concat ml)
     let wClauses = map writeClause allClause
-    let t = ("c\nc test max format\nc\np wcnf " ++ show (length ml) ++ " " ++ show (length wClauses) ++ "\n") ++ concat wClauses
+    let t = ("c\nc test max format\nc\np wcnf " ++ show (length $ concat ml) ++ " " ++ show (length wClauses) ++ "\n") ++ concat wClauses
     writeFile "testformat.txt" t
 
+runMaxHS :: IO [Int]
+runMaxHS = do
+    output <- readProcess "wsl" ["../../MaxHS-3.2/build/release/bin/maxhs","testformat.txt"] ""
+    let sol = map read $ tail $ words $ head $ filter (\x -> head x == 'v') (lines output)-- (head $ filter (\x -> head x == "v") (lines output))
+    return $ filter (0 <) sol
+
 writeClause ::  Clause -> String
-writeClause (c,w) = show w ++ " " ++ (concat $ map (\x -> show x ++ " ") c) ++ "0\n"
+writeClause (c,w) = (showDecimal $ realToFrac w) ++ " " ++ (concat $ map (\x -> show x ++ " ") c) ++ "0\n"
+
+showDecimal :: Double -> String
+showDecimal d = show (floor d) ++ "." ++ show (floor((d-(fromIntegral(floor d)))*100))
 
 makeHardClause :: [Int] -> Clause
 makeHardClause c = (c,maxWeight)
@@ -113,7 +128,7 @@ size = 16
 -- Gives the cluebox as a polygon from the port
 -- Need to convert everything to rational since the intersection functions don't always work otherwise
 clueBox :: Port -> ClueBox
-clueBox (Port p v s) = clueBoxPolygon p v s
+clueBox (Port p v s) = clueBoxPolygon p v s 1
 
 -- clueBox (Port (Point2 lx ly) (Vector2 vx vy) False) = fromPoints $ map ext ([Point2 _lx _ly,Point2 (_lx-(_vy*size)) (_ly+(_vx*size)), Point2 (_lx+(_vx*size)) (_ly+(_vy*size)),Point2 (_lx+((_vx*size)-(_vy*size))) (_ly+((_vy*size)+(_vx*size)))] :: [Point 2 Rational])
 --    where

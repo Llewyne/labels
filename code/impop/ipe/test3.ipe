@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.18">
-<info created="D:20200619161352" modified="D:20210707110142"/>
+<info created="D:20200619161352" modified="D:20210707113316"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -258,270 +258,268 @@ h
 h
 </path>
 <path stroke="red">
--224 128 m
--176 224 l
--160 224 l
--160 160 l
+-240 112 m
+-192 208 l
+-176 208 l
+-160 128 l
 -128 224 l
 -112 224 l
--160 128 l
--176 128 l
--176 192 l
--208 128 l
+-144 96 l
+-176 96 l
+-192 176 l
+-208 112 l
 h
 </path>
 <path stroke="red">
--96 144 m
--112 176 l
--64 208 l
--48 176 l
+-80 128 m
+-32 176 l
+16 128 l
+-32 80 l
 h
 </path>
-<path matrix="1 0 0 1 176 -32" stroke="red">
--224 128 m
--176 224 l
--160 224 l
--160 160 l
+<path matrix="1 0 0 1 144 -160" stroke="red">
+-240 112 m
+-192 208 l
+-176 208 l
+-160 128 l
 -128 224 l
 -112 224 l
--160 128 l
--176 128 l
--176 192 l
--208 128 l
+-144 96 l
+-176 96 l
+-192 176 l
+-208 112 l
 h
 </path>
-<path matrix="1 0 0 1 176 -32" stroke="red">
--96 144 m
--112 176 l
--64 208 l
--48 176 l
+<path matrix="1 0 0 1 144 -160" stroke="red">
+-80 128 m
+-32 176 l
+16 128 l
+-32 80 l
 h
 </path>
 <path stroke="black">
--176 224 m
+-192 208 m
 -160 272 l
-h
 </path>
 <path stroke="black">
--224 128 m
--272 -16 l
-h
+-176 208 m
+-192 272 l
 </path>
 <path stroke="black">
--224 128 m
--272 128 l
-h
+-192 208 m
+-272 208 l
 </path>
 <path stroke="black">
--208 128 m
-272 128 l
-h
-</path>
-<path stroke="black">
--208 128 m
--272 -48 l
-h
-</path>
-<path stroke="black">
--176 224 m
--272 224 l
-h
-</path>
-<path stroke="black">
--160 224 m
-272 224 l
-h
-</path>
-<path stroke="black">
--112 224 m
--96 272 l
-h
+-176 208 m
+272 208 l
 </path>
 <path stroke="black">
 -128 224 m
 -112 272 l
-h
 </path>
 <path stroke="black">
--176 128 m
--272 -176 l
-h
+-112 224 m
+-96 272 l
+</path>
+<path stroke="black">
+-144 96 m
+-240 -272 l
+</path>
+<path stroke="black">
+-176 96 m
+-80 -272 l
+</path>
+<path stroke="black">
+-144 96 m
+272 96 l
+</path>
+<path stroke="black">
+-176 96 m
+-272 96 l
+</path>
+<path stroke="black">
+-208 112 m
+-272 -208 l
+</path>
+<path stroke="black">
+-240 112 m
+-272 112 l
+</path>
+<path stroke="black">
+-208 112 m
+272 112 l
 </path>
 <path stroke="black">
 -160 128 m
--272 -224 l
-h
+-48 -272 l
 </path>
 <path stroke="black">
--176 192 m
--176 272 l
-h
+-160 128 m
+-272 -272 l
 </path>
 <path stroke="black">
--176 128 m
--176 -272 l
-h
+-32 176 m
+-128 272 l
 </path>
 <path stroke="black">
--160 160 m
--160 -272 l
-h
-</path>
-<path stroke="black">
--160 224 m
--160 272 l
-h
-</path>
-<path stroke="black">
--112 176 m
--160 272 l
-h
-</path>
-<path stroke="black">
--96 144 m
-112 -272 l
-h
-</path>
-<path stroke="black">
--64 208 m
--96 272 l
-h
-</path>
-<path stroke="black">
--48 176 m
-192 -272 l
-h
-</path>
-<path stroke="black">
--112 176 m
--272 80 l
-h
-</path>
-<path stroke="black">
--96 144 m
--272 48 l
-h
-</path>
-<path stroke="black">
--64 208 m
-48 272 l
-h
-</path>
-<path stroke="black">
--48 176 m
-112 272 l
-h
-</path>
-<path stroke="black">
-0 192 m
-32 272 l
-h
-</path>
-<path stroke="black">
-16 192 m
-16 272 l
-h
-</path>
-<path stroke="black">
-48 192 m
-96 272 l
-h
-</path>
-<path stroke="black">
-64 192 m
-112 272 l
-h
-</path>
-<path stroke="black">
-16 128 m
-16 -272 l
-h
-</path>
-<path stroke="black">
-0 96 m
-0 -272 l
-h
-</path>
-<path stroke="black">
-16 96 m
--144 -272 l
-h
-</path>
-<path stroke="black">
-16 128 m
--160 -272 l
-h
-</path>
-<path stroke="black">
--32 96 m
--192 -272 l
-h
-</path>
-<path stroke="black">
--48 96 m
--208 -272 l
-h
-</path>
-<path stroke="black">
--48 96 m
--272 96 l
-h
-</path>
-<path stroke="black">
--32 96 m
-272 96 l
-h
-</path>
-<path stroke="black">
-64 144 m
-0 272 l
-h
-</path>
-<path stroke="black">
-112 176 m
+-32 176 m
 64 272 l
-h
 </path>
 <path stroke="black">
-112 176 m
-240 272 l
-h
+16 128 m
+160 272 l
 </path>
 <path stroke="black">
-128 144 m
-272 240 l
-h
+16 128 m
+272 -128 l
 </path>
 <path stroke="black">
-128 144 m
-272 -96 l
-h
+-32 80 m
+-272 -160 l
 </path>
 <path stroke="black">
-80 112 m
-272 -224 l
-h
+-32 48 m
+-80 272 l
 </path>
 <path stroke="black">
-64 144 m
--272 -96 l
-h
+-48 48 m
+48 272 l
 </path>
 <path stroke="black">
-80 112 m
--272 -128 l
+-48 48 m
+-272 48 l
 </path>
 <path stroke="black">
--176 192 m
+-32 48 m
+272 48 l
+</path>
+<path stroke="black">
+16 64 m
+80 272 l
+</path>
+<path stroke="black">
+32 64 m
+96 272 l
+</path>
+<path stroke="black">
+-32 -64 m
+0 -272 l
+</path>
+<path stroke="black">
+0 -64 m
+272 -64 l
+</path>
+<path stroke="black">
+-32 -64 m
+-272 -64 l
+</path>
+<path stroke="black">
+-96 -48 m
+-272 -48 l
+</path>
+<path stroke="black">
+-64 -48 m
+272 -48 l
+</path>
+<path stroke="black">
+-64 -48 m
+-112 -272 l
+</path>
+<path stroke="black">
+-96 -48 m
+-208 -272 l
+</path>
+<path stroke="black">
+-16 -32 m
+48 -272 l
+</path>
+<path stroke="black">
+-48 16 m
+16 272 l
+</path>
+<path stroke="black">
+112 16 m
 -144 272 l
 </path>
 <path stroke="black">
-0 160 m
-48 272 l
+160 -32 m
+272 -144 l
 </path>
 <path stroke="black">
-0 160 m
-0 272 l
+112 16 m
+272 176 l
+</path>
+<path stroke="black">
+160 -32 m
+272 80 l
+</path>
+<path stroke="black">
+64 -32 m
+-144 -272 l
+</path>
+<path stroke="black">
+112 -80 m
+-64 -272 l
+</path>
+<path stroke="black">
+32 64 m
+272 64 l
+</path>
+<path stroke="black">
+16 64 m
+-272 64 l
+</path>
+<path stroke="black">
+-128 224 m
+-272 224 l
+</path>
+<path stroke="black">
+-112 224 m
+272 224 l
+</path>
+<path stroke="black">
+112 -80 m
+272 -240 l
+</path>
+<path stroke="black">
+64 -32 m
+-224 272 l
+</path>
+<path stroke="black">
+-80 128 m
+-208 272 l
+</path>
+<path stroke="black">
+-32 80 m
+272 -224 l
+</path>
+<path stroke="black">
+-48 16 m
+-103.763 272 l
+</path>
+<path stroke="black">
+-192 176 m
+-210.318 272 l
+</path>
+<path stroke="black">
+-240 112 m
+-272 55.4179 l
+</path>
+<path stroke="black">
+-80 128 m
+-272 -40.7717 l
+</path>
+<path stroke="black">
+0 -64 m
+-35.0636 -272 l
+</path>
+<path stroke="black">
+-192 176 m
+-168.719 272 l
+</path>
+<path stroke="black">
+-16 -32 m
+-72.3142 -272 l
 </path>
 </page>
 </ipe>

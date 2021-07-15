@@ -40,7 +40,7 @@ data TestApp = TestApp
 vierkant' :: PlanarSubdivision TestApp () () () Rational
 vierkant' = fromPolygon (Identity TestApp) vierkant () ()
 
-vierkant = SimplePolygon . C.fromList . map (:+ ())
+vierkant = simpleFromPoints . map (:+ ())
          $ [ Point2 (-250) (-250)
 --       , Point2 0 (-250)
          , Point2 250 (-250)

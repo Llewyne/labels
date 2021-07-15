@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!DOCTYPE ipe SYSTEM "ipe.dtd">
 <ipe version="70218" creator="Ipe 7.2.18">
-<info created="D:20200423150625" modified="D:20210527170701"/>
+<info created="D:20200619161352" modified="D:20210707114228"/>
 <ipestyle name="basic">
 <symbol name="arrow/arc(spx)">
 <path stroke="sym-stroke" fill="sym-stroke" pen="sym-pen">
@@ -244,73 +244,168 @@ h
 <anglesize name="45 deg" value="45"/>
 <anglesize name="30 deg" value="30"/>
 <anglesize name="22.5 deg" value="22.5"/>
-<opacity name="10%" value="0.1"/>
-<opacity name="30%" value="0.3"/>
-<opacity name="50%" value="0.5"/>
-<opacity name="75%" value="0.75"/>
 <tiling name="falling" angle="-60" step="4" width="1"/>
 <tiling name="rising" angle="30" step="4" width="1"/>
 </ipestyle>
 <page>
 <layer name="alpha"/>
-<layer name="beta"/>
-<view layers="alpha beta" active="beta"/>
-<path layer="alpha" matrix="1 0 0 1 -448 -128" stroke="blue" fill="white" pen="fat">
-320 256 m
-320 0 l
-576 0 l
-576 256 l
+<view layers="alpha" active="alpha"/>
+<path layer="alpha" stroke="blue" pen="fat">
+-128 128 m
+-128 -128 l
+128 -128 l
+128 128 l
 h
 </path>
-<path stroke="red" pen="fat">
--64 -80 m
--64 16 l
-0 80 l
-32 48 l
-48 32 l
-64 16 l
-64 -80 l
+<path stroke="red">
+-96 96 m
+-48 112 l
+-96 64 l
+h
+</path>
+<path stroke="red">
+-96 16 m
+-64 -16 l
+-16 64 l
+h
+</path>
+<path stroke="red">
+32 80 m
+48 16 l
+96 80 l
+h
+</path>
+<path stroke="red">
+-16 -16 m
 -64 -80 l
+0 -96 l
+h
 </path>
-<path layer="beta" stroke="black" pen="fat">
-64 -80 m
-128 -80 l
+<path stroke="red">
+80 0 m
+48 -48 l
+96 -80 l
+h
 </path>
-<path stroke="black" pen="fat">
+<path stroke="black">
+-48 112 m
+-28.6856 128 l
+</path>
+<path stroke="black">
+-48 112 m
+-0.132882 128 l
+</path>
+<path stroke="black">
+-96 96 m
+-95.4801 128 l
+</path>
+<path stroke="black">
+-96 96 m
+-128 87.5558 l
+</path>
+<path stroke="black">
+-96 64 m
+-128 29.472 l
+</path>
+<path stroke="black">
+-96 64 m
+-99.3555 -128 l
+</path>
+<path stroke="black">
+-96 16 m
+-128 -0.540162 l
+</path>
+<path stroke="black">
+-96 16 m
+-128 48.296 l
+</path>
+<path stroke="black">
+-16 64 m
+27.5301 128 l
+</path>
+<path stroke="black">
+-16 64 m
+85.1643 128 l
+</path>
+<path stroke="black">
+32 80 m
+17.8346 128 l
+</path>
+<path stroke="black">
+32 80 m
+-128 77.3824 l
+</path>
+<path stroke="black">
+96 80 m
+128 117.78 l
+</path>
+<path stroke="black">
+96 80 m
+128 80.0756 l
+</path>
+<path stroke="black">
+48 16 m
+89.4734 -128 l
+</path>
+<path stroke="black">
+48 16 m
+-63.4997 -128 l
+</path>
+<path stroke="black">
+-64 -16 m
+49.6142 -128 l
+</path>
+<path stroke="black">
+-64 -16 m
+-128 -105.754 l
+</path>
+<path stroke="black">
 -64 -80 m
--128 -80 l
+-128 -65.8952 l
 </path>
-<path stroke="black" pen="fat">
-0 80 m
-48 128 l
+<path stroke="black">
+-16 -16 m
+-45.7246 128 l
 </path>
-<path stroke="black" pen="fat">
--64 16 m
--128 -48 l
+<path stroke="black">
+-16 -16 m
+103.021 128 l
 </path>
-<path stroke="black" pen="fat">
-64 16 m
-64 128 l
+<path stroke="black">
+0 -96 m
+3.92998 -128 l
 </path>
-<path stroke="black" pen="fat">
-64 -80 m
-64 -128 l
+<path stroke="black">
+0 -96 m
+113.021 -128 l
 </path>
-<path stroke="black" pen="fat">
--64 16 m
--64 128 l
+<path stroke="black">
+48 -48 m
+-9.18803 -128 l
 </path>
-<path stroke="black" pen="fat">
+<path stroke="black">
+96 -80 m
+128 -104.873 l
+</path>
+<path stroke="black">
+96 -80 m
+106.341 -128 l
+</path>
+<path stroke="black">
+48 -48 m
+-128 83.5831 l
+</path>
+<path stroke="black">
+80 0 m
+128 69.4598 l
+</path>
+<path stroke="black">
+80 0 m
+57.3879 128 l
+</path>
+<path stroke="black">
 -64 -80 m
--64 -128 l
-</path>
-<path stroke="black" pen="fat">
-0 80 m
--48 128 l
-</path>
-<path stroke="black" pen="fat">
-64 16 m
-128 -48 l
+-101.535 -128 l
 </path>
 </page>
 </ipe>

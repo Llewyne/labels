@@ -6,5 +6,6 @@ module Main where
 import qualified TestLabelPipeline
 
 main :: IO ()
+--main = TestDynamicPSD.main
 main = TestLabelPipeline.main
 -- main = TestCurveArrangement.main

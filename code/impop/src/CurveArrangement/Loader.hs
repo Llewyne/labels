@@ -76,11 +76,11 @@ import Debug.Trace
 
 -- main reader: looks for files that store intermediate products to speed up loading
 -- but also checks if time stamps are chronological
-loadCAR :: (RealFrac r, Coordinate r, Show r) => FilePath -> IO (CA r)
+loadCAR :: FilePath -> IO (CA Float)
 loadCAR filePath = do
   makePlanar filePath
   makeSnapped filePath
-  fromSnapped filePath
+--   fromSnapped filePath
 
 
 -- read an arbitrary ipe file and convert it into a planar one (preserving properties)
@@ -144,12 +144,11 @@ makePlanar filePath =
     since start
 
 
-makeSnapped :: FilePath -> IO ()
-makeSnapped filePath =
-  let base   = dropExtensions filePath
-      input  = addExtension base ".planar.ipe"
-      output = addExtension base ".snapped.ipe"
-  in whenM (necessary input output) $ do
+makeSnapped :: FilePath -> IO (CA Float)
+makeSnapped filePath = do
+    let base   = dropExtensions filePath
+    let input  = addExtension base ".planar.ipe"
+    let output = addExtension base ".snapped.ipe"
 
     putStrLn $ "makeSnapped called on " ++ filePath
 
@@ -158,7 +157,7 @@ makeSnapped filePath =
     since start
 
     -- read the ipe page
-    page <- readIpePage input :: IO (IpePage Float)
+    page <- readIpePage (addExtension base ".planar.ipe") :: IO (IpePage Float)
     let paths :: [Path Float :+ IpeAttributes Path Float]
         paths = concatMap objectPaths $ view content page
     putStrLn $ "page paths: " ++ show (length paths)
@@ -187,10 +186,31 @@ makeSnapped filePath =
     writeFile "log/newpaths.txt" $ unlines $ map show newpaths
     since start
 
-    -- write the ipe page
-    let newpage = makePage newpaths
-    writeIpePage output newpage
+    let nonopaths = separatePaths newpaths
+
+    -- extract the contents of the page as a set of curves
+    let -- curves :: [BezierSpline 3 2 r :+ IpeAttributes Path r]
+        curves = convertPathsToBeziers nonopaths
+    putStrLn $ "converted curves: " ++ show (length curves)
+    writeFile "log/converted.txt" $ unlines $ map show curves
     since start
+
+    {-
+    -- get collection of line segments
+    let segs = map (bimap (const ()) id) $ map _core $ map seg curves
+    putStrLn $ "segments: " ++ show (length segs)
+    writeFile "log/segments.txt" $ unlines $ map show segs
+    since start
+    -}
+
+    -- construct an arrangement from the chopped curves
+    let car = constructPlanar curves
+    putStrLn $ "curve arrangement:" 
+    writeFile "log/car.txt" $ show car
+    since start
+
+
+    return car
 
 
 -- read a supposedly planar and already snapped ipe file

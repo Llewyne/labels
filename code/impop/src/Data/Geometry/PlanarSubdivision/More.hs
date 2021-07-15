@@ -14,40 +14,6 @@ import qualified Data.Vector as V
 import           Data.Set (Set)
 import qualified Data.Set as Set
 
--- incidences
-
-class Incident s a b where
-  incidences :: PlanarSubdivision s v e f r -> a -> [b]
-
-instance Incident s (VertexId' s) (Dart s) where
-  incidences psd i = toList (incidentEdges i psd) ++ map twin (toList $ incidentEdges i psd)
-
-instance Incident s (VertexId' s) (FaceId' s) where
-  incidences psd i = map ((flip leftFace) psd) $ toList $ incidentEdges i psd
-
-instance Incident s (Dart s) (VertexId' s) where
-  incidences psd i = [headOf i psd, tailOf i psd]
-
-instance Incident s (Dart s) (FaceId' s) where
-  incidences psd i = [leftFace i psd, rightFace i psd]
-
-instance Incident s (FaceId' s) (VertexId' s) where
-  incidences psd i = toList $ boundaryVertices i psd
-
-instance Incident s (FaceId' s) (Dart s) where
-  incidences psd i = toList (outerBoundaryDarts i psd) ++ map twin (toList $ outerBoundaryDarts i psd)
-
-common :: (Incident s a c, Incident s b c, Ord c) => PlanarSubdivision s v e f r -> a -> b -> [c]
-common psd a b = Set.toList $ Set.intersection (Set.fromList $ incidences psd a) (Set.fromList $ incidences psd b)
-
-commonVertices :: (Incident s a (VertexId' s), Incident s b (VertexId' s)) => PlanarSubdivision s v e f r -> a -> b -> [VertexId' s]
-commonVertices = common
-
-commonDarts :: (Incident s a (Dart s), Incident s b (Dart s)) => PlanarSubdivision s v e f r -> a -> b -> [Dart s]
-commonDarts = common
-
-commonFaces :: (Incident s a (FaceId' s), Incident s b (FaceId' s)) => PlanarSubdivision s v e f r -> a -> b -> [FaceId' s]
-commonFaces = common
 
 -- opposite darts
 
@@ -129,22 +95,8 @@ instance Applicable s (VertexId' s) where applyAll = applyAllV
 instance Applicable s (Dart s)      where applyAll = applyAllD
 instance Applicable s (FaceId' s)   where applyAll = applyAllF
 
--- hidden functions from Data.Geometry.PlanarSubdivision.Basic
 
-asLocalV                 :: VertexId' s -> PlanarSubdivision s v e f r
-                         -> (ComponentId s, VertexId' (Wrap s), Component s r)
-asLocalV (VertexId v) ps = let (Raw ci v' _) = ps^?!rawVertexData.ix v
-                           in (ci,v',ps^.component ci)
 
-asLocalD      :: Dart s -> PlanarSubdivision s v e f r
-              -> (ComponentId s, Dart (Wrap s), Component s r)
-asLocalD d ps = let (Raw ci d' _) = ps^?!rawDartData.ix (fromEnum d)
-                in (ci,d',ps^.component ci)
 
-asLocalF                          :: FaceId' s -> PlanarSubdivision s v e f r
-                                  -> NonEmpty (ComponentId s, FaceId' (Wrap s), Component s r)
-asLocalF (FaceId (VertexId f)) ps = case ps^?!rawFaceData.ix f of
-      RawFace (Just (ci,f')) _        -> (ci,f',ps^.component ci) :| []
-      RawFace Nothing (FaceData hs _) -> toLocalF <$> NonEmpty.fromList (F.toList hs)
-  where
-    toLocalF d = let (ci,d',c) = asLocalD d ps in (ci,PG.leftFace d' c,c)
+
+

@@ -31,15 +31,18 @@ import Eva.Leader hiding (boxSize,debug_log,debug)
 import Eva.Test
 import SAT.Mios (CNFDescription (..), solveSAT)
 
-type FSUnplacedLabel = (Port, Clue) -- Unplaced Label with a fixed side
+import System.Exit
 
+type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
 type PortAssignment = (UnplacedLabel,Int) -- Possible assignment where the integer is the index of the assigned port of the unplaced label
 type VarAssignment = (Int,PortAssignment) -- Possible port assignment mapped to an index  
+
+getPortVA (_,pa) = getPort pa
 
 boxSize = 16
 unit = 3
 
-debug_log = True
+debug_log = False
 
 small_number = 0.0001
 
@@ -51,9 +54,20 @@ placeLabelsDynamic ls f = do
     let roundedEdges = map roundSegment edges --`debug` show (length edges)
     let filteredEdges = removeZeroLength roundedEdges
     let simplified = simplify filteredEdges --`debug` show (simplify filteredEdges)
-    ls_ <- assignPorts ls simplified
-    return $ concatMap (placeLabelsDynamicEdge ls_) ( simplify simplified)
+    ls_ <- assignPorts ls (simplify simplified)
+    findSolution ls_ [] 0 (simplify simplified) -- $ concatMap (placeLabelsDynamicEdge ls_) ( simplify simplified)
     
+-- Tries all assignments until a solution is found
+findSolution :: [[FSUnplacedLabel]] -> [Label] -> Int-> [LineSegment 2 () Float]  -> IO [Label]
+findSolution uls best total ls = do
+    putStrLn $ "Trying assignment number: " ++ (show $ length uls)
+    let amountLabels = length $ head uls
+    let sol = concatMap(placeLabelsDynamicEdge (head uls)) ls
+    let labeled = length (filter (\x -> x^.offset >= 0) sol)
+    let bestNew = if labeled > total then sol else best
+    let bestLabeled = if labeled > total then labeled else total
+    if labeled  == amountLabels || length uls == 1 then return bestNew else findSolution (tail uls) bestNew bestLabeled ls
+
 -- Check if an unplaced label is valid
 checkValid :: Frame -> UnplacedLabel -> IO ()
 checkValid f ul 
@@ -64,24 +78,45 @@ checkValid f ul
 isOnFrame :: Frame -> Port -> Bool
 isOnFrame f p = (p^.location) `intersects` f
 
-assignPorts :: [UnplacedLabel] -> [LineSegment 2 () Float]-> IO [FSUnplacedLabel]
+assignPorts :: [UnplacedLabel] -> [LineSegment 2 () Float] -> IO [[FSUnplacedLabel]]
 assignPorts ul ls = do
     -- Create a variable for each port
     let ml = mapVars ul
-    -- mapM_ (putStrLn . show) ml
+    mapM_ (putStrLn . show) ml
 
     -- Set the clauses
     let clauses = setClauses ml ls
-    --putStrLn $ show clauses
+    putStrLn $ show clauses
 
     -- Create a problem description for the SAT solver
     let desc = CNFDescription (length $ concat ml) (length clauses) ""
     -- Solve
     asg <- solveSAT desc clauses
 
-    --putStrLn $ show asg
+    putStrLn $ show asg
 
-    return (map (assignPort (concat ml)) $ filter (0<) asg)
+    -- die (show asg)
+
+    other <- getAllOtherSolutions clauses [asg] (length $ concat ml) 1000
+    shuffled <- shuffle other
+    let random100 = take 100 shuffled
+    putStrLn $ "Total possible assignments found:" ++ (show $ length random100)
+
+    let assignedPorts = map (filter (0<)) random100
+    return $ map (map (assignPort (concat ml))) assignedPorts
+
+-- Gets all other solutions for a SAT problem
+getAllOtherSolutions :: [[Int]] -> [[Int]] -> Int -> Int -> IO [[Int]]
+getAllOtherSolutions cls sols vars limit = do
+    if length sols == limit 
+        then return sols 
+        else do
+            let sol = map ((-1)*) (head sols) -- clause to ban previously found solution
+            let newcls = sol:cls -- add to existing clauses
+            let desc = CNFDescription vars (length newcls) ""
+            asg <- solveSAT desc newcls -- solve new problem
+
+            if null asg then return sols else getAllOtherSolutions newcls (asg:sols) vars limit -- stop when no solution can be found
               
 assignPort :: [(Int,(UnplacedLabel,Int))] -> Int -> FSUnplacedLabel
 assignPort ml i = (port, clue)
@@ -98,53 +133,74 @@ assignPort ml i = (port, clue)
 -- If it is impossible for a label to intersect another, make sure it is always chosen (when it is the first or last port on a frame edge and is pointed away from the other labels)
 -- also for each line l the clauses: xal or xbl, -xal or -xbl to ensure each line has exactly one label above and below
 setClauses :: [[VarAssignment]] -> [LineSegment 2 () Float] -> [[Int]]
-setClauses ml ls  = map (\((a,_),(b,_))->[-a,-b]) (filter (not.fitBox) (filter differentPort (pairs (concat ml)))) -- clauses for overlapping 
-            ++ concat ( map (\ls->[[-(fst $ ls!!0),-(fst $ ls!!1)],[(fst $ ls!!0),(fst $ ls!!1)]]) ( filter (\x->length x == 2) ml)) -- make sure 1 of 2 ports is selected for every line
+setClauses ml l  = --map (\((a,_),(b,_))->[-a,-b]) (filter (not.(fitBox l)) (filter differentPort (pairs (concat ml)))) -- `debug` show (map (\((a,_),(b,_))->[-a,-b]) (filter differentPort (pairs (concat ml))))-- clauses for overlapping 
+            concat ( map (\ls->[[-(fst $ ls!!0),-(fst $ ls!!1)],[(fst $ ls!!0),(fst $ ls!!1)]]) ( filter (\x->length x == 2) ml)) -- make sure 1 of 2 ports is selected for every line
             ++ map (\ls->[fst $ head ls]) (filter (\x->length x == 1) ml) -- If there is only one port, it must be chosen
-            ++ map alwaysFitClause set0 0
-            ++ map alwaysFitClause set1 1
+            ++ map alwaysFitClause duplicatesRemovedSet
             
             where
-                set0 = map (filter . isOutAndPointedAway) (map (groupByEdge ml 0) ls)
-                set1 = map (filter . isOutAndPointedAway) (map (groupByEdge ml 1) (filter (\x -> not x `elem` set0) ls))
 
--- Group the assignments by frame edge
-groupByEdge :: [[VarAssignment]] -> Int -> LineSegment 2 () Float -> [[VarAssignment]]
-groupByEdge mls i ls = filter (isOnEdge ls) mls
+                duplicatesRemovedSet = nubBy (\x y -> x == y || x == reverse y) alwaysFitSet -- [[VarAssignment]]
+                alwaysFitSet = concat $ map isOutAndPointedAway_ groupedByEdge -- [[VarAssignment]]
+                groupedByEdge = map (groupByEdge ml_) l -- [[[VarAssignment]]]
+                ml_ = ml ++ map reverse ml -- [[VarAssignment]]
+
+
+-- Return only the assignments on ls 
+groupByEdge :: [[VarAssignment]] -> LineSegment 2 () Float -> [[VarAssignment]]
+groupByEdge mls ls = sortBy (compareVA ls) $ filter (isOnEdge_ ls) mls 
+    where isOnEdge_ ls (va:_) = isOnEdge ls ((getPortVA va)^.location)
+        
+isOnEdge ls p
+            | p == (ls^.end.core) = False -- make sure each port is only on one edge
+            | otherwise = p `onSegment` ls
+
+
+-- Order of points on the line segment
+compareVA :: LineSegment 2 () Float -> [VarAssignment] -> [VarAssignment] -> Ordering
+compareVA ls va1 va2 = _compareVA ls (head va1) ( head va2)
     where 
-        isOnEdge ls ml = ((snd $ ml)!!i)^.location `onSegment` ls
+        _compareVA :: LineSegment 2 () Float -> VarAssignment -> VarAssignment -> Ordering
+        _compareVA ls v1 v2 = (euclideanDist (ls^.end.core) l1, i s1) `compare` (euclideanDist (ls^.end.core) l2, i s2) --`debug` (show $ ls^.start.core)
+            where
+                (Port l1 _ s1) = getPortVA v1
+                (Port l2 _ s2) = getPortVA v2
+                i s | s = 1
+                    | otherwise = 0
+
+getLabelFromVa :: VarAssignment -> UnplacedLabel
+getLabelFromVa va = fst $ snd va
 
 alwaysFitClause 
-    :: [[VarAssignment]] -- Set of vars for one port where the ith port always fits
-    -> Int
+    :: [VarAssignment] -- Set of vars for one port where the first port always fits
     -> [Int] -- Clause
-alwaysFitClause mls i = (fst (mls!!i): map (\x -> - fst x) $ removeAt i mlp)
-        where
-            removeAt n xs = let (as, bs) = splitAt n xs in as ++ tail bs
+alwaysFitClause (ml:mls) = map (negate . fst) mls -- The other option for this label should never be chosen
+ 
+
+isOutAndPointedAway_
+    :: [[VarAssignment]] -- Vars for this edge
+    -> [[VarAssignment]]
+isOutAndPointedAway_ vars = filter ((isOutAndPointedAway) vars) vars --`debug` (show $ map (getPortVA . head) (filter ((isOutAndPointedAway) vars) vars))
 
 isOutAndPointedAway 
-    :: [[VarAssignment]]  --mapped labels for this frame edge
+    :: [[VarAssignment]]  -- mapped labels for this frame edge
     -> [VarAssignment] -- a label
-    -> Int
     -> Bool -- True if first or last label on edge and pointed away
-isOutAndPointedAway mle ml i = pointedAway np > pi `div` 2.0
+isOutAndPointedAway mle ml = np > pi / 2.0 --`debug` ((show $ getPortVA $ head ml) ++ show np)
     where
-        Port p v _ = getPort $ snd ml_
-        pointedAway nextp
-            | Just (Port p2 _ _,_) = angleBetweenVectors v (p2 .-. p)
-            | Nothing = 0
+        Port p v _ = getPortVA ml_
         np
-            | head mle == ml_ && length mle > 1 = Just mle!!1
-            | last mle == ml_ && length mle > 1 = Just mle!!(length mle - 1)
-            | otherwise = Nothing
-        ml_ = ml!!i
+            | head mle == ml && length mle > 3 = angleBetweenVectors v (((getPortVA $ head (mle!!2))^.location) .-. p) --`debug` (show (((getPortVA $ head (mle!!1))^.location) .-. p))
+            | last mle == ml && length mle > 3 = angleBetweenVectors (((getPortVA $ head (mle!!(length mle - 3)))^.location) .-. p) v --`debug` (show (((getPortVA $ head (mle!!(length mle - 2)))^.location) .-. p))
+            | otherwise = 0
+        ml_ = ml!!0
 
 -- Determine if ports are unequal
-differentPort :: (VarAssignment,VarAssignment)-> Bool
+differentPort :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
 differentPort ((_,l1),(_,l2)) = (_location $ getPort l1) /= (_location $ getPort l2)
 
 --Shorthand for getting the ith possible port from an unplaced label
-getPort :: PortAssignment -> Port
+getPort :: (UnplacedLabel,Int) -> Port
 getPort ((ps,_),i) = ps!!(i-1)
 
 --All possible pairs from a list
@@ -153,15 +209,15 @@ pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 
 -- map the variables for the SAT clauses,
 -- result is a list of pairs where the first element is the index of the variable and the second element the port assignment
-mapVars :: [UnplacedLabel] -> [[VarAssignment]]
+mapVars :: [UnplacedLabel] -> [[(Int,(UnplacedLabel,Int))]]
 mapVars ul = _mapVars (map getVar ul) 1
 
-_mapVars :: [[PortAssignment]] -> Int -> [[VarAssignment]]
+_mapVars :: [[(UnplacedLabel,Int)]] -> Int -> [[(Int,(UnplacedLabel,Int))]]
 _mapVars [] _ = []
 _mapVars (v:vs) i = zip [i..] v : _mapVars vs (i + (length v))
 
 -- Create variables for every port of an unplaced label
-getVar :: UnplacedLabel -> [PortAssignment]
+getVar :: UnplacedLabel -> [(UnplacedLabel,Int)]
 getVar ul = [(a,b)|a<-[ul],b<-[1..(length (fst ul))] ]
 
 -- Places labels dynamically on an edge, it is assumed the edge is horizontal and the labels extend upwards
@@ -199,7 +255,6 @@ prepareEdgeLabels labels edge = (ordering, preparedLabels)
         (ordering,sLabels)  = unzip $ sortBy compareLabels $ zip [0..] tLabels                      -- The sorted labels and ordering
         preparedLabels      = dummy0 tEdge : sLabels ++ [dummyNplus1 tEdge]                         -- The prepared labels
 
-
 compareLabels (_,((Port l1 _ s1),_)) (_,((Port l2 _ s2),_)) = (l1^.xCoord,i s1) `compare` (l2^.xCoord,i s2)
     where
         i s | s = 1
@@ -227,7 +282,7 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                 | j - 1 > i = minimum m --`debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
                         m = [smart i k j a b c | k<-[i+1..j-1],c <- [set k i j a b]] --`debug` (show ls ++ show i ++ show j ++ show (set 1)) 
-                        set k i j a b = chs blocking `debug` ("result:" ++ show (chs blocking) ++ "k:" ++ show (k,ls!!k) ++ " i:" ++ show (i,a,ls!!i) ++ " j:" ++ show (j,b,ls!!j))
+                        set k i j a b = chs blocking --`debug` ("result:" ++ show (chs blocking) ++ "k:" ++ show (k,ls!!k) ++ " i:" ++ show (i,a,ls!!i) ++ " j:" ++ show (j,b,ls!!j))
                             where 
                                 chs [] = 1000000
                                 chs a = maximum a
@@ -237,20 +292,24 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                             | c == 1000000      =   (1000000,[])
                             | fst f1 >= 1000000 =   (1000000,[])
                             | fst f2 >= 1000000 =   (1000000,[])
-                            | otherwise = ((fst f1) + (fst f2) - c, init (snd f1) ++ snd f2)
+                            | otherwise = ((fst f1) + (fst f2) - c, init (snd f1) ++ snd f2) `debug` show (c,f1,f2)
                                 where
                                     f1 = f i k a c
                                     f2 =  f k j c b
 
 minBoundaryBlockingLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> Int ->  Maybe Int
 minBoundaryBlockingLength ls i j k a b
+    | i == 0 && j == (length ls) - 1 = Just m -- Can't be blocked by dummies
+    | i == 0 && fitLength_ ls k m j b = Just m
+    | fitLength_ ls i a k m && j == (length ls) - 1 = Just m
     | fitLength_ ls i a k m && fitLength_ ls k m j b =  Just m 
     | otherwise = Nothing
     where
-        m = traceShowId $ minLength (fst (ls!!k)) `debug` show (i,a,j,b,k,minLength (fst (ls!!k)))
+        m = minLength (fst (ls!!k)) --`debug` show (i,a,j,b,k,minLength (fst (ls!!k)))
 
 
 -- Determines the minimum length for the label to clear the boundary
+-- Assumes boundary is horizontal
 minLength :: Port -> Int
 minLength (Port p d s) | ((x > 0 && s) || (x < 0 && not s))= minlength --`debug` (show minlength ++ ", " ++ show p ++ show d ++ show s)  -- direction is tot the top right and label is on right side
                        | otherwise = 0 --`debug` ("minlength 0" ++ show p ++ show d ++ show s)
@@ -259,6 +318,16 @@ minLength (Port p d s) | ((x > 0 && s) || (x < 0 && not s))= minlength --`debug`
                                 y = d^.yComponent 
                                 minlength = ceiling (fromIntegral boxSize / ((abs y) / (abs x)))
 
+minLengthEdge :: Port -> LineSegment 2 () Float -> Int
+minLengthEdge prt@(Port p d s) ls
+    | (angle_ < (pi/2) && s) || (angle_ > (pi/2) && not s) = 0
+    | ls^.start.core.yCoord == ls^.end.core.yCoord && d^.yComponent > 0 = minLength prt -- horizontal
+    | otherwise = ceiling ((fromIntegral boxSize) / tan angle)
+        where
+            angle 
+                | angle_ <= (pi/2) = angle_
+                | otherwise = abs $ angleBetweenVectors (ls^.start.core .-. ls^.end.core) d
+            angle_ = abs $ angleBetweenVectors (ls^.end.core .-. ls^.start.core) d
 
 minBlockingLength2 
   :: [FSUnplacedLabel]    -- the labels
@@ -267,6 +336,7 @@ minBlockingLength2
     -> Int                  -- index of label k
     -> Maybe Int
 minBlockingLength2 ls i a k 
+    | i == 0 || i == (length ls) = Nothing -- Dummies can't block
     |  (k < i && not sk) || (k > i && sk) = Nothing
     | otherwise = lengthFromIntersection2 vk pk vvk ip
     where
@@ -364,13 +434,13 @@ minBlockingLength ls i a k
         ls_i_top = OpenLineSegment (ext pi_) (ext pi__)                       -- Line segment on top of box
         ls_i_opp = OpenLineSegment (ext pi__) (ext pi___)                       -- Line segment on opposite of box
 
-        ip1 = traceShowId $ asA @(Point 2 Float) $ line_k_ `intersect` line_i
+        ip1 = asA @(Point 2 Float) $ line_k_ `intersect` line_i
         ip2 = asA @(Point 2 Float) $ line_k_ `intersect` line_i_top
         ip3 = asA @(Point 2 Float) $ line_pi_ `intersect` ((horizontalLine 0)::Line 2 Float)
         ip4 = asA @(Point 2 Float) $ line_pi__ `intersect` ((horizontalLine 0)::Line 2 Float)
         ip5 = asA @(Point 2 Float) $ line_k_ `intersect` line_i_
 
-        pk_ = traceShowId $ pk .+^ ((signorm vvk)^*(fromIntegral boxSize))
+        pk_ = pk .+^ ((signorm vvk)^*(fromIntegral boxSize))
 
         vvi 
             | si = Vector2 (vi^.yComponent) (-(vi^.xComponent))
@@ -386,10 +456,10 @@ minBlockingLength ls i a k
 
 
 lengthFromIntersection :: Point 2 Float -> Maybe (Point 2 Float) -> Maybe Int
-lengthFromIntersection _ Nothing     = Nothing `debug` "no intersection"
+lengthFromIntersection _ Nothing     = Nothing --`debug` "no intersection"
 lengthFromIntersection p (Just ip)
     | ip^.yCoord >= 0 = Just (ceiling (euclideanDist p ip)) --`debug` show ip
-    | otherwise = Nothing `debug` show ip
+    | otherwise = Nothing --`debug` show ip
 
 -- Gives a range of lengths for k where it will fit with l
 doesFitLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> [Int]
@@ -401,21 +471,36 @@ getLengths r p1 p2
     | port == -1 = replicate (p2-p1 + 1) (-1)
     | (port,l)== (0,0) = []
     | otherwise = getLengths r p1 port ++ [l] ++ getLengths r port p2
-    where (_,(port,l)) = r!(p1,p2) `debug` show r
+    where (_,(port,l)) = r!(p1,p2) --`debug` show r
 
 debug x y | debug_log = flip trace x y
         | otherwise = x
  
 -- Determines if l' might fit with to l1
-fitBox :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
-fitBox ((_,(p1,i1)),(_,(p2,i2))) 
-    | pos1 == pos || pos2 == pos = True -- `debug` "true: positions are the same"
-    | intersects l1 l = False -- `debug` "false: i intersects k"
-    | intersects b l1 = False -- `debug` "false: box k intersects i"
-    | otherwise = True -- `debug` "true: no intersection"
+-- TODO its cb1 with cb is not relevant
+fitBox :: [LineSegment 2 () Float] -> ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
+-- fitBox ((_,(p1,i1)),(_,(p2,i2))) =  not (lb1 `intersects` lb) 
+--     where
+--         lb1 = leaderFromLabelLength_ (p1,i1) --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
+--         lb = leaderFromLabelLength_ (p2,i2) --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
+--         leaderFromLabelLength_ (ul@(_, c),i) = (ls, clueBoxPolygon (ls^.end.core) v s (length c))
+--             where 
+--                 ls = leader p v (minLength $ getPort (ul,i))
+--                 Port p v s = getPort (ul,i)
+
+fitBox lss ((_,(p1,i1)),(_,(p2,i2)))
+    | isNothing ls = False
+    | getPort (p1,i1) == getPort(p2,i2)  = True -- `debug` "true: positions are the same"
+    | intersects l1 l = False  -- `debug` "false: i intersects k"
+    | intersects b l1 = False  -- `debug` "false: box k intersects i"
+    | intersects b1 l = False  -- `debug` "false: box k intersects i"
+    | intersects b b1 = False
+    | otherwise = True  -- `debug` "true: no intersection"
     where
-        l1 = (leader pos1 dir1 boxSize) --debug` ("i: " ++ show (leader pos1 dir1 boxSize))
-        l = (leader pos dir boxSize) --`debug` ("k: " ++ show (leader pos dir boxSize))
+        ls = getEdge (getPort (p1,i1)) lss
+        l1 = (leader pos1 dir1 (minLengthEdge(getPort(p1,i1)) (fromJust ls))) -- `debug` ("i: " ++ show (leader pos1 dir1 boxSize))
+        l = (leader pos dir (minLengthEdge(getPort(p2,i2)) (fromJust ls))) -- `debug` ("k: " ++ show (leader pos dir boxSize))
+        b1 = clueBoxPolygon (l1^.end.core) dir1 s1 1
         b = clueBoxPolygon (l^.end.core) dir s 1
         Port pos1 dir1 s1 = getPort (p1,i1)
         Port pos dir s = getPort (p2,i2)
@@ -436,10 +521,10 @@ fitLength ls i len1 j len2 k len = not (lb1 `intersects` lb) && not (lb2 `inters
         lb2 = leaderFromLabelLength (ls!!j) len2 --`debug` ("j:" ++ show (leaderFromLabelLength (ls!!j) len2) ++ show len2)
         lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
 
-fitLength_ ls i len1 k len = traceShowId $ not (lb1 `intersects` lb) `debug` show (i,len1,k,len)
+fitLength_ ls i len1 k len = not (lb1 `intersects` lb) --`debug` show (i,len1,k,len)
     where
-        lb1 = traceShowId $ leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
-        lb = traceShowId $ leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
+        lb1 = leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
+        lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
 
 --     | intersects l1 l = False  -- `debug` "false: i intersects k"
 --     | intersects l2 l = False  -- `debug` "false: j intersects k"
@@ -469,9 +554,9 @@ initLeaders l = (maxLength:leader1:take (l-2) (repeat 0))++ [leaderN,maxLength]
 
 -- Makes dummies, assumes line segment is horizontal
 dummy0 :: LineSegment 2 () Float -> FSUnplacedLabel
-dummy0 s = (Port (Point2 ((s^.end.core.xCoord) - unit) (s^.end.core.yCoord)) (Vector2 (-unit) 0) False,[0])
+dummy0 s = (Port (Point2 ((s^.end.core.xCoord) - unit) (s^.end.core.yCoord)) (Vector2 (-unit) (-unit)) False,[])
 dummyNplus1 :: LineSegment 2 () Float -> FSUnplacedLabel
-dummyNplus1 s = (Port (Point2 ((s^.start.core.xCoord) + unit) (s^.start.core.yCoord)) (Vector2 (unit) 0) True,[0])
+dummyNplus1 s = (Port (Point2 ((s^.start.core.xCoord) + unit) (s^.start.core.yCoord)) (Vector2 (unit) (-unit)) True,[])
 
 -- Sets start and end leader length
 leader1 = 1
@@ -505,7 +590,7 @@ sortLabel (p1,_) (p2,_)
 
 -- determines if a label is on a segment
 labelOnSegment :: LineSegment 2 () Float -> FSUnplacedLabel -> Bool
-labelOnSegment s l = onSegment ((fst l)^.location) s
+labelOnSegment s l = isOnEdge s ((fst l)^.location)
 
 --determines the length of l2 is where it crosses l1
 intersectionLength :: Port -> Port -> Float
@@ -516,11 +601,18 @@ intersectionLength p1 p2 = case ip of
 
 leaderFromLabelLength :: FSUnplacedLabel -> Int -> Leader
 leaderFromLabelLength (Port p v s, c) i = (ls, clueBoxPolygon (ls^.end.core) v s (length c))
-    where ls = leader p v i `debug` show (p,v,i)
+    where ls = leader p v i --`debug` show (p,v,i)
 
 --Cluebox on the boundary
 clueBoxFromLabel :: FSUnplacedLabel -> ClueBox
 clueBoxFromLabel (Port p v s,c) = clueBoxPolygon p v s (length c)
+
+--Returns the edge which p is on
+getEdge :: Port -> [LineSegment 2 () Float] -> Maybe (LineSegment 2 () Float)
+getEdge (Port pos _ _) ls = getEdge_ $ filter (\x -> x `isOnEdge` pos) ls
+    where
+        getEdge_ [] = Nothing
+        getEdge_ ls = Just (head ls)  
 
 ------------------
 

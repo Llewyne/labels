@@ -19,21 +19,21 @@ import CurveArrangement.Types
 
 
 type Frame    = SimplePolygon () Float
-type Interior = CA Rational -- change to Float!
+type Interior = CA Float -- change to Float!
 type Clue     = [Int]
 
 data Port = Port
   { _location  :: Point 2 Float
   , _direction :: Vector 2 Float
   , _side      :: Bool -- True if on right of direction vector (left if going into puzzle)
-  } deriving (Show, Eq)
+  } deriving (Show,Eq)
 $(makeLenses ''Port)
 
 data Label = Label
   { _clue      :: Clue
   , _port      :: Port
   , _offset    :: Float
-  } deriving (Show, Eq)
+  } deriving Show
 $(makeLenses ''Label)
 
 data Nonogram = Nonogram

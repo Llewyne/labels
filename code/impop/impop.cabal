@@ -1,3 +1,4 @@
+
 cabal-version: 1.12
 
 name:           impop
@@ -19,8 +20,8 @@ source-repository head
 
 library
   exposed-modules:
-      Test
-    , Draw, Convert
+      -- Test
+      Draw, Glossify
     , CurveArrangement
     , CurveArrangement.Basic
     , CurveArrangement.Construct
@@ -32,7 +33,6 @@ library
     , CurveArrangement.Loader
     , Data.Geometry.PlanarSubdivision.ForceDirected
     , Data.Geometry.PlanarSubdivision.More
-    , Data.Geometry.PlanarSubdivision.Dynamic
     , Algorithms.Geometry.Misc
     , Algorithms.Geometry.Snap
     , Algorithms.Geometry.Cluster
@@ -57,6 +57,8 @@ library
     , Eva.Leader
     , Eva.Util
     , Eva.Test
+    , Eva.SATLabeling
+    , Eva.SATLabelingExtensible
   other-modules:
       Paths_impop
   
@@ -70,7 +72,8 @@ library
     , Rasterific
     , gloss
     , vector
-    , lens
+    , nonempty-vector >= 0.2.1
+    , lens >= 4.19
     , containers
     , data-default
     , hlist
@@ -78,13 +81,14 @@ library
     , text
     , clock, time
     , directory, filepath
-    , extra
-    , mios
-    , split
+    ,extra
+     , split
     , array
     , vinyl
     , matrix
-    , ersatz
+    , mios
+    , random
+    , process
   default-language: Haskell2010
   default-extensions: TypeFamilies
                     , GADTs
@@ -110,7 +114,6 @@ library
 
                     , AutoDeriveTypeable
 
-
                     , FlexibleInstances
                     , FlexibleContexts
                     , MultiParamTypeClasses
@@ -120,7 +123,7 @@ executable impop-exe
   other-modules:
       Paths_impop
     -- , TestCurveArrangement
-    -- , TestDynamicPSD
+    , TestDynamicPSD
     , TestLabelPipeline  
   hs-source-dirs:
       app
@@ -134,6 +137,7 @@ executable impop-exe
     , Rasterific
     , gloss
     , vector
+    , nonempty-vector >= 0.2.1
     , lens
     , containers
     , data-default
@@ -144,6 +148,7 @@ executable impop-exe
     , directory, filepath
     , extra
     , mios
+    , random
   default-language: Haskell2010
   default-extensions: TypeFamilies
                     , GADTs
@@ -168,7 +173,6 @@ executable impop-exe
                     , DeriveTraversable
 
                     , AutoDeriveTypeable
-
 
                     , FlexibleInstances
                     , FlexibleContexts

@@ -23,7 +23,7 @@ import qualified Data.CircularSeq as C
 import Graphics.Gloss hiding (Point, Vector, Path, Arc, arc, display)
 import Graphics.Gloss.Interface.Pure.Game hiding (Point, Vector, Path, Arc, arc)
 
-import Convert
+import Glossify
 
 import PSDGlossApp
 import PSDGlossApp.Common
@@ -160,7 +160,7 @@ fixVertex :: (HasForceData v, Real r) => VertexId' s -> PlanarSubdivision s v e 
 fixVertex i psd = psd & dataOf i . fluid .~ Fixed (traverse %~ realToFrac $ psd ^. locationOf i)
 
 
-vierkant = SimplePolygon . C.fromList . map (:+ def)
+vierkant = simpleFromPoints . map (:+ def)
          $ [ Point2 (-250) (-250)
 --       , Point2 0 (-250)
          , Point2 250 (-250)

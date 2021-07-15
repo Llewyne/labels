@@ -8,8 +8,8 @@ import Control.Lens
 import Nonogram
 import Data.Foldable (toList)
 
-import Data.Geometry hiding (head,direction,init)
-import Data.Geometry.Polygon
+import Data.Geometry hiding (head,direction,init,size)
+import Data.Geometry.Polygon hiding(size)
 import Data.Geometry.Boundary
 import Data.Ext
 import Data.List

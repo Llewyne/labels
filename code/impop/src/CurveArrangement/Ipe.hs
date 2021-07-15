@@ -18,7 +18,7 @@ import Data.Geometry.PlanarSubdivision hiding (endPoints)
 import Data.Geometry hiding (endPoints, head, init)
 import qualified Data.CircularSeq as C
 
-import Convert
+--import Convert
 
 import Algorithms.Geometry.Misc
 

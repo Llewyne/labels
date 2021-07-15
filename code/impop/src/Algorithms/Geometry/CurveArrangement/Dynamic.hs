@@ -47,16 +47,16 @@ subdivideEdge i t psd =
   in splitEdge a b p vdata f psd
 
 
-mergeEdges :: (Show r, RealFrac r) => Dart CAS -> Dart CAS -> Maybe (BezierSpline 3 2 r) -> CA r -> CA r
-mergeEdges i j mb ca | headOf i ca /= tailOf j ca = error "mergeEdges: can't merge these edges, man"
-mergeEdges i j mb ca = 
-  let [a]        = common ca i j
-      f (e1, e2) | e1 == ca ^. dataOf i        = case mb of Just b  -> e1 & stub .~ (traverse %~ realToFrac $ tangent b)
-                                                            Nothing -> e1
-                 | e1 == ca ^. dataOf (twin j) = case mb of Just b  -> e1 & stub .~ (traverse %~ realToFrac $ tangent $ reverse b)
-                                                            Nothing -> e1
-                 | otherwise = error "What the data?"
-  in unSplitEdge a f ca
+-- mergeEdges :: (Show r, RealFrac r) => Dart CAS -> Dart CAS -> Maybe (BezierSpline 3 2 r) -> CA r -> CA r
+-- mergeEdges i j mb ca | headOf i ca /= tailOf j ca = error "mergeEdges: can't merge these edges, man"
+-- mergeEdges i j mb ca = 
+--   let [a]        = common ca i j
+--       f (e1, e2) | e1 == ca ^. dataOf i        = case mb of Just b  -> e1 & stub .~ (traverse %~ realToFrac $ tangent b)
+--                                                             Nothing -> e1
+--                  | e1 == ca ^. dataOf (twin j) = case mb of Just b  -> e1 & stub .~ (traverse %~ realToFrac $ tangent $ reverse b)
+--                                                             Nothing -> e1
+--                  | otherwise = error "What the data?"
+--   in unSplitEdge a f ca
 
 
 -- insert a new edge
@@ -74,12 +74,12 @@ insertEdge i j mb ca | i == j = ca
                                                        Nothing -> def & stub .~ (il .-. jl) ^/ 3
                                    in splitFace i j (e1, e2) f ca
 
-dangleVertex :: (Show r, Real r) => VertexId' CAS -> FaceId' CAS -> Point 2 r -> BezierSpline 3 2 r -> CA r -> CA r
-dangleVertex i j p b ca = 
-  let v = def
-      e1 = def & stub .~ (traverse %~ realToFrac $ tangent           b)
-      e2 = def & stub .~ (traverse %~ realToFrac $ tangent $ reverse b)
-  in sproutIntoFace i j p v (e1, e2) ca
+-- dangleVertex :: (Show r, Real r) => VertexId' CAS -> FaceId' CAS -> Point 2 r -> BezierSpline 3 2 r -> CA r -> CA r
+-- dangleVertex i j p b ca = 
+--   let v = def
+--       e1 = def & stub .~ (traverse %~ realToFrac $ tangent           b)
+--       e2 = def & stub .~ (traverse %~ realToFrac $ tangent $ reverse b)
+--   in sproutIntoFace i j p v (e1, e2) ca
 
 
 {-
