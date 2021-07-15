@@ -29,6 +29,7 @@ simplify
     :: [LineSegment 2 () Float] -- List of line segments
     -> [LineSegment 2 () Float] -- Simplified list of line segments
 simplify ls
+    | length ll == 0 = [l]
     | abs (abs(getM l) - abs(getM (last ll))) < 0.01 || getM l == getM (last ll) = (((last ll)&start .~ (last ll)^.start)&end .~ l^.end) : init ll
     | otherwise = l:ll
     where (l:ll) = simplify_ ls

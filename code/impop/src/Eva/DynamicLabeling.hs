@@ -31,12 +31,15 @@ import Eva.Leader hiding (boxSize,debug_log,debug)
 import Eva.Test
 import SAT.Mios (CNFDescription (..), solveSAT)
 
-type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
+type FSUnplacedLabel = (Port, Clue) -- Unplaced Label with a fixed side
+
+type PortAssignment = (UnplacedLabel,Int) -- Possible assignment where the integer is the index of the assigned port of the unplaced label
+type VarAssignment = (Int,PortAssignment) -- Possible port assignment mapped to an index  
 
 boxSize = 16
 unit = 3
 
-debug_log = False
+debug_log = True
 
 small_number = 0.0001
 
@@ -44,11 +47,11 @@ small_number = 0.0001
 placeLabelsDynamic :: [UnplacedLabel] -> Frame -> IO [Label] 
 placeLabelsDynamic ls f = do
     mapM_ (checkValid f) ls
-    ls_ <- assignPorts ls
     let edges = listEdges f --`debug` show ls_
     let roundedEdges = map roundSegment edges --`debug` show (length edges)
     let filteredEdges = removeZeroLength roundedEdges
     let simplified = simplify filteredEdges --`debug` show (simplify filteredEdges)
+    ls_ <- assignPorts ls simplified
     return $ concatMap (placeLabelsDynamicEdge ls_) ( simplify simplified)
     
 -- Check if an unplaced label is valid
@@ -61,14 +64,14 @@ checkValid f ul
 isOnFrame :: Frame -> Port -> Bool
 isOnFrame f p = (p^.location) `intersects` f
 
-assignPorts :: [UnplacedLabel] -> IO [FSUnplacedLabel]
-assignPorts ul = do
+assignPorts :: [UnplacedLabel] -> [LineSegment 2 () Float]-> IO [FSUnplacedLabel]
+assignPorts ul ls = do
     -- Create a variable for each port
     let ml = mapVars ul
     -- mapM_ (putStrLn . show) ml
 
     -- Set the clauses
-    let clauses = setClauses ml
+    let clauses = setClauses ml ls
     --putStrLn $ show clauses
 
     -- Create a problem description for the SAT solver
@@ -92,18 +95,56 @@ assignPort ml i = (port, clue)
 -- And xbl = 1 (xbl = 0) if the label below l is assigned to p (q)
 -- If a label cant fit next to another label because the box would intersect the leader
 -- then  the clause: -xal or -xb'l is added
+-- If it is impossible for a label to intersect another, make sure it is always chosen (when it is the first or last port on a frame edge and is pointed away from the other labels)
 -- also for each line l the clauses: xal or xbl, -xal or -xbl to ensure each line has exactly one label above and below
-setClauses :: [[(Int,(UnplacedLabel,Int))]] -> [[Int]]
-setClauses ml = map (\((a,_),(b,_))->[-a,-b]) (filter (not.fitBox) (filter differentPort (pairs (concat ml)))) -- clauses for overlapping 
+setClauses :: [[VarAssignment]] -> [LineSegment 2 () Float] -> [[Int]]
+setClauses ml ls  = map (\((a,_),(b,_))->[-a,-b]) (filter (not.fitBox) (filter differentPort (pairs (concat ml)))) -- clauses for overlapping 
             ++ concat ( map (\ls->[[-(fst $ ls!!0),-(fst $ ls!!1)],[(fst $ ls!!0),(fst $ ls!!1)]]) ( filter (\x->length x == 2) ml)) -- make sure 1 of 2 ports is selected for every line
-            ++ map (\ls->[fst $ head ls]) (filter (\x->length x == 1) ml) 
+            ++ map (\ls->[fst $ head ls]) (filter (\x->length x == 1) ml) -- If there is only one port, it must be chosen
+            ++ map alwaysFitClause set0 0
+            ++ map alwaysFitClause set1 1
+            
+            where
+                set0 = map (filter . isOutAndPointedAway) (map (groupByEdge ml 0) ls)
+                set1 = map (filter . isOutAndPointedAway) (map (groupByEdge ml 1) (filter (\x -> not x `elem` set0) ls))
+
+-- Group the assignments by frame edge
+groupByEdge :: [[VarAssignment]] -> Int -> LineSegment 2 () Float -> [[VarAssignment]]
+groupByEdge mls i ls = filter (isOnEdge ls) mls
+    where 
+        isOnEdge ls ml = ((snd $ ml)!!i)^.location `onSegment` ls
+
+alwaysFitClause 
+    :: [[VarAssignment]] -- Set of vars for one port where the ith port always fits
+    -> Int
+    -> [Int] -- Clause
+alwaysFitClause mls i = (fst (mls!!i): map (\x -> - fst x) $ removeAt i mlp)
+        where
+            removeAt n xs = let (as, bs) = splitAt n xs in as ++ tail bs
+
+isOutAndPointedAway 
+    :: [[VarAssignment]]  --mapped labels for this frame edge
+    -> [VarAssignment] -- a label
+    -> Int
+    -> Bool -- True if first or last label on edge and pointed away
+isOutAndPointedAway mle ml i = pointedAway np > pi `div` 2.0
+    where
+        Port p v _ = getPort $ snd ml_
+        pointedAway nextp
+            | Just (Port p2 _ _,_) = angleBetweenVectors v (p2 .-. p)
+            | Nothing = 0
+        np
+            | head mle == ml_ && length mle > 1 = Just mle!!1
+            | last mle == ml_ && length mle > 1 = Just mle!!(length mle - 1)
+            | otherwise = Nothing
+        ml_ = ml!!i
 
 -- Determine if ports are unequal
-differentPort :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
+differentPort :: (VarAssignment,VarAssignment)-> Bool
 differentPort ((_,l1),(_,l2)) = (_location $ getPort l1) /= (_location $ getPort l2)
 
 --Shorthand for getting the ith possible port from an unplaced label
-getPort :: (UnplacedLabel,Int) -> Port
+getPort :: PortAssignment -> Port
 getPort ((ps,_),i) = ps!!(i-1)
 
 --All possible pairs from a list
@@ -112,15 +153,15 @@ pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 
 -- map the variables for the SAT clauses,
 -- result is a list of pairs where the first element is the index of the variable and the second element the port assignment
-mapVars :: [UnplacedLabel] -> [[(Int,(UnplacedLabel,Int))]]
+mapVars :: [UnplacedLabel] -> [[VarAssignment]]
 mapVars ul = _mapVars (map getVar ul) 1
 
-_mapVars :: [[(UnplacedLabel,Int)]] -> Int -> [[(Int,(UnplacedLabel,Int))]]
+_mapVars :: [[PortAssignment]] -> Int -> [[VarAssignment]]
 _mapVars [] _ = []
 _mapVars (v:vs) i = zip [i..] v : _mapVars vs (i + (length v))
 
 -- Create variables for every port of an unplaced label
-getVar :: UnplacedLabel -> [(UnplacedLabel,Int)]
+getVar :: UnplacedLabel -> [PortAssignment]
 getVar ul = [(a,b)|a<-[ul],b<-[1..(length (fst ul))] ]
 
 -- Places labels dynamically on an edge, it is assumed the edge is horizontal and the labels extend upwards
@@ -182,30 +223,31 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
    where 
        f i j a b 
                 | i == j - 1  = (a+b,[(i,a),(j,b)]) -- `debug` ("I AND J ADJACENT|| i: " ++ show i ++ ", j: " ++ show j ++ ", a: " ++ show a ++ ", b: " ++ show b)
-                | null m = (1000000,[(i,a)] ++ [(k,-boxSize)|k<-[i+1..j-1]] ++[(j,b)]) --`debug` ("M NULL|| i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
+                | m == [] || ((snd $ head m) == []) = (1000000,[(i,a)] ++ [(k,-boxSize)|k<-[i+1..j-1]] ++[(j,b)]) --`debug` ("M NULL|| i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                 | j - 1 > i = minimum m --`debug` ("OTHER|| m: " ++ show m ++ "min m: " ++ show (minimum m) ++ "i: " ++ show (i,ls!!i) ++ ", j: " ++ show (j,ls!!j) ++ ", a: " ++ show a ++ ", b: " ++ show b)
                     where 
                         m = [smart i k j a b c | k<-[i+1..j-1],c <- [set k i j a b]] --`debug` (show ls ++ show i ++ show j ++ show (set 1)) 
-                        set k i j a b = chs blocking `debug` ("result:" ++ show (chs blocking) ++ "k:" ++ show k ++ show (ls!!k) ++ " i:" ++ show i ++ show (ls!!i) ++ " j:" ++ show j ++ show (ls!!j))
+                        set k i j a b = chs blocking `debug` ("result:" ++ show (chs blocking) ++ "k:" ++ show (k,ls!!k) ++ " i:" ++ show (i,a,ls!!i) ++ " j:" ++ show (j,b,ls!!j))
                             where 
-                                chs [] = minLength (fst(ls!!k))
+                                chs [] = 1000000
                                 chs a = maximum a
-                                blocking = traceShowId $ catMaybes $ ( [minBlockingLength2 ls i a k]++[minBlockingLength2 ls j b k])
+                                blocking = catMaybes [minBlockingLength2 ls i a k, minBlockingLength2 ls j b k, minBoundaryBlockingLength ls i j k a b]
 
                         smart i k j a b c 
-                            | fst f1 == 1000000 = (1000000,[])
-                            | fst f2 == 1000000 = (1000000,[])
+                            | c == 1000000      =   (1000000,[])
+                            | fst f1 >= 1000000 =   (1000000,[])
+                            | fst f2 >= 1000000 =   (1000000,[])
                             | otherwise = ((fst f1) + (fst f2) - c, init (snd f1) ++ snd f2)
                                 where
                                     f1 = f i k a c
-                                    f2 = f k j c b
+                                    f2 =  f k j c b
 
 minBoundaryBlockingLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> Int ->  Maybe Int
 minBoundaryBlockingLength ls i j k a b
-    | fitLength_ ls i a k m && fitLength_ ls j b k m =  Just m `debug` show (ls!!k)
+    | fitLength_ ls i a k m && fitLength_ ls k m j b =  Just m 
     | otherwise = Nothing
     where
-        m = minLength (fst (ls!!k))
+        m = traceShowId $ minLength (fst (ls!!k)) `debug` show (i,a,j,b,k,minLength (fst (ls!!k)))
 
 
 -- Determines the minimum length for the label to clear the boundary
@@ -228,7 +270,7 @@ minBlockingLength2 ls i a k
     |  (k < i && not sk) || (k > i && sk) = Nothing
     | otherwise = lengthFromIntersection2 vk pk vvk ip
     where
-        ip = findIntersection line_k line_k_ (traceShowId $ (catMaybes [ip_ik_,ip_itop_k_,ip_opp_k_])++[pi_opp,pi_top])
+        ip = findIntersection line_k line_k_ ( (catMaybes [ip_ik_,ip_itop_k_,ip_opp_k_])++[pi_opp,pi_top])
 
         li@(Port pi vi si,c) = ls!!i
         lk@(Port pk vk sk,_) = ls!!k
@@ -264,7 +306,7 @@ minBlockingLength2 ls i a k
 
 lengthFromIntersection2 :: Vector 2 Float -> Point 2 Float -> Vector 2 Float -> Maybe (Point 2 Float) -> Maybe Int
 lengthFromIntersection2 _ _ _ Nothing = Nothing
-lengthFromIntersection2 vk pk vvk (Just ip) = traceShowId $ lengthFromIntersection2_ corner
+lengthFromIntersection2 vk pk vvk (Just ip) = lengthFromIntersection2_ corner
     where 
         corner = asA @(Point 2 Float) $ (lineFromVectorPoint vvk ip) `intersect` Line pk vk
         lengthFromIntersection2_ (Just c) = Just (ceiling $ euclideanDist pk c)
@@ -273,10 +315,10 @@ lengthFromIntersection2 vk pk vvk (Just ip) = traceShowId $ lengthFromIntersecti
 --highest intersection between k and k'
 findIntersection :: Line 2 Float -> Line 2 Float -> [Point 2 Float] -> Maybe (Point 2 Float)
 findIntersection line_k line_k_ is
-    | length inBetweens > 0 = Just (traceShowId $ getHighestPoint_ inBetweens (head inBetweens))
+    | length inBetweens > 0 = Just (getHighestPoint_ inBetweens (head inBetweens))
     | otherwise = Nothing
     where --there is a bug in onSide and onLine, so onLine2 is neccesary
-        inBetweens = filter (\x-> x^.yCoord >= 0 && (x `onLine2` line_k || x `onLine2` line_k_ || x `onSide` traceShowId(line_k) /= x `onSide` traceShowId(line_k_))) is
+        inBetweens = filter (\x-> x^.yCoord >= 0 && (x `onLine2` line_k || x `onLine2` line_k_ || x `onSide` line_k /= x `onSide` line_k_)) is
 
 
 
@@ -394,10 +436,10 @@ fitLength ls i len1 j len2 k len = not (lb1 `intersects` lb) && not (lb2 `inters
         lb2 = leaderFromLabelLength (ls!!j) len2 --`debug` ("j:" ++ show (leaderFromLabelLength (ls!!j) len2) ++ show len2)
         lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
 
-fitLength_ ls i len1 k len = not (lb1 `intersects` lb)
+fitLength_ ls i len1 k len = traceShowId $ not (lb1 `intersects` lb) `debug` show (i,len1,k,len)
     where
-        lb1 = leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
-        lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
+        lb1 = traceShowId $ leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
+        lb = traceShowId $ leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
 
 --     | intersects l1 l = False  -- `debug` "false: i intersects k"
 --     | intersects l2 l = False  -- `debug` "false: j intersects k"
@@ -474,7 +516,7 @@ intersectionLength p1 p2 = case ip of
 
 leaderFromLabelLength :: FSUnplacedLabel -> Int -> Leader
 leaderFromLabelLength (Port p v s, c) i = (ls, clueBoxPolygon (ls^.end.core) v s (length c))
-    where ls = leader p v i
+    where ls = leader p v i `debug` show (p,v,i)
 
 --Cluebox on the boundary
 clueBoxFromLabel :: FSUnplacedLabel -> ClueBox
