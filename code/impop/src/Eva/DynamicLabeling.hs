@@ -26,20 +26,20 @@ import Nonogram
 import Data.Geometry.Polygon
 
 import Eva.Util
-import Eva.ClueBox hiding (boxSize,debug_log,debug)
+import Eva.NonoUtil
+import Eva.ClueBox hiding (debug_log,debug)
 import Eva.Leader hiding (boxSize,debug_log,debug)
 import Eva.Test
+import Eva.Intersect hiding (FSUnplacedLabel)
+import Eva.Assignment
+
 import SAT.Mios (CNFDescription (..), solveSAT)
 
 import System.Exit
 
 type FSUnplacedLabel = (Port, Clue) --Unplaced Label with a fixed side
-type PortAssignment = (UnplacedLabel,Int) -- Possible assignment where the integer is the index of the assigned port of the unplaced label
-type VarAssignment = (Int,PortAssignment) -- Possible port assignment mapped to an index  
 
-getPortVA (_,pa) = getPort pa
 
-boxSize = 16
 unit = 3
 
 debug_log = False
@@ -151,9 +151,7 @@ groupByEdge :: [[VarAssignment]] -> LineSegment 2 () Float -> [[VarAssignment]]
 groupByEdge mls ls = sortBy (compareVA ls) $ filter (isOnEdge_ ls) mls 
     where isOnEdge_ ls (va:_) = isOnEdge ls ((getPortVA va)^.location)
         
-isOnEdge ls p
-            | p == (ls^.end.core) = False -- make sure each port is only on one edge
-            | otherwise = p `onSegment` ls
+
 
 
 -- Order of points on the line segment
@@ -198,14 +196,6 @@ isOutAndPointedAway mle ml = np > pi / 2.0 --`debug` ((show $ getPortVA $ head m
 -- Determine if ports are unequal
 differentPort :: ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
 differentPort ((_,l1),(_,l2)) = (_location $ getPort l1) /= (_location $ getPort l2)
-
---Shorthand for getting the ith possible port from an unplaced label
-getPort :: (UnplacedLabel,Int) -> Port
-getPort ((ps,_),i) = ps!!(i-1)
-
---All possible pairs from a list
-pairs :: [a] -> [(a, a)]
-pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
 
 -- map the variables for the SAT clauses,
 -- result is a list of pairs where the first element is the index of the variable and the second element the port assignment
@@ -297,175 +287,6 @@ placeLabelsDynamicEdge_ ls p1 p2 e1 e2 = (f p1 p2 e1 e2)
                                     f1 = f i k a c
                                     f2 =  f k j c b
 
-minBoundaryBlockingLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> Int -> Int ->  Maybe Int
-minBoundaryBlockingLength ls i j k a b
-    | i == 0 && j == (length ls) - 1 = Just m -- Can't be blocked by dummies
-    | i == 0 && fitLength_ ls k m j b = Just m
-    | fitLength_ ls i a k m && j == (length ls) - 1 = Just m
-    | fitLength_ ls i a k m && fitLength_ ls k m j b =  Just m 
-    | otherwise = Nothing
-    where
-        m = minLength (fst (ls!!k)) --`debug` show (i,a,j,b,k,minLength (fst (ls!!k)))
-
-
--- Determines the minimum length for the label to clear the boundary
--- Assumes boundary is horizontal
-minLength :: Port -> Int
-minLength (Port p d s) | ((x > 0 && s) || (x < 0 && not s))= minlength --`debug` (show minlength ++ ", " ++ show p ++ show d ++ show s)  -- direction is tot the top right and label is on right side
-                       | otherwise = 0 --`debug` ("minlength 0" ++ show p ++ show d ++ show s)
-                            where
-                                x = d^.xComponent
-                                y = d^.yComponent 
-                                minlength = ceiling (fromIntegral boxSize / ((abs y) / (abs x)))
-
-minLengthEdge :: Port -> LineSegment 2 () Float -> Int
-minLengthEdge prt@(Port p d s) ls
-    | (angle_ < (pi/2) && s) || (angle_ > (pi/2) && not s) = 0
-    | ls^.start.core.yCoord == ls^.end.core.yCoord && d^.yComponent > 0 = minLength prt -- horizontal
-    | otherwise = ceiling ((fromIntegral boxSize) / tan angle)
-        where
-            angle 
-                | angle_ <= (pi/2) = angle_
-                | otherwise = abs $ angleBetweenVectors (ls^.start.core .-. ls^.end.core) d
-            angle_ = abs $ angleBetweenVectors (ls^.end.core .-. ls^.start.core) d
-
-minBlockingLength2 
-  :: [FSUnplacedLabel]    -- the labels
-    -> Int                  -- index of label i
-    -> Int                  -- The length of label i
-    -> Int                  -- index of label k
-    -> Maybe Int
-minBlockingLength2 ls i a k 
-    | i == 0 || i == (length ls) = Nothing -- Dummies can't block
-    |  (k < i && not sk) || (k > i && sk) = Nothing
-    | otherwise = lengthFromIntersection2 vk pk vvk ip
-    where
-        ip = findIntersection line_k line_k_ ( (catMaybes [ip_ik_,ip_itop_k_,ip_opp_k_])++[pi_opp,pi_top])
-
-        li@(Port pi vi si,c) = ls!!i
-        lk@(Port pk vk sk,_) = ls!!k
-
-        line_k = lineFromVectorPoint vk pk
-        line_k_ =  lineFromVectorPoint vk pk_                                   -- line defined by side of cluebox opposite of extension=
-        line_i =  lineFromVectorPoint vi pi     
-        line_i_ = Line pi_bot vi
-        line_i_top =  lineThrough pi_top pi_opp                                    -- line defined by extension
-
-        --The blocking intersection point is either on one of the top corners of the i clue box
-        --or is the (highest) intersection of line k' with one of the line segments making up the  i clue box
-
-        ip_ik_ = asA @(Point 2 Float) $ line_i_ `intersect` line_k_
-        ip_itop_k_ = asA @(Point 2 Float) $ ls_i_top `intersect` line_k_
-        ip_opp_k_ = asA @(Point 2 Float) $ ls_i_opp `intersect` line_k_
-
-        ls_i = ClosedLineSegment (ext pi) (ext pi_top)                             -- Line segment from port to end of label (including extension)
-        ls_i_top = ClosedLineSegment (ext pi_top) (ext pi_opp)                       -- Line segment on top of box
-        ls_i_opp = ClosedLineSegment (ext pi_opp) (ext pi_bot)                       -- Line segment on opposite of box
-
-        pk_ = pk .+^ ((signorm vvk)^*(fromIntegral boxSize))
-        pi_top = pi .+^ ((signorm vi)^* (fromIntegral(a + ((length c)* boxSize))))   -- Point on end of extension (including box)
-        pi_opp = pi_top .+^ ((signorm vvi)^*(fromIntegral boxSize))                  -- Point on top of label opposite extension
-        pi_bot= pi_opp .+^ ((signorm $ negated vi)^*(fromIntegral ((length c)* boxSize))) 
-
-        vvi 
-            | si = Vector2 (vi^.yComponent) (-(vi^.xComponent))
-            | otherwise = Vector2 (-(vi^.yComponent)) (vi^.xComponent)
-        vvk 
-            | sk = Vector2 (vk^.yComponent) (-(vk^.xComponent))
-            | otherwise = Vector2 (-(vk^.yComponent)) (vk^.xComponent)
-
-lengthFromIntersection2 :: Vector 2 Float -> Point 2 Float -> Vector 2 Float -> Maybe (Point 2 Float) -> Maybe Int
-lengthFromIntersection2 _ _ _ Nothing = Nothing
-lengthFromIntersection2 vk pk vvk (Just ip) = lengthFromIntersection2_ corner
-    where 
-        corner = asA @(Point 2 Float) $ (lineFromVectorPoint vvk ip) `intersect` Line pk vk
-        lengthFromIntersection2_ (Just c) = Just (ceiling $ euclideanDist pk c)
-        lengthFromIntersection2_ Nothing = Nothing
-
---highest intersection between k and k'
-findIntersection :: Line 2 Float -> Line 2 Float -> [Point 2 Float] -> Maybe (Point 2 Float)
-findIntersection line_k line_k_ is
-    | length inBetweens > 0 = Just (getHighestPoint_ inBetweens (head inBetweens))
-    | otherwise = Nothing
-    where --there is a bug in onSide and onLine, so onLine2 is neccesary
-        inBetweens = filter (\x-> x^.yCoord >= 0 && (x `onLine2` line_k || x `onLine2` line_k_ || x `onSide` line_k /= x `onSide` line_k_)) is
-
-
-
--- i blocks k:
--- only if label of k is flipped towards i
--- otherwise length of k at intersection (maybe + boxSize)
-minBlockingLength 
-    :: [FSUnplacedLabel]    -- the labels
-    -> Int                  -- index of label i
-    -> Int                  -- The length of label i
-    -> Int                  -- index of label k
-    -> Maybe Int
-minBlockingLength ls i a k 
-    | (k < i && not sk) || (k > i && sk)                = Nothing `debug` "Label faces outward, cant be blocked"
-    | si == sk && dontIntersect ip1                     = Nothing `debug` "labels on same side and intersection below B"
-    | si /= sk && dontIntersect ip5                     = Nothing `debug` "labels facing inwards and intersection below B"
-    | ls_i_top `intersects` line_k_                    = lengthFromIntersection pk_ ip2 `debug` "k' intersects top i"
-    | si == sk && ((i < k && (angleBetweenVectors vi vk) > 0) || (k > i && (angleBetweenVectors vk vi) > 0))       = lengthFromIntersection pi_ ip3 `debug` "labels on same side and angle > 0"
-    | si == sk && ((i < k && (angleBetweenVectors vi vk) < 0) || (k > i && (angleBetweenVectors vk vi) < 0))       = lengthFromIntersection pi__ ip4 `debug` "labels on the same side and angle < 0"
-    | si == sk && line_i `intersects` line_k_            = lengthFromIntersection pk_ ip1 `debug` "labels on same side and k' intersects lsi"
-    | si /= sk && ls_i `intersects` line_k_ && (angleBetweenVectors vi vk) >= 90 = lengthFromIntersection pk_ ip1 `debug` "labels facing inwards and lsi intersects k' and angle >= 90"
-    | si /= sk && ls_i `intersects` line_k_            = lengthFromIntersection pi_ ip3 `debug` "labels facing inwards and lsi intersects k' and angle <90"
-    | si /= sk && line_i_ `intersects` line_k_         = lengthFromIntersection pk_ ip5 `debug` "labels facing inwards and i' intersects k'"
-    | otherwise = error ("missed some case" ++ show i ++ "|" ++ show a ++ "|" ++ show k ++ "|" ++ show line_i_ ++ show line_k_ ++ show ip1 ++ show ls_i ++ (show (ls_i `intersect` line_k_)))
-    where
-        li@(Port pi vi si,c) = ls!!i
-        lk@(Port pk vk sk,_) = ls!!k
-        line_k_ =  lineFromVectorPoint vk pk_                                   -- line defined by side of cluebox opposite of extension=
-        line_i =  lineFromVectorPoint vi pi     
-        line_i_ = lineFromVectorPoint vi pi___           
-        line_i_top =  lineThrough pi_ pi__                                    -- line defined by extension
-                     -- line defined by extension
-        line_pi_ = lineFromVectorPoint vk pi_ 
-        line_pi__ = lineFromVectorPoint vk pi__
-        line_pi___ = lineFromVectorPoint vk pi___
-
-
-        pi_ = pi .+^ ((signorm vi)^* (fromIntegral(a + ((length c)* boxSize))))   -- Point on end of extension (including box)
-        pi__ = pi_ .+^ ((signorm vvi)^*(fromIntegral boxSize))                  -- Point on top of label opposite extension
-        pi___= pi__ .+^ ((signorm $ negated vi)^*(fromIntegral ((length c)* boxSize)))        -- Point on bottom of label
-
-        ls_i = OpenLineSegment (ext pi) (ext pi_)                             -- Line segment from port to end of label (including extension)
-        ls_i_top = OpenLineSegment (ext pi_) (ext pi__)                       -- Line segment on top of box
-        ls_i_opp = OpenLineSegment (ext pi__) (ext pi___)                       -- Line segment on opposite of box
-
-        ip1 = asA @(Point 2 Float) $ line_k_ `intersect` line_i
-        ip2 = asA @(Point 2 Float) $ line_k_ `intersect` line_i_top
-        ip3 = asA @(Point 2 Float) $ line_pi_ `intersect` ((horizontalLine 0)::Line 2 Float)
-        ip4 = asA @(Point 2 Float) $ line_pi__ `intersect` ((horizontalLine 0)::Line 2 Float)
-        ip5 = asA @(Point 2 Float) $ line_k_ `intersect` line_i_
-
-        pk_ = pk .+^ ((signorm vvk)^*(fromIntegral boxSize))
-
-        vvi 
-            | si = Vector2 (vi^.yComponent) (-(vi^.xComponent))
-            | otherwise = Vector2 (-(vi^.yComponent)) (vi^.xComponent)
-        vvk 
-            | sk = Vector2 (vk^.yComponent) (-(vk^.xComponent))
-            | otherwise = Vector2 (-(vk^.yComponent)) (vk^.xComponent)
-
-        dontIntersect Nothing = True --if l and k' do not intersect above the boundary then l does not block k
-        dontIntersect (Just ip)
-            | ip^.yCoord > 0 = False
-            | otherwise = True
-
-
-lengthFromIntersection :: Point 2 Float -> Maybe (Point 2 Float) -> Maybe Int
-lengthFromIntersection _ Nothing     = Nothing --`debug` "no intersection"
-lengthFromIntersection p (Just ip)
-    | ip^.yCoord >= 0 = Just (ceiling (euclideanDist p ip)) --`debug` show ip
-    | otherwise = Nothing --`debug` show ip
-
--- Gives a range of lengths for k where it will fit with l
-doesFitLength :: [FSUnplacedLabel] -> Int -> Int -> Int -> [Int]
-doesFitLength ls l len k = filter (fitLength_ ls l len k) lengths
-    where lengths = [minLength (fst (ls!!k)) + e | e <- [0..64], e == 0 || e `mod` boxSize == 0] 
-    
 -- getLengths :: (Ix t, Eq a1, Num t, Num a1) => Array (t, t) (a2, (t, a1)) -> t -> t -> [a1]
 getLengths r p1 p2
     | port == -1 = replicate (p2-p1 + 1) (-1)
@@ -476,75 +297,8 @@ getLengths r p1 p2
 debug x y | debug_log = flip trace x y
         | otherwise = x
  
--- Determines if l' might fit with to l1
--- TODO its cb1 with cb is not relevant
-fitBox :: [LineSegment 2 () Float] -> ((Int,(UnplacedLabel,Int)),(Int,(UnplacedLabel,Int)))-> Bool
--- fitBox ((_,(p1,i1)),(_,(p2,i2))) =  not (lb1 `intersects` lb) 
---     where
---         lb1 = leaderFromLabelLength_ (p1,i1) --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
---         lb = leaderFromLabelLength_ (p2,i2) --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
---         leaderFromLabelLength_ (ul@(_, c),i) = (ls, clueBoxPolygon (ls^.end.core) v s (length c))
---             where 
---                 ls = leader p v (minLength $ getPort (ul,i))
---                 Port p v s = getPort (ul,i)
 
-fitBox lss ((_,(p1,i1)),(_,(p2,i2)))
-    | isNothing ls = False
-    | getPort (p1,i1) == getPort(p2,i2)  = True -- `debug` "true: positions are the same"
-    | intersects l1 l = False  -- `debug` "false: i intersects k"
-    | intersects b l1 = False  -- `debug` "false: box k intersects i"
-    | intersects b1 l = False  -- `debug` "false: box k intersects i"
-    | intersects b b1 = False
-    | otherwise = True  -- `debug` "true: no intersection"
-    where
-        ls = getEdge (getPort (p1,i1)) lss
-        l1 = (leader pos1 dir1 (minLengthEdge(getPort(p1,i1)) (fromJust ls))) -- `debug` ("i: " ++ show (leader pos1 dir1 boxSize))
-        l = (leader pos dir (minLengthEdge(getPort(p2,i2)) (fromJust ls))) -- `debug` ("k: " ++ show (leader pos dir boxSize))
-        b1 = clueBoxPolygon (l1^.end.core) dir1 s1 1
-        b = clueBoxPolygon (l^.end.core) dir s 1
-        Port pos1 dir1 s1 = getPort (p1,i1)
-        Port pos dir s = getPort (p2,i2)
 
--- Determines if l' fits in between l1 and l2
-fitLength 
-    :: [FSUnplacedLabel] -- labels
-    -> Int     -- index of l1
-    -> Int      -- Extension length of l1
-    -> Int     -- index of l2
-    -> Int      -- Extension length of l2
-    -> Int     -- index of l'
-    -> Int      -- Extension length of l'
-    -> Bool
-fitLength ls i len1 j len2 k len = not (lb1 `intersects` lb) && not (lb2 `intersects` lb)
-    where
-        lb1 = leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
-        lb2 = leaderFromLabelLength (ls!!j) len2 --`debug` ("j:" ++ show (leaderFromLabelLength (ls!!j) len2) ++ show len2)
-        lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
-
-fitLength_ ls i len1 k len = not (lb1 `intersects` lb) --`debug` show (i,len1,k,len)
-    where
-        lb1 = leaderFromLabelLength (ls!!i) len1 --`debug` ("i:" ++ show (leaderFromLabelLength (ls!!i) len1) ++ show len1)
-        lb = leaderFromLabelLength (ls!!k) len --`debug` ("k:" ++ show (leaderFromLabelLength (ls!!k) len) ++ show len)
-
---     | intersects l1 l = False  -- `debug` "false: i intersects k"
---     | intersects l2 l = False  -- `debug` "false: j intersects k"
---     | intersects b l1 = False  -- `debug` "false: box k intersects i"
---     | intersects b l2 = False  -- `debug` "false: box k intersects j"
---     | intersects b1 l = False  -- `debug` "false: box i intersects k"
---     | intersects b2 l = False  -- `debug` "false: box j intersects k"
---     | intersects b1 b = False  -- `debug` ("false: box i " ++ show b1 ++ " intersects box k" ++ show b)
---     | intersects b2 b = False  -- `debug` "false: box j intersects box k"
---     | otherwise = True  -- `debug` "true: no intersection"
---     where
---         l1 = (leader pos1 dir1 len1) `debug` ("i: " ++ show (i,(leader pos1 dir1 len1)) ++ ", j: " ++ show (j,(leader pos2 dir2 len2))  ++ ", k: " ++ show (k,(leader pos dir len)))
---         l2 = (leader pos2 dir2 len2)
---         l = (leader pos dir len) 
---         b1 = clueBoxPolygon (l1^.end.core) dir1 s1
---         b2 = clueBoxPolygon (l2^.end.core) dir2 s2
---         b = clueBoxPolygon (l^.end.core) dir s
---         (Port pos1 dir1 s1) = fst $ ls!!i
---         (Port pos2 dir2 s2) = fst $ ls!!j
---         (Port pos dir s) = fst $ ls!!k
 
 intersectsTrace a b  = trace ((show a)++(show b)) (intersects a b)
 
@@ -592,27 +346,13 @@ sortLabel (p1,_) (p2,_)
 labelOnSegment :: LineSegment 2 () Float -> FSUnplacedLabel -> Bool
 labelOnSegment s l = isOnEdge s ((fst l)^.location)
 
---determines the length of l2 is where it crosses l1
-intersectionLength :: Port -> Port -> Float
-intersectionLength p1 p2 = case ip of
-    Just p -> euclideanDist (_location p1) p
-    Nothing -> read "Infinity" :: Float
-    where ip = asA (intersect (_line p1) (_line p2))
 
-leaderFromLabelLength :: FSUnplacedLabel -> Int -> Leader
-leaderFromLabelLength (Port p v s, c) i = (ls, clueBoxPolygon (ls^.end.core) v s (length c))
-    where ls = leader p v i --`debug` show (p,v,i)
 
 --Cluebox on the boundary
 clueBoxFromLabel :: FSUnplacedLabel -> ClueBox
 clueBoxFromLabel (Port p v s,c) = clueBoxPolygon p v s (length c)
 
---Returns the edge which p is on
-getEdge :: Port -> [LineSegment 2 () Float] -> Maybe (LineSegment 2 () Float)
-getEdge (Port pos _ _) ls = getEdge_ $ filter (\x -> x `isOnEdge` pos) ls
-    where
-        getEdge_ [] = Nothing
-        getEdge_ ls = Just (head ls)  
+
 
 ------------------
 

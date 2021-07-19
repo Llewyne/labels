@@ -118,7 +118,7 @@ labelTest name = do
   since start
 
   -- place the labels
-  pl  <- placeLabelsSATExtensible fupl -- frame
+  pl  <- placeLabelsSATExtensible fupl frame -- frame
   putStrLn $ "labels: " ++ show (length pl)
   writeFile "log/labels.txt" $ unlines $ map show pl
   since start

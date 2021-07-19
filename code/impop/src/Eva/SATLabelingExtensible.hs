@@ -17,32 +17,51 @@ import Data.Function (on)
 import System.Process
 
 import Debug.Trace
-import Eva.ClueBox
 
+import Eva.Util
+import Eva.NonoUtil hiding (getPort)
+import Eva.ClueBox hiding(debug_log,debug)
+import Eva.Assignment
+import Eva.Intersect
+
+debug_log = False
+
+debug x y | debug_log = flip trace x y
+        | otherwise = x
+
+
+-- First element is a list of ports (always the same) and extension lenghts
 type UnplacedLabelExt = ([(Port,Float)], Clue)
 
 type Clause = ([Int], Float)
 
 maxWeight = 10000
-eMax = 5
+eMax = 30
+stepsOf = 4
 
-placeLabelsSATExtensible :: [UnplacedLabel] -> IO [Label]
-placeLabelsSATExtensible ul = do
-    let ml = mapVars (map makeUnplacedLabelExt ul)
+placeLabelsSATExtensible :: [UnplacedLabel] -> Frame -> IO [Label]
+placeLabelsSATExtensible ul f = do
+    --handle edges
+    let edges = listEdges f --`debug` show ls_
+    let roundedEdges = map roundSegment edges --`debug` show (length edges)
+    let filteredEdges = removeZeroLength roundedEdges
+    let simplified = simplify filteredEdges --`debug` show (simplify filteredEdges)
+
+    let ml = mapVars (map (makeUnplacedLabelExt (simplify simplified)) ul)
     -- mapM_ (putStrLn . show) ml
     let clauses = setClauses ml
     -- putStrLn $ show clauses
     -- let desc = CNFDescription (length $ concat ml) (length clauses) ""
-    printClauses ul
+    printClauses ul simplified
     asg <- runMaxHS
     -- putStrLn $ show asg
     let allLabels = map (makeLabelExt (concat ml)) $ filter (0<) asg
     let bestLabels = map (minimumBy (compare `on` _offset)) (groupBy (\x y -> _port x == _port y) allLabels)
     return bestLabels
 
-printClauses :: [UnplacedLabel] -> IO ()
-printClauses ul = do
-    let ml = mapVars (map makeUnplacedLabelExt ul)
+printClauses :: [UnplacedLabel] -> [LineSegment 2 () Float] -> IO ()
+printClauses ul simplified= do
+    let ml = mapVars (map (makeUnplacedLabelExt (simplify simplified)) ul)
     let clauses = setClauses ml
     let allClause = (map makeHardClause clauses) ++ map setSoftClauses (concat ml)
     let wClauses = map writeClause allClause
@@ -52,8 +71,10 @@ printClauses ul = do
 runMaxHS :: IO [Int]
 runMaxHS = do
     output <- readProcess "wsl" ["../../MaxHS-3.2/build/release/bin/maxhs","testformat.txt"] ""
-    let sol = map read $ tail $ words $ head $ filter (\x -> head x == 'v') (lines output)-- (head $ filter (\x -> head x == "v") (lines output))
-    return $ filter (0 <) sol
+    let solLines = filter (\x -> head x == 'v') (lines output)
+    if null solLines
+        then return []
+        else return $  filter (0 <) $ map read $ tail $ words $ head solLines
 
 writeClause ::  Clause -> String
 writeClause (c,w) = (showDecimal $ realToFrac w) ++ " " ++ (concat $ map (\x -> show x ++ " ") c) ++ "0\n"
@@ -77,9 +98,13 @@ makeLabelExt ml i = Label clue port len
             port = fst (fst ( fst $ snd $ ml!!(i-1))!!(snd ( snd $ ml!!(i-1))-1))
             len = snd (fst ( fst $ snd $ ml!!(i-1))!!(snd ( snd $ ml!!(i-1))-1))
 
-makeUnplacedLabelExt :: UnplacedLabel -> UnplacedLabelExt
-makeUnplacedLabelExt ul = ([(p,ls)|p<-fst ul,ls<-[1..eMax]],snd ul)
-
+makeUnplacedLabelExt :: [LineSegment 2 () Float] -> UnplacedLabel -> UnplacedLabelExt
+makeUnplacedLabelExt ls ul = ([(p,ls)|p<-fst ul,ls<-[minLength p + (m*4)|m<-[0..eMax]]],snd ul)
+    where
+        minLength p = len (edge p) p
+        len (Just e) p = fromIntegral $  minLengthEdge p e
+        len Nothing _ = 0
+        edge p = getEdge p ls
 
 -- Sets the clauses
 -- for each line l with ports p and q, xal = 1 (xal = 0) if the label above l is assigned to p (q). 
@@ -102,9 +127,6 @@ differentPort ((_,l1),(_,l2)) = _location (getPort l1) /= _location (getPort l2)
 getPort :: (UnplacedLabelExt,Int) -> Port
 getPort ((ps,_),i) = fst (ps!!(i-1))
 
-pairs :: [a] -> [(a, a)]
-pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]
-
 -- map the variables for the SAT clauses, result is a list of pairs where the first element is the index of the variable and the second element the port assignment
 mapVars :: [UnplacedLabelExt] -> [[(Int,(UnplacedLabelExt,Int))]]
 mapVars ul = _mapVars (map getVar ul) 1
@@ -118,7 +140,17 @@ getVar ul = [(a,b)|a<-[ul],b<-[1..(length (fst ul))] ]
 
 -- Determines if two labels overlap
 overlap :: ((Int,(UnplacedLabelExt,Int)),(Int,(UnplacedLabelExt,Int)))-> Bool
-overlap ((_,(l1,i1)),(_,(l2,i2))) = intersects (clueBox (fst((fst l1)!!(i1-1)))) (clueBox (fst((fst l2)!!(i2-1))))
+overlap ((_,(l1,i1)),(_,(l2,i2))) = lb1 `intersects` lb2
+    where
+        port1 = fst ((fst l1)!!(i1-1))
+        len1 = snd ((fst l1)!!(i1-1))
+        clues1 = snd l1
+        port2 = fst ((fst l2)!!(i2-1))
+        len2 = snd ((fst l2)!!(i2-1))
+        clues2 = snd l2
+        lb1 = leaderFromPortCluesLength port1 clues1 (floor len1) `debug` ("i:" ++ show (leaderFromPortCluesLength port1 clues1 (floor len1)) ++ show len1)
+        lb2 = leaderFromPortCluesLength port2 clues2 (floor len2) `debug` ("k:" ++ show (leaderFromPortCluesLength port2 clues2 (floor len2)) ++ show len2)
+
 
 
 size :: Rational

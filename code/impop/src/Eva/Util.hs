@@ -147,3 +147,12 @@ shuffle xs = do
     n = length xs
     newArray :: Int -> [a] -> IO (IOArray Int a)
     newArray n xs =  newListArray (1,n) xs
+
+isOnEdge ls p
+            | p == (ls^.end.core) = False -- make sure each port is only on one edge
+            | otherwise = p `onSegment` ls
+
+
+--All possible pairs from a list
+pairs :: [a] -> [(a, a)]
+pairs l = [(x,y) | (x:ys) <- tails l, y <- ys]

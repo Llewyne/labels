@@ -56,6 +56,9 @@ library
     , Eva.ClueBox
     , Eva.Leader
     , Eva.Util
+    , Eva.NonoUtil
+    , Eva.Intersect
+    , Eva.Assignment
     , Eva.Test
     , Eva.SATLabeling
     , Eva.SATLabelingExtensible

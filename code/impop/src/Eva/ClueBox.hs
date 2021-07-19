@@ -122,7 +122,7 @@ lsIntersects ls1 ls2
     cy = c^.core.yCoord :: Float
     dy = d^.core.yCoord :: Float
 
-boxSize = 16
+boxSize = 16 :: Int
 
 -- Create a clue box for line l
 clueBoxPolygon 
