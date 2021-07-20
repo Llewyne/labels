@@ -1,9 +1,0 @@
-tests: true
-packages:
-    hgeometry
-    hgeometry-combinatorial
-    hgeometry-ipe
-    hgeometry-examples
-    hgeometry-test
-    hgeometry-benchmarks
-    hgeometry-svg
