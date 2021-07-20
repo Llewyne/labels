@@ -1,0 +1,145 @@
+
+cabal-version: 1.12
+
+name:           eva
+version:        0.1.0.0
+author:         Eva Timmer
+copyright:      2021 Eva Timmer
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+
+source-repository head
+  type: git
+  location: https://github.com/Llewyne/labels
+  
+library
+  exposed-modules:
+      Eva.DynamicLabeling
+    , Eva.ClueBox
+    , Eva.Leader
+    , Eva.Util
+    , Eva.NonoUtil
+    , Eva.Intersect
+    , Eva.Assignment
+    , Eva.Test
+    , Eva.SATLabeling
+    , Eva.SATLabelingExtensible
+  other-modules:
+      Paths_eva
+  
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , hgeometry >= 0.11
+    , hgeometry-combinatorial >= 0.10
+    , hgeometry-ipe >= 0.10
+    , impop
+    , Rasterific
+    , gloss
+    , vector
+    , nonempty-vector >= 0.2.1
+    , lens >= 4.19
+    , containers
+    , data-default
+    , hlist
+    , colour
+    , text
+    , clock, time
+    , directory, filepath
+    ,extra
+     , split
+    , array
+    , vinyl
+    , matrix
+    , mios
+    , random
+    , process
+  default-language: Haskell2010
+  default-extensions: TypeFamilies
+                    , GADTs
+                    , KindSignatures
+                    , DataKinds
+                    , TypeOperators
+                    , ConstraintKinds
+                    , PolyKinds
+                    , RankNTypes
+                    , TypeApplications
+                    , ScopedTypeVariables
+
+                    , PatternSynonyms
+                    , TupleSections
+                    , LambdaCase
+                    , ViewPatterns
+
+                    , StandaloneDeriving
+                    , GeneralizedNewtypeDeriving
+                    , DeriveFunctor
+                    , DeriveFoldable
+                    , DeriveTraversable
+
+                    , AutoDeriveTypeable
+
+                    , FlexibleInstances
+                    , FlexibleContexts
+                    , MultiParamTypeClasses
+
+executable eva-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_eva
+    , TestLabelPipeline  
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , eva
+    , impop
+    , hgeometry >= 0.11
+    , hgeometry-combinatorial >= 0.10
+    , hgeometry-ipe >= 0.10
+    , Rasterific
+    , gloss
+    , vector
+    , nonempty-vector >= 0.2.1
+    , lens
+    , containers
+    , data-default
+    , hlist
+    , colour
+    , text
+    , clock, time
+    , directory, filepath
+    , extra
+    , mios
+    , random
+  default-language: Haskell2010
+  default-extensions: TypeFamilies
+                    , GADTs
+                    , KindSignatures
+                    , DataKinds
+                    , TypeOperators
+                    , ConstraintKinds
+                    , PolyKinds
+                    , RankNTypes
+                    , TypeApplications
+                    , ScopedTypeVariables
+
+                    , PatternSynonyms
+                    , TupleSections
+                    , LambdaCase
+                    , ViewPatterns
+
+                    , StandaloneDeriving
+                    , GeneralizedNewtypeDeriving
+                    , DeriveFunctor
+                    , DeriveFoldable
+                    , DeriveTraversable
+
+                    , AutoDeriveTypeable
+
+                    , FlexibleInstances
+                    , FlexibleContexts
+                    , MultiParamTypeClasses
